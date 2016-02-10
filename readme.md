@@ -1,13 +1,17 @@
 Установить node.js (https://nodejs.org)
 
+Установка необходимых компонентов:
 ```
 sudo npm install -g grunt-cli
-git clone https://github.com/hakimel/reveal.js.git
-cd reveal.js
 npm install
+```
+
+Запуск локального сервера:
+```
 grunt serve
 ```
 
-После изменения шаблона темы выполнить
+Компиляция css-тем после изменения шаблонов:
+```
 grunt css-themes
-
+```
