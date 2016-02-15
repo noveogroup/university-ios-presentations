@@ -72,7 +72,7 @@
 
 ## Основные положения
 
-* Выделение памяти под объект происходит в методе класса `alloc`
+* Выделение памяти под объект (и его переменные) происходит в методе класса `alloc`
 * Высвобождение памяти происходит в методе объекта `dealloc`
 * Каждый объект имеет свойство-счетчик ссылок `retainCount`
 * Объект умирает (вызывается метод `dealloc`) когда счетчик ссылок достигает нуля
@@ -82,36 +82,141 @@
 
 ## Управление счетчиком ссылок
 
-* Методы `alloc`, `new`,  задает счетчик ссылок равным единице
+* Методы `alloc`, `new`, `copy`, `mutableCopy` возвращают объекты с счетчиком ссылок равным единице*
 * Метод `retain` увеличивает счетчик на единицу
 * Метод `release` уменьшает счетчик на единицу
-* Метод `autorelease` помещает объект в Autorelease Pool
+* Метод `autorelease` выполняет отложенное уменьшение счетчика на единицу
+
+\*На самом деле не всегда, но мы должны так считать
 
 
 ----
 
-## Основные правила управления памятью
+## Пример
 
-К управленю памятью следует подходить с позиции "владения" и "объектных графов"
-* Объектный граф - группа объектов, которые соединены в сеть посредством установления тех или иных отношений между ними
+```ObjectiveC
+NSMutableArray *array = [[NSMutableArray alloc] init];
+NSLog(@"%ld", array.retainCount); //1
+[array retain];
+NSLog(@"%ld", array.retainCount); //2
+[array retain];
+NSLog(@"%ld", array.retainCount); //3
+[array release];
+NSLog(@"%ld", array.retainCount); //2
+[array autorelease]
+NSLog(@"%ld", array.retainCount); //2
+
+NSMutableArray *arrayCopy = [array mutableCopy];
+NSLog(@"%ld", arrayCopy.retainCount); //1
+[arrayCopy release];
+[arrayCopy release]; //Exception
+```
 
 
 ----
 
-## Основные правила управления памятью
+## Управление памятью в пределах подпрограммы
 
-Вы владеете любым объектом, который создаете
-
-Для создания объекта используются методы, начинающиеся с alloc, new, copy, mutableCopy
+* Создаем объекты когда они нужны
+* Удаляем когда они больше не нужны
+* Возвращаем "наверх" autorelease-нутые объекты
 
 
 ----
 
-## Основные правила управления памятью
+## Пример
 
-Вы должны отказаться от права владения объектом тогда, когда он больше не нужен
+```ObjectiveC
+- (NSString *)getTimeOfDate:(NSDate *)date
+{
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    dateFormatter.date = @"hh:mm";
+    NSString *dateString = [dateFormat stringFromDate:date];
+    [dateFormat release];
 
-Для отказа достаточно послать объекту одно из сообщений release или autorelease
+    return dateString;
+}
+```
+Упрощенный вариант
+```ObjectiveC
+- (NSString *)getTimeOfDate:(NSDate *)date
+{
+    NSDateFormatter *dateFormatter = [[[NSDateFormatter alloc] init] autorelease];
+    dateFormatter.date = @"hh:mm";
+    return [dateFormat stringFromDate:date];
+}
+```
+
+
+----
+
+## Пример
+
+```ObjectiveC
+- (NSString *)appendNewLineToString:(NSString *)string
+{
+    NSString *result = [[NSString alloc] initWithFormat:@"%@\n", string];
+    return [result autorelease];
+}
+```
+Упрощенный вариант
+```ObjectiveC
+- (NSString *)appendNewLineToString:(NSString *)string
+{
+    return [[[NSString alloc] initWithFormat:@"%@\n", string] autorelease];
+}
+```
+Еще проще
+```ObjectiveC
+- (NSString *)appendNewLineToString:(NSString *)string
+{
+    return [NSString stringWithFormat:@"%@\n", string];
+}
+```
+
+
+----
+
+## Управление памятью в пределах объекта
+
+К управленю памятью объекта следует подходить с позиции "владения" и "объектных графов". Для владения объектом нужно:
+* Создать объект либо поработить объект, переданный извне, методом retain
+* Сохранить ссылку на объект в переменной объекта-владыки
+* Освободить объект когда он больше не нужен методом release или autorelease
+* Освобождать все объекты-рабы в методе dealloc
+* Не хранить ссылки на освобожденные объекты (занулять переменные-указатели)
+
+
+----
+
+## Пример
+
+```ObjectiveC
+@interface Person : NSObject {
+    NSString *_firstName;
+    NSString *_lastName;
+    NSString *_fullName;
+}
+@end
+
+@implementation Person
+
+- (Person *)initWithFirstName:(NSString *)firstName lastName:(NSString *)lastName
+{
+    self = [super init];
+    _firstName = [firstName retain];
+    _lastName = [lastName retain];
+    _fullName = [[NSString stringWithFormat:@"%@ %@", firstName, lastName] retain];
+    return self;
+}
+
+- (NSString *)getFullName
+{
+    return _fullName;
+}
+
+@end
+```
 
 
 ----
@@ -126,38 +231,6 @@
     // ...
     [aPupil release];
     aPupil = nil;
-}
-```
-
-
-----
-
-## Пример
-
-```ObjectiveC
-- (NSString *)fullName
-{
-    NSString *fullName =
-        [[[NSString alloc] initWithFormat:@”%@ %@”,
-            self.surname, self.name] autorelease];
-
-    return fullName;
-}
-```
-
-
-----
-
-## Пример
-
-```ObjectiveC
-- (NSString *)fullName
-{
-    NSString *fullName =
-        [NSString stringWithFormat:@”%@ %@”,
-            self.surname, self.name];
-
-    return fullName;
 }
 ```
 
@@ -196,14 +269,6 @@
     string = nil;
 }
 ```
-
-
-----
-
-## Высвобождение памяти
-
-* Осуществляется автоматически как только счетчик ссылок достигает значения 0
-* Всегда сопряжено с вызовом метода dealloc (определен в классе NSObject) у того объекта, который будет удален из памяти
 
 
 ----
