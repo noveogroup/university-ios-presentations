@@ -1,4 +1,4 @@
-# 1.2 Основы паттернов ООП
+# 2. Основы паттернов ООП
 
 ### Noveo University — iOS
 
@@ -108,42 +108,42 @@ CLLocationManager
 
 ## Model-View-Controller
 
-![](lecture_1_2_img/MVC.png)
+![](lecture_2_img/MVC.png)
 
 
 ----
 
 ## Model-View-Controller
 
-![](lecture_1_2_img/TV_1.png)
+![](lecture_2_img/TV_1.png)
 
 
 ----
 
 ## Model-View-Controller
 
-![](lecture_1_2_img/TV_2.png)
+![](lecture_2_img/TV_2.png)
 
 
 ----
 
 ## Delegate
 
-![](lecture_1_2_img/TV_3.png)
+![](lecture_2_img/TV_3.png)
 
 
 ----
 
 ## Delegate
 
-![](lecture_1_2_img/TV_4.png)
+![](lecture_2_img/TV_4.png)
 
 
 ----
 
 ## Observer
 
-![](lecture_1_2_img/TV_5.png)
+![](lecture_2_img/TV_5.png)
 
 
 ----
@@ -244,7 +244,7 @@ MyClass *instance = [MyClass sharedInstance];
 
 Иерархия UIView — типичный пример компоновщика.
 
-![](lecture_1_2_img/Composite.png)
+![](lecture_2_img/Composite.png)
 
 
 ----
@@ -253,4 +253,4 @@ MyClass *instance = [MyClass sharedInstance];
 
 Классическая книга по шаблонам от "Банды Четырёх"
 
-![](lecture_1_2_img/GoF.png)
+![](lecture_2_img/GoF.png)

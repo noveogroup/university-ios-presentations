@@ -1,4 +1,4 @@
-# 1.1 Objective-C
+# 1. Objective-C
 
 ### Noveo University — iOS
 

@@ -1,6 +1,6 @@
 ### Noveo University — iOS
 
 
-* [1.1 Objective-C](./lecture_1_1.html)
-* [1.2 Шаблоны ООП](./lecture_1_2.html)
+* [1. Objective-C](./lecture_1.html)
+* [2. Шаблоны ООП](./lecture_2.html)
 * [3 Управление памятью](./lecture_3.html)
