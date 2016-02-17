@@ -72,9 +72,49 @@
 
 ## Основные положения
 
+* Управление памятью объектов базируется на объектом "владении" (ownership)
+* К управлению связями между объектами следует подходить с позиции "объектных графов"
+* Объект живет пока имеет одного или нескольких владельцев
+* Объект умирает когда больше не имеет владельцев
+
+
+----
+
+## Объектный граф
+
+![](lecture_3_img/Graph_1.png)
+
+
+----
+
+## Основные положения
+
+* Вы владеете любым объектом, который создаете (методами `alloc`, `new`, `copy`, `mutableCopy`)
+* Вы можете стать владельцем объекта (сохранив его от преждевременного уничтожения), вызвав его метод `retain`
+* Когда объект вам больше не нужен, вы отпускаете его методом `release` или `autorelease`
+* Вы не должны отказываться от владения объектом если вы его не создавали
+* Вы не владеете объектами, возвращенными по ссылке
+
+
+----
+
+## Кто такие "вы"?
+
+* Подпрограмма
+  * Метод объекта
+  * Метод класса
+  * Функция
+* Объект
+  * ivar
+
+
+----
+
+## Под капотом
+
 * Выделение памяти под объект (и его переменные) происходит в методе класса `alloc`
-* Высвобождение памяти происходит в методе объекта `dealloc`
-* Каждый объект имеет свойство-счетчик ссылок `retainCount`
+* Высвобождение памяти и ресурсов происходит в методе объекта `dealloc`
+* Каждый объект имеет свойство-счетчик ссылок (счетчик владельцев) `retainCount`
 * Объект умирает (вызывается метод `dealloc`) когда счетчик ссылок достигает нуля
 
 
@@ -97,29 +137,24 @@
 ```ObjectiveC
 NSMutableArray *array = [[NSMutableArray alloc] init];
 NSLog(@"%ld", array.retainCount); //1
-[array retain];
-NSLog(@"%ld", array.retainCount); //2
-[array retain];
-NSLog(@"%ld", array.retainCount); //3
-[array release];
-NSLog(@"%ld", array.retainCount); //2
-[array autorelease]
-NSLog(@"%ld", array.retainCount); //2
+[array retain]; //2
+[array retain]; //3
+[array release]; //2
+[array autorelease]; //2
 
-NSMutableArray *arrayCopy = [array mutableCopy];
-NSLog(@"%ld", arrayCopy.retainCount); //1
-[arrayCopy release];
-[arrayCopy release]; //Exception
+NSMutableArray *arrayCopy = [array mutableCopy]; //1
+[arrayCopy release]; //0
+[arrayCopy release]; //Exception - zombie
 ```
 
 
 ----
 
-## Управление памятью в пределах подпрограммы
+## Владение объектами в пределах подпрограммы
 
 * Создаем объекты когда они нужны
-* Удаляем когда они больше не нужны
-* Возвращаем "наверх" autorelease-нутые объекты
+* Освобождаем когда они больше не нужны
+* Отложенно освобождаем для возвращения "наверх"
 
 
 ----
@@ -153,22 +188,23 @@ NSLog(@"%ld", arrayCopy.retainCount); //1
 ## Пример
 
 ```ObjectiveC
-- (NSString *)appendNewLineToString:(NSString *)string
+NSString *appendNewLineToString(NSString *string)
 {
     NSString *result = [[NSString alloc] initWithFormat:@"%@\n", string];
-    return [result autorelease];
+    [result autorelease];
+    return result;
 }
 ```
 Упрощенный вариант
 ```ObjectiveC
-- (NSString *)appendNewLineToString:(NSString *)string
+NSString *appendNewLineToString(NSString *string)
 {
     return [[[NSString alloc] initWithFormat:@"%@\n", string] autorelease];
 }
 ```
 Еще проще
 ```ObjectiveC
-- (NSString *)appendNewLineToString:(NSString *)string
+NSString *appendNewLineToString(NSString *string)
 {
     return [NSString stringWithFormat:@"%@\n", string];
 }
@@ -177,14 +213,29 @@ NSLog(@"%ld", arrayCopy.retainCount); //1
 
 ----
 
+## Пример
+
+```ObjectiveC
+NSError *error = nil;
+NSString *string =
+    [[NSString alloc]
+        initWithContentsOfFile:fileName encoding:NSUTF8StringEncoding error:&error];
+if (error) {
+    //error processing
+}
+//...
+[string release];
+```
+
+
+----
+
 ## Управление памятью в пределах объекта
 
-К управленю памятью объекта следует подходить с позиции "владения" и "объектных графов". Для владения объектом нужно:
-* Создать объект либо поработить объект, переданный извне, методом retain
+Для грамотного владения объектом нужно:
+* Создать объект либо завладеть объектом, полченным извне
 * Сохранить ссылку на объект в переменной объекта-владыки
-* Освободить объект когда он больше не нужен методом release или autorelease
-* Освобождать все объекты-рабы в методе dealloc
-* Не хранить ссылки на освобожденные объекты (занулять переменные-указатели)
+* Освободить объект и занулить ссылку когда он больше не нужен
 
 
 ----
@@ -193,28 +244,50 @@ NSLog(@"%ld", arrayCopy.retainCount); //1
 
 ```ObjectiveC
 @interface Person : NSObject {
-    NSString *_firstName;
     NSString *_lastName;
-    NSString *_fullName;
 }
 @end
 
 @implementation Person
 
-- (Person *)initWithFirstName:(NSString *)firstName lastName:(NSString *)lastName
+- (void)setLastName:(NSString *)lastName
 {
-    self = [super init];
-    _firstName = [firstName retain];
-    _lastName = [lastName retain];
-    _fullName = [[NSString stringWithFormat:@"%@ %@", firstName, lastName] retain];
-    return self;
+    [lastName retain];
+    [_lastName release];
+    _lastName = lastName;
 }
 
-- (NSString *)getFullName
+- (NSString *)getLastName
 {
-    return _fullName;
+    return _lastName
 }
 
+@end
+```
+
+
+----
+
+## То же самое
+
+```ObjectiveC
+@interface Person : NSObject {
+    NSString *_lastName;
+}
+@property (retain) NSString *lastName;
+@end
+
+@implementation Person
+@synthesize lastName = _lastName;
+@end
+```
+Еще проще (c XCode 4.4)
+```ObjectiveC
+@interface Person : NSObject
+@property (retain) NSString *lastName;
+@end
+
+@implementation Person
 @end
 ```
 
@@ -224,97 +297,59 @@ NSLog(@"%ld", arrayCopy.retainCount); //1
 ## Пример
 
 ```ObjectiveC
-{
-    Pupil *aPupil = [[Pupil alloc] init];
-    // ...
-    NSString *name = aPupil.name;
-    // ...
-    [aPupil release];
-    aPupil = nil;
-}
-```
-
-
-----
-
-## Основные правила управления памятью
-
-Вы не владеете объектами, которые вам вернули по ссылке
-
-
-----
-
-## Основные правила управления памятью
-
-Ни при каких условиях вы не должны отказываться от прав на владение тем или иным объектом, если вы им не владеете.
-
-
-----
-
-## Пример
-
-```ObjectiveC
-{
-    NSError *error = nil;
-    NSString *string =
-        [[NSString alloc]
-            initWithContentsOfFile:fileName
-            encoding:NSUTF8StringEncoding
-            error:&error];
-    if (string == nil) {
-        // Handle the error ...
-    }
-    // ...
-    [string release];
-    string = nil;
-}
-```
-
-
-----
-
-## Высвобождение памяти
-
-Метод dealloc всегда вызывается автоматически, не пытайтесь вызывать его самостоятельно.
-
-
-----
-
-## Роль метода dealloc
-
-* Высвобождение занятой объектом памяти,
-* Освобождение занятых ресурсов,
-* Отказ от прав на владение любыми внутренними объектами.
-
-
-----
-
-## Пример
-
-```ObjectiveC
-@interface Pupil : NSObject
-@property (retain) NSString *name;
+@interface Person : NSObject
+@property (retain) NSString *firstName;
+@property (retain) NSString *lastName;
 @end
 
-@implementation Pupil
-//...
+@implementation Person
+
+- (void)setNewFirstName:(NSString *)firstName lastName:(NSString *)lastName
+{
+    self.firstName = firstName;
+    self.lastName = lastName;
+}
+
+@end
+```
+
+
+----
+
+## dealloc
+
+* Вызывается системой когда объект умирает (больше не имеет владельцев)
+* Вручную нельзя вызывать
+* Служит для освобождения всех объектов-рабов и ресурсов
+* Где-то в `[NSObject dealloc]` (или рядом) происходит низкоуровневое высвобождение памяти, отведенной под объект и его переменные
+* Реализация метода должна высвободить внутренние объекты (по ссылкам-переменным, объявленным в классе), и вызвать `[super dealloc]`
+* Не стоит использовать сеттеры и геттеры
+* Нельзя помещать код, управляющий системными ресурсами
+
+
+----
+
+## Пример
+
+```ObjectiveC
+@interface ExtendedPerson : Person
+@property (retain) NSNumber *age;
+@property (retain) NSDate *birthDate;
+@end
+
+@implementation ExtendedPerson
+
 - (void)dealloc
 {
-    [name release];
-    name = nil;
+    [_age release];
+    _age = nil;
+    [_birthDate release];
+    _birthDate = nil;
     [super dealloc];
 }
+
 @end
 ```
-
-
-----
-
-## Переопределение метода dealloc
-
-* Вы обязаны вызвать [super dealloc]
-* Ни при каких обстоятельствах не помещайте код, управляющий системными ресурсами, в переопределенную реализацию метода
-
 
 
 ----
@@ -322,20 +357,46 @@ NSLog(@"%ld", arrayCopy.retainCount); //1
 ## Классификаторы времени жизни
 
 К свойствам объектов применимы следующие классификаторы
-* retain
-* copy
-* readonly
-* readwrite (по умолчанию для скалярных типов)
-* assign (по умолчанию для объектов)
+* `assign` (по умолчанию для объектов, единственный вариант для скалярных типов)
+* `retain`
+* `copy`
+
+А также
+* `readwrite`
+* `readonly`
+
+
+----
+
+## Пример
+
+```ObjectiveC
+- (void)setRetainString:(NSString *)string
+{
+    [_retainString release];
+    _retainString = [string retain];
+}
+
+- (void)setCopyString:(NSString *)string
+{
+    [_copyString release];
+    _copyString = [string copy];
+}
+
+- (void)setAssignString:(NSString *)string
+{
+    _assignString = string;
+}
+```
 
 
 ----
 
 ## "Слабое" связывание объектов
 
+* Классификатор `assign`
 * Решает проблему циклических ссылок
 * Не оказывает влияния на счетчик ссылок
-* Классификатор assign
 
 
 ----
@@ -344,12 +405,13 @@ NSLog(@"%ld", arrayCopy.retainCount); //1
 
 ```ObjectiveC
 @interface UITableView : UIScrollView <NSCoding>
-//...
+...
 @property (nonatomic, assign)
     id<UITableViewDataSource> dataSource;
 @property (nonatomic, assign)
     id<UITableViewDelegate> delegate;
-//...
+...
+@end
 ```
 
 
@@ -363,7 +425,7 @@ NSLog(@"%ld", arrayCopy.retainCount); //1
 ## Autorelease pools
 
 * Механизм, предоставляющий возможность отказаться от прав владения объектом, избегая немедленного высвобождения памяти
-* Все объекты, получившие сообщение autorelease, остаются в памяти до тех пор, пока жив pool, в котором объект получил это сообщение
+* Все объекты, получившие сообщение `autorelease`, остаются в памяти до тех пор, пока жив pool, в котором объект получил это сообщение
 
 
 ----
@@ -371,36 +433,18 @@ NSLog(@"%ld", arrayCopy.retainCount); //1
 ## Autorelease pools
 
 Обычно вам не нужно создавать подобного рода объекты, за исключением нескольких особых случаев
-
-
-----
-
-## Особые случаи
-
-Вы работаете над приложением, которое не базируется на UI framework
-
-
-----
-
-## Особые случаи
-
-Вы работаете над неким циклом, который порождает множество временных объектов
-
-
-----
-
-## Особые случаи
-
-Вы работаете над многопоточным приложением. Каждый новый поток должен иметь собственный autorelease pool к моменту запуска.
+* Приложение, которое не базируется на UI framework
+* Цикл, порождающий множество временных объектов
+* Многопоточное приложение: каждый новый поток должен иметь собственный `autorelease pool` к моменту запуска.
 
 
 ----
 
 ## Принцип действия
 
-При уничтожении autorelease pool рассылает сообщение release всем связанным с ним объектам, которые до момента уничтожения получили сообщение autorelease.
-
-Число рассылаемых сообщений release равно числу разосланных autorelease.
+* `Autorelease pool` Запоминает объекты, которым был послан `autorelease`
+* При уничтожении рассылает сообщение `release` всем своим объектам
+* Число рассылаемых сообщений `release` равно числу разосланных `autorelease`
 
 
 ----
@@ -409,14 +453,12 @@ NSLog(@"%ld", arrayCopy.retainCount); //1
 
 ```ObjectiveC
 {
-    // ...
-    NSAutoreleasePool *const pool =
+    NSAutoreleasePool *pool =
         [[NSAutoreleasePool alloc] init];
 
     // Code that creates autoreleased objects.
 
     [pool release];
-    // ...
 }
 ```
 
@@ -456,22 +498,21 @@ Copyright © 2012 Apple Inc. All Rights Reserved.
 
 ----
 
-## Ограничения накладываемые ARC
+## Ограничения ARC
 
 Запрещено вызывать:
-* retain
-* release (autorelease)
-* [super dealloc]
+* `retain`
+* `release` (`autorelease`)
+* `[super dealloc]`
 
 
 ----
 
 ## Классификаторы времени жизни
 
-Множество классификаторов, применимых к свойствам объектов, дополнено:
-* strong (по умолчанию для объектов)
-* weak
-* unsafe_unretained
+* `strong` ( = `retain`, по умолчанию для объектов)
+* `weak`
+* `unsafe_unretained` ( = `assign`)
 
 
 ----
@@ -491,7 +532,7 @@ Copyright © 2012 Apple Inc. All Rights Reserved.
 
 Оформляйте классификаторы правильно!
 
-ClassName *qualifier variable;
+`ClassName *qualifier variable;`
 
 
 ----
@@ -499,13 +540,9 @@ ClassName *qualifier variable;
 ## Пример
 
 ```ObjectiveC
-// ...
-
 MyClass *__weak weakReference = ...;
 
 MyClass *__unsafe_unretained unsafeReference = ...;
-
-// ...
 ```
 
 
@@ -515,12 +552,11 @@ MyClass *__unsafe_unretained unsafeReference = ...;
 
 ```ObjectiveC
 {
-    // ...
     NSString *__weak string =
         [[NSString alloc] initWithFormat:
             @"First Name: %@", [self firstName]];
     NSLog(@"string: %@", string);
-    // ...
+    ...
 }
 ```
 
@@ -546,8 +582,8 @@ MyClass *__unsafe_unretained unsafeReference = ...;
 ## Включение/выключение ARC
 
 При помощи флагов компилятора
-* -fobjc-arc,
-* -fno-objc-arc (для отдельных файлов).
+* -fobjc-arc
+* -fno-objc-arc
 
 
 ----
@@ -569,11 +605,10 @@ MyClass *__unsafe_unretained unsafeReference = ...;
 
 ```ObjectiveC
 {
-    // ...
     @autoreleasepool {
         // Code that creates autoreleased objects.
     }
-    // ...
+    ...
 }
 
 ```
@@ -585,4 +620,24 @@ MyClass *__unsafe_unretained unsafeReference = ...;
 
 * Clang Static Analyzer
 * Developer Tools - Instruments
+
+
+----
+
+## Темы для самостоятельного изучения
+
+[Особенности управления памятью в Core Foundation с использованием ARC](https://developer.apple.com/library/ios/releasenotes/ObjectiveC/RN-TransitioningToARC/Introduction/Introduction.html#//apple_ref/doc/uid/TP40011226-CH1-SW1)
+
+
+----
+
+## Справочная литература
+
+[Advanced Memory Management Programming Guide](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/MemoryMgmt/Articles/MemoryMgmt.html#//apple_ref/doc/uid/10000011-SW1)
+
+[Transitioning to ARC Release Notes](https://developer.apple.com/library/ios/releasenotes/ObjectiveC/RN-TransitioningToARC/Introduction/Introduction.html#//apple_ref/doc/uid/TP40011226-CH1-SW11)
+
+[Toll-Free Bridged Types](https://developer.apple.com/library/ios/documentation/CoreFoundation/Conceptual/CFDesignConcepts/Articles/tollFreeBridgedTypes.html#//apple_ref/doc/uid/TP40010677)
+
+[ARC Best Practices](http://amattn.com/p/arc_best_practices.html)
 
