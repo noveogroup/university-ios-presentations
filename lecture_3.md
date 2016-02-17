@@ -357,8 +357,8 @@ if (error) {
 ## Типичные ошибки
 
 * Неуравновешенное колчество вызовов методов создания+владения и освобождения
-  * Обращением к мертвым объектам (зомби)
-  * Бессмертные объекты (и их подчиненные)
+  * Обращением к мертвым объектам - зомби
+  * Бессмертные объекты (и их подчиненные) - утечки памяти
 * Циклические неуправляемые сильные связи
 
 
@@ -567,37 +567,6 @@ Copyright © 2012 Apple Inc. All Rights Reserved.
 MyClass *__weak weakReference = ...;
 
 MyClass *__unsafe_unretained unsafeReference = ...;
-```
-
-
-----
-
-## Пример
-
-```ObjectiveC
-{
-    NSString *__weak string =
-        [[NSString alloc] initWithFormat:
-            @"First Name: %@", [self firstName]];
-    NSLog(@"string: %@", string);
-    ...
-}
-```
-
-
-----
-
-## Пример
-
-```ObjectiveC
-{
-    // ...
-    NSError *error;
-    BOOL OK = [object doSomethingWithError:&error];
-    if (!OK) {
-        // ...
-    }
-}
 ```
 
 
