@@ -7,3 +7,4 @@
 * [4. Foundation framework](./lecture_4.html)
 * [5.1. UIKit framework](./lecture_5_1.html)
 * [5.2. UIKit framework](./lecture_5_2.html)
+* [6. Хранение данных](./lecture_6.html)
