@@ -9,3 +9,4 @@
 * [5.2. UIKit framework](./lecture_5_2.html)
 * [6. Хранение данных](./lecture_6.html)
 * [7. Асинхронность](./lecture_7.html)
+* [8. Работа с сетью](./lecture_8.html)
