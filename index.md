@@ -10,3 +10,4 @@
 * [6. Хранение данных](./lecture_6.html)
 * [7. Асинхронность](./lecture_7.html)
 * [8. Работа с сетью](./lecture_8.html)
+* [9. KVC, KVO](./lecture_9.html)
