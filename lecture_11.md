@@ -12,7 +12,7 @@
 * Карты
     * Map Kit framework 
     * Core Location framework
-* Мультимеида
+* Мультимедиа
     * Звук
     * Видео
     * Изображения
