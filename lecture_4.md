@@ -2,8 +2,6 @@
 
 ### Noveo University — iOS
 
-#### Константин Мамаев
-
 
 ----
 
@@ -20,9 +18,9 @@
 
 ----
 
-## Foundation - это ...
+## Foundation
 
-* Фреймворк, созданный Apple, который доступен как iOS, так и OS X разработчикам.
+* Фреймворк, созданный Apple, который доступен как iOS, так и macOS разработчикам.
 * Фреймворк играет роль «базы» Objective-C классов и позволяет в некоторой мере абстрагироваться от конкретной ОС.
 
 
@@ -31,13 +29,13 @@
 ## Справочная литература
 
 * [Документация Apple](https://developer.apple.com/library/ios/navigation/)
-* [http://nshipster.com](http://nshipster.com)
-* [http://rypress.com](http://rypress.com)
+* [NSHipster](http://nshipster.com)
+* [RyPress](http://rypress.com)
 
 
 ----
 
-## NSString + NSMutableString
+## [NSString и NSMutableString](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/Strings/Articles/Strings.html#//apple_ref/doc/uid/20000145-BBCCGGCC)
 
 
 --
@@ -71,12 +69,12 @@ NSString *anotherMessage =
 // Previous message was 'Today is year 2014'
 ```
 
-это, наверное, самый часто используемый метод у строк
+Самый часто используемый метод у строк
 
 
 --
 
-## Format specifiers
+## Спецификаторы формата
 
 Точно такие же, как у printf + <font color="red">`%@`</font> для объектов
 
@@ -90,40 +88,43 @@ NSString *anotherMessage =
 
 ## NSRange
 
-```ObjectiveC
+```Objective-C
 typedef struct _NSRange {
     NSUInteger location;
     NSUInteger length;
 } NSRange;
 ```
 
-**NSRange** используется в методах, которые что-то ищут или заменяют.
-Если ничего найти не удалось, они возвращают **NSNotFound** в *location*
+**NSRange** используется для описания непрерывного интервала целых чисел. Наиболее часто используется со строками, массивами, упорядоченными коллекциями для замены элементов или поиска вхождений. Если ничего найти не удалось, они будет возвращено **NSNotFound** в *location*
 
 
 --
 
-## Поиск подстроки
+## Применение NSRange
 
 ```ObjectiveC
-NSRange range = [@"Porsche Carrera" rangeOfString: @"Car"];
-// {.location = 8, .length = 3}
+NSString *s = @"Student name: Ivan";
+NSRange range1 = NSMakeRange(14, 4);
+NSLog(@"%@", [s substringWithRange:r]); // Ivan
+
+NSRange range2 = [@"Porsche Carrera" rangeOfString:@"Car"];
+NSLog(@"Case 1: %@", NSStringFromRange(range2)); // Case 1: {8, 3}
+NSLog(@"Case 2: %@", [NSValue valueWithRange:range2]); // Case 2: NSRange: {8, 3} 
 ```
 
 
 --
 
-## … и еще пара методов
+## И еще пара методов
 
 ```ObjectiveC
-int length = [@"Hello world" length];
-// 11
+int length = [@"Hello world" length]; // 11
 	
 unichar ch = [@"Abcdef" characterAtIndex:3];
 NSLog(@"%c", ch); // d
 ```
 
-но они довольно редко используются, особенно второй
+Довольно редко используются
 
 
 --
@@ -143,7 +144,7 @@ NSString *otherFullName = [[fullName stringByReplacingOccurrencesOfString:surnam
 // Steven King
 ```
 
-методы, создающие новую строку из имеющейся, обычно начинаются со stringBy...
+Методы, создающие новую строку из имеющейся, обычно начинаются со stringBy...
 
 
 --
@@ -221,13 +222,6 @@ NSString *st = [[NSMutableString alloc] initWithString:@"Mutable string"];
 ```
 
 
---
-
-## Задание для самостоятельного изучения
-
-* Прочитать документацию к NSString.
-
-
 ----
 
 ## Коллекции
@@ -235,9 +229,9 @@ NSString *st = [[NSMutableString alloc] initWithString:@"Mutable string"];
 
 --
 
-## Коллекции — это ...
+## Коллекции
 
-Своеобразные хранилища для разнородных элементов.
+Хранилища для разнородных элементов.
 
 * Основные: <font color="red">*NSArray*</font>, <font color="red">*NSDictionary*</font>, <font color="red">*NSSet*</font>
 * Экзотические: *NSCountedSet*, *NSOrderedSet*, *NSIndexSet*, *NSCharacterSet*
