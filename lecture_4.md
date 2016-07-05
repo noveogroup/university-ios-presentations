@@ -234,8 +234,8 @@ NSString *st = [[NSMutableString alloc] initWithString:@"Mutable string"];
 Хранилища для разнородных элементов.
 
 * Основные: <font color="red">*NSArray*</font>, <font color="red">*NSDictionary*</font>, <font color="red">*NSSet*</font>
-* Экзотические: *NSCountedSet*, *NSOrderedSet*, *NSIndexSet*, *NSCharacterSet*
-* Могут быть изменяемые и неизменяемые (mutable и immutable)
+* Специализированные: *NSCountedSet*, *NSOrderedSet*, *NSIndexSet*, *NSCharacterSet*
+* Могут быть изменяемые <i>mutable<i> и неизменяемые <i>immutable<i>
 * Могут быть типизированные и нетипизированные <i>(NSArray < NSString \*>, NSDictionary< Car \*>, NSSet< UIView \*>)</i>
 
 
@@ -243,9 +243,9 @@ NSString *st = [[NSMutableString alloc] initWithString:@"Mutable string"];
 
 ## Коллекции «на каждый день»
 
-* <font color="blue">NSArray</font> - массив (элементы хранятся по порядку)
-* <font color="blue">NSDictionary</font> - словарь (хранит пары ключ:значение; ключи не могут повторяться)
-* <font color="blue">NSSet</font> - множество (хранит элементы без учета порядка)
+* <font color="blue">NSArray</font> - массив - упорядоченная коллекция, которые позволяют индексировать доступ к содержимому.
+* <font color="blue">NSDictionary</font> - словарь - неупорядоченный набор, который позволяют получить доступ к содержимому с помощью ключа-значения.
+* <font color="blue">NSSet</font> - набор (множество) - неупорядоченная коллекция объектов.
 
 
 --
@@ -259,9 +259,10 @@ NSMutableArray, NSMutableDictionary, NSMutableSet - <font color="green">изме
 
 --
 
-## Mutable коллекции
+## Изменяемые коллекции
 
-Наследуют методы immutable коллекций + добавляют свои
+Наследуются от неизменяемых коллекций.
+Доступны все методы неизменяемые коллекцию + добавляются свои собствнные методы.
 
 <font color="red">Нельзя изменять коллекцию, пока ее перебираешь!</font>
 
@@ -272,7 +273,7 @@ NSMutableArray, NSMutableDictionary, NSMutableSet - <font color="green">изме
 
 ```ObjectiveC
 NSMutableArray *cities = 
-	[NSMutableArray arrayWithArray:@[@"Moscow", @"St. Petersburg", @"Kiev"]];
+	[NSMutableArray arrayWithArray:@[@"Moscow", @"St. Petersburg", @"Novosibirsk"]];
 [cities enumerateObjectsUsingBlock:^(NSString *obj, NSUInteger idx, BOOL *stop) {
 		if ([obj length] > 4) {
 			[cities removeObject:obj];
@@ -289,7 +290,7 @@ NSMutableArray *cities =
 
 ```ObjectiveC
 NSMutableArray *cities =
-	[NSMutableArray arrayWithArray:@[@"Moscow", @"St. Petersburg", @"Kiev"]];
+	[NSMutableArray arrayWithArray:@[@"Moscow", @"St. Petersburg", @"Novosibirsk"]];
 NSArray *copy = [cities copy];
 [copy enumerateObjectsUsingBlock:^(NSString *obj, NSUInteger idx, BOOL *stop) {
     	if ([obj length] > 4) {
@@ -324,7 +325,7 @@ NSSet<NSString *> *set = [NSSet setWithArray:@[@"one", @"two", @"three"]];
 
 ## Как поместить в коллекцию нечто, что не является Objective-C объектом?
 
-* число (*int, float, BOOL, NSInteger, …*) - используем <font color="blue">NSNumber</font>
+* Xисло (*int, float, BOOL, NSInteger, …*) - используем <font color="blue">NSNumber</font>
 * C struct - <font color="blue">NSValue</font>
 * бинарные данные (*void **) - <font color="blue">NSData</font>
 * отсутствие данных (*nil*) - <font color="blue">NSNull</font>
@@ -358,7 +359,7 @@ NSData *pointerObj = [NSData dataWithBytes:pointer length:sizeof(range.length)];
 // создание массива
 NSArray *array = @[xObj, rangeObj, pointerObj, [NSNull null]];
 
-// получаем данные обратно
+// получение данных
 NSValue *value = (NSValue *)array[1];
 NSLog(@"%@", value); // NSRange: {10, 3}
 ```
@@ -366,7 +367,7 @@ NSLog(@"%@", value); // NSRange: {10, 3}
 
 --
 
-## Проверки на равенство
+## Идентичность и эквивалентность
 
 ```ObjectiveC
 obj1 == obj2
@@ -386,7 +387,8 @@ obj1 == obj2
 
 --
 
-## Проверки на равенство
+## Идентичность и эквивалентность
+
 
 ```ObjectiveC
 - (BOOL)isEqualToArray:(NSArray *)otherArray;
@@ -402,7 +404,7 @@ obj1 == obj2
 
 --
 
-## NSArray — это ...
+## NSArray
 
 * Упорядоченный набор объектов.
 * Нумерация начинается с 0, объекты могут быть любого класса.
@@ -438,7 +440,7 @@ NSArray *array3 = [[NSArray alloc] initWithArray:array];
 
 --
 
-## Как создать новый массив на основе имеющегося?
+## Создание нового массива на основе имеющегося
 
 * Дополнить имеющийся массив
 * Получить подмассив из имеющегося массива
@@ -497,7 +499,7 @@ typedef NS_ENUM(NSInteger, NSComparisonResult) {
 
 --
 
-## Определяем размер коллекции
+## Определение размера коллекции
 
 ```ObjectiveC
 - (NSUInteger)count;
@@ -516,7 +518,7 @@ typedef NS_ENUM(NSInteger, NSComparisonResult) {
 
 --
 
-## Индексы элементов массива, удовлетворяющих заданым условиям
+## Индексы элементов массива, удовлетворяющих заданным условиям
 
 ```ObjectiveC
 - (NSIndexSet *)indexesOfObjectsWithOptions:(NSEnumerationOptions)opts 
@@ -541,7 +543,7 @@ typedef NS_ENUM(NSInteger, NSComparisonResult) {
 
 --
 
-## … и еще пара полезных методов
+## И еще пара полезных методов
 
 ```ObjectiveC
 - (id)firstObject;
@@ -563,7 +565,7 @@ typedef NS_ENUM(NSInteger, NSComparisonResult) {
 ## Перебор элементов коллекции при помощи цикла
 
 ```ObjectiveC
-NSArray *cities = @[@"Moscow", @"St. Petersburg", @"Kiev"];
+NSArray *cities = @[@"Moscow", @"St. Petersburg", @"Novosibirsk"];
 for (int i = 0; i < [cities count]; i++) {
 	NSLog(@"%@", cities[i]);
 }
@@ -575,13 +577,13 @@ for (int i = 0; i < [cities count]; i++) {
 ## Перебор элементов коллекции при помощи fast enumeration
 
 ```ObjectiveC
-NSArray *cities = @[@"Moscow", @"St. Petersburg", @"Kiev"];
+NSArray *cities = @[@"Moscow", @"St. Petersburg", @"Novosibirsk"];
 for (NSString *city in cities) {
 	NSLog(@"%@", city);
 }
 ```
 
-ограничение: не поддерживает индексацию
+Ограничение: не поддерживает индексацию
 
 
 --
@@ -592,7 +594,7 @@ for (NSString *city in cities) {
 NSArray *cities = @[@"Moscow", @"St. Petersburg", @"Kiev"];
 [cities enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		NSLog(@"%@", obj);
-	}];
+}];
 ```
 
 
@@ -730,7 +732,7 @@ for (NSString *city in weather) {
 [weather allKeys];
 [weather allValues];
 ```
-обратите внимание, что их порядок не обязан совпадать
+Обратите внимание, что их порядок не обязан совпадать
 
 
 --
@@ -768,9 +770,8 @@ weather[@"Moscow"] = @-1;
 
 ## Дополнительно
 
-[NSDictionary на Rypress](http://rypress.com/tutorials/objective-c/data-types/nsdictionary.html)
-
-[NSDictionary в документации Apple](https://developer.apple.com/library/mac/documentation/Cocoa/Reference/Foundation/Classes/NSDictionary_Class/Reference/Reference.html)
+1. Прочитать документацию к NSDictionary,
+2. Прочитать документацию к NSMutableDictionary.
 
 
 ----
@@ -780,7 +781,7 @@ weather[@"Moscow"] = @-1;
 
 --
 
-## Для чего?
+## Назначение
 
 * Хранит неупорядоченный набор различных элементов.
 * NSSet - неизменяемые объекты
@@ -789,11 +790,11 @@ weather[@"Moscow"] = @-1;
 
 --
 
-## Что с ним можно делать:
+## Использование
 
 * Получить из NSArray и вернуть NSArray со всеми элементами (нельзя рассчитывать на определенный порядок)
 * Проверять утверждения  x∈A, A⊆B и A∩B = ∅
-* Отфильтровать
+* Фильтровать
 
 
 --
@@ -812,6 +813,8 @@ weather[@"Moscow"] = @-1;
 
 ## Теория множеств
 
+![](lecture_4_img/set93db1d87.png)
+
 x∈A
 ```ObjectiveC
 - (BOOL)containsObject:(id)anObject;
@@ -828,7 +831,7 @@ A⊆B
 
 --
 
-## Отфильтровать
+## Фильтрация
 
 ```ObjectiveC
 - (NSSet *)objectsPassingTest:(BOOL (^)(id obj, BOOL *stop))predicate NS_AVAILABLE(10_6, 4_0);
