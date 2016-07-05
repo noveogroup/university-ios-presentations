@@ -325,7 +325,7 @@ NSSet<NSString *> *set = [NSSet setWithArray:@[@"one", @"two", @"three"]];
 
 ## Как поместить в коллекцию нечто, что не является Objective-C объектом?
 
-* Xисло (*int, float, BOOL, NSInteger, …*) - используем <font color="blue">NSNumber</font>
+* число (*int, float, BOOL, NSInteger, …*) - используем <font color="blue">NSNumber</font>
 * C struct - <font color="blue">NSValue</font>
 * бинарные данные (*void **) - <font color="blue">NSData</font>
 * отсутствие данных (*nil*) - <font color="blue">NSNull</font>
@@ -904,7 +904,7 @@ Bugatti */
 
 [NSSet в документации Apple](https://developer.apple.com/library/ios/documentation/Cocoa/Reference/Foundation/Classes/NSSet_Class/Reference/Reference.html)
 
-[NSSet в Rypress](http://rypress.com/tutorials/objective-c/data-types/nsset.html)
+[NSSet в RyPress](http://rypress.com/tutorials/objective-c/data-types/nsset.html)
 
 
 ----
@@ -914,9 +914,9 @@ Bugatti */
 
 --
 
-## Предназначение
+## Назначение
 
-An NSValue object is a simple container for a single C or Objective-C data item. It can hold any of the scalar types such as int, float, and char, as well as pointers, structures, and object ids. The purpose of this class is to allow items of such data types to be added to collections such as instances of NSArray and NSSet, which require their elements to be objects. NSValue objects are always immutable.
+NSValue представляет собой простой контейнер для C данных и Objective-C и применяется для создания объектов из скалярных данных.
 
 Может хранить что угодно (почти - см. следующий слайд), но в основном используется для хранения struct - для остального есть NSData и NSNumber. 
 
@@ -925,7 +925,13 @@ An NSValue object is a simple container for a single C or Objective-C data item.
 
 ## Хранить можно не все
 
-The type you specify must be of constant length. You cannot store C strings, variable-length arrays and structures, and other data types of indeterminate length in an NSValue—you should use NSString or NSData objects for these types. You can store a pointer to variable-length item in an NSValue object.
+Объекты класса NSValue могу размещать данные с постоянной длинной, вы не можете сохранить в объекте C-строки, массивы переменной длины, структуры или другие данные неопределенной длинны.
+
+Следующий код не верен:
+```ObjectiveC
+char *cstring = "This is a string.";  
+NSValue *value = [NSValue value:cstring withObjCType:@encode(char *)]; 
+```
 
 
 --
@@ -963,7 +969,7 @@ The type you specify must be of constant length. You cannot store C strings, var
 + (NSValue *)valueWithBytes:(const void *)value objCType:(const char *)type;
 ```
 
-где взять этот самый objCType?
+Где взять этот самый objCType?
 
 
 --
@@ -985,7 +991,7 @@ The type you specify must be of constant length. You cannot store C strings, var
 - (void)getValue:(void *)value;
 ```
 
-- копирует значение в заданный буфер. Он должен быть достаточно большого размера.
+Копирует значение в заданный буфер. Он должен быть достаточно большого размера.
 
 
 --
@@ -1028,9 +1034,9 @@ NSLog(@"%i, %c", s2.x, s2.y);
 
 ## Дополнительно
 
-[http://nshipster.com/nsvalue/](http://nshipster.com/nsvalue/)
+[NSValue на NSHipster](http://nshipster.com/nsvalue/)
 
-[http://nshipster.com/type-encodings/](http://nshipster.com/type-encodings/)
+[Type Encodings на NSHipster](http://nshipster.com/type-encodings/)
 
 [NSValue в документации Apple](https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/NumbersandValues/NumbersandValues.pdf)
 
@@ -1042,28 +1048,26 @@ NSLog(@"%i, %c", s2.x, s2.y);
 
 --
 
-## Для чего используется
+## Назначение
 
-* В основном, чтобы передать в метод число как объект (или получить обратно).
-* В частности, для того, чтобы сохранить число в **NSArray**, **NSDictionary** или **NSSet**.
-* Объекты класса **NSNumber** неизменяемые.
+Класс NSNumber является подклассом NSValue, объекты которого позволяют хранить значения скалярных числовых типов языка С. 
 
 
 --
 
-## Раньше их создавали так
+## Создание NSNumber
 
 ```ObjectiveC
 NSNumber *pi = [NSNumber numberWithFloat:3.1415];
 NSNumber *e = [NSNumber numberWithFloat:2.71];
 ```
 
-долго и нудно (плюс лишняя пара квадратных скобок)
+Долго и нудно :)
 
 
 --
 
-## Теперь создают так
+## Создание NSNumber по-новому 
 
 ```ObjectiveC
 NSNumber *pi = @3.1415;
@@ -1079,7 +1083,7 @@ NSNumber *ePlusPi = @(3.1415 + 2.71);
 
 --
 
-## Получить число обратно
+## Получить число
 
 ```ObjectiveC
 - (char)charValue;
@@ -1103,14 +1107,13 @@ NSNumber *ePlusPi = @(3.1415 + 2.71);
 
 --
 
-## Что еще можно делать?
+## Дополнительные методы
 
 Также NSNumber можно сравнивать
 ```ObjectiveC
 - (NSComparisonResult)compare:(NSNumber *)otherNumber;
 - (BOOL)isEqualToNumber:(NSNumber *)number;
 ```
-Ну и, собственно, все.
 
 
 --
@@ -1125,7 +1128,7 @@ NSLog(@"%?", pi);
 Какой format specifier нужно подставить вместо <font color="green">**%?**</font> ?	
 
 <fragment>
-Не правильно, нужно использовать <font color="red">**%@**</font>, так как NSNumber — это объект.
+Нужно использовать <font color="red">**%@**</font>, так как NSNumber — это объект.
 </fragment>
 <!-- .element: class="fragment" data-fragment-index="3" -->
 
@@ -1143,7 +1146,7 @@ NSNumber *e = @2.71;
 ```
 3. Почитать про NSDecimalNumber
 
-[NSDecimalNumber на Rypress](http://rypress.com/tutorials/objective-c/data-types/nsdecimalnumber.html)
+[NSDecimalNumber на RyPress](http://rypress.com/tutorials/objective-c/data-types/nsdecimalnumber.html)
 
 
 ----
@@ -1153,9 +1156,9 @@ NSNumber *e = @2.71;
 
 --
 
-## Что это?
+## NSData
 
-Класс, позволяющий хранить бинарные данные.
+NSData - представляет собой объект Cocoa для работы с бинарными данными.
 Многие методы для работы с интернетом возвращают **NSData** в качестве результата.
 
 
@@ -1255,10 +1258,11 @@ typedef NS_OPTIONS(NSUInteger, NSDataSearchOptions) {
 
 --
 
-## NSDate — это...
+## NSDate
 
 * Специальный класс для хранение абсолютного значения времени, не зависящего от конкретной системы исчисления или от временной зоны.
 * Неизменяемый объект.
+
 
 
 --
@@ -1267,7 +1271,7 @@ typedef NS_OPTIONS(NSUInteger, NSDataSearchOptions) {
 
 * Сравнение дат
 * Преобразование даты в строку
-* Увеличение/уменьшение даты
+* Изменение даты
 
 
 --
@@ -1308,7 +1312,7 @@ NSString *dateAsString = [dateFormatter stringFromDate:currentDate];
 
 --
 
-## Увеличение/уменьшение даты
+## Изменение даты
 
 ```ObjectiveC
 NSTimeInterval dayInterval = 24 * 60 * 60;
@@ -1335,10 +1339,10 @@ NSDate *tomorrowDate = [currentDate dateByAddingTimeInterval:dayInterval];
 ## Ошибки бывают двух видов
 
 
-1. Деление на 0, выход за границы массива, ...
+1. Ошибки программирования, например, деление на 0, выход за границы массива, ...
 </br>**NSException**
 
-2. Не удалось загрузить файл, не удалось создать объект, …
+2. Проблемы пользовательского уровня, например, не удалось загрузить файл, не удалось создать объект, …
 </br>**NSError**
 
 
@@ -1364,7 +1368,6 @@ NSString *yandexString = [NSString stringWithContentsOfURL:yandex
 - (NSInteger)code; // код ошибки
 - (NSString *)domain;  // домен ошибки (напр., NSCocoaErrorDomain)
 // могут существовать ошибки с одним кодом, но разными доменами
- 
 - (NSDictionary *)userInfo;  // дополнительная информация
 ```
 
@@ -1380,7 +1383,7 @@ NSString *yandexString = [NSString stringWithContentsOfURL:yandex
 
 --
 
-## Как использовать такие методы?
+## Использование
 
 ```ObjectiveC
 //...
@@ -1388,7 +1391,7 @@ NSError *error = nil;
 NSString *yandexString = [NSString stringWithContentsOfURL:yandex 
 	encoding:NSUTF8StringEncoding error:&error];
 	
-// сначала проверяем, произошла ли ошибка...
+// сначала проверяем, произошла ли ошибка…
 if (error != nil) {
 	// …, и только после этого обрабатываем ошибку
 	NSLog(@"Error - %@", error);
@@ -1436,7 +1439,7 @@ int index = 100;
 
 --
 
-## Скорее всего, вам это не пригодится
+## Создание NSException
 
 ```ObjectiveC
 NSException *myException = [[NSException alloc] initWithName:@"ExceptionName"
@@ -1452,9 +1455,9 @@ NSException *myException = [[NSException alloc] initWithName:@"ExceptionName"
 
 ## Дополнительные материалы
 
-[http://nshipster.com/nserror/](http://nshipster.com/nserror/)
+[NSError на NSHipster](http://nshipster.com/nserror/)
 
-[http://rypress.com/tutorials/objective-c/exceptions.html](http://rypress.com/tutorials/objective-c/exceptions.html)
+[Exceptions & Errors на RyPress](http://rypress.com/tutorials/objective-c/exceptions)
 
 
 ----
