@@ -1489,14 +1489,14 @@ NSLog(@"%@", dictionary[@1]);
 dictionary[@3] = @"three";
 ```
 
-Обращение к элементам коллекций идёт через квадратные скобки.
+Обращение к элементам коллекций идёт с помощью литерального синтексиса.
 
 
 --
 
 ## Хотите так же?
 
-Это может быть полезно, если ваш класс хранит коллекцию элементов (например, шахматная доска, судоку, граф, …)
+Это может быть полезно, если ваш класс хранит коллекцию элементов (например, шахматная доска, судоку, граф, и д.р.)
 
 ```ObjectiveC
 // Sudoku *sudoku = ...
@@ -1524,7 +1524,7 @@ NSLog(@"%@", [dictionary objectForKeyedSubscript:@2]);
 
 --
 
-## Ага, вот эти методы
+## Вот эти методы
 
 ```ObjectiveC
 // myObject[idx];
@@ -1545,7 +1545,7 @@ NSLog(@"%@", [dictionary objectForKeyedSubscript:@2]);
 
 --
 
-## NSCopying — что это?
+## NSCopying
 
 Мы его уже встречали 2 раза:
 * На прошлом слайде
@@ -1554,9 +1554,9 @@ NSLog(@"%@", [dictionary objectForKeyedSubscript:@2]);
 
 --
 
-## Из документации
+## Определение
 
-The ***NSCopying*** protocol declares a method for providing functional copies of an object. The exact meaning of “copy” can vary from class to class, but a copy must be a functionally independent object with values identical to the original at the time the copy was made.
+**NSCopying** протокол объявляет метод для обеспечения функциональной копии объекта. Точное значение "копии" может варьироваться от класса к классу, но копия должна быть функционально самостоятельным объектом со значениями идентичными оригинальным на момент создания копии.
 
 **NSString** и **NSNumber** поддерживают этот протокол. А как реализовать его в своем классе?
 
@@ -1589,19 +1589,19 @@ The ***NSCopying*** protocol declares a method for providing functional copies o
 
 ```ObjectiveC
 @interface Person : NSObject <NSCopying>
-@property (copy, nonatomic) NSString *name;
-@property (copy, nonatomic) NSString *surname;
-@property (copy, nonatomic) NSUInteger age;
+@property (nonatomic, copy) NSString *name;
+@property (nonatomic, copy) NSString *surname;
+@property (nonatomic) NSUInteger age;
 @end
  
  
 @implementation Person
  
 - (id)copyWithZone:(NSZone *)zone {
-	Person *personCopy = [[Person alloc] init];
-	personCopy.name = self.name;
-	personCopy.surname = self.surname;
-	personCopy.age = self.age;
+	Person *personCopy = [[[self class] allocWithZone:zone] init];
+	personCopy->_name = [self.name copy];
+	personCopy->surname = [self.surname copy];
+	personCopy->age = self.age;
 	return personCopy;
 }
  
@@ -1635,18 +1635,9 @@ The ***NSCopying*** protocol declares a method for providing functional copies o
 Для этих проверок у **NSObject** есть 2 метода:
 
 ```ObjectiveC
-- (NSUInteger)hash;
 - (BOOL)isEqual:(id)object;
+- (NSUInteger)hash;
 ```
-
-
---
-
-## Hash
-
-* Хэш — это число.
-* Если хэши различны, объекты точно не совпадают. 
-* Если одинаковы — неизвестно. Тогда можно проверить с помощью метода *-isEqual:*.
 
 
 --
@@ -1665,9 +1656,21 @@ The ***NSCopying*** protocol declares a method for providing functional copies o
 Т.е. объект эквивалентен только сам себе.
 
 Если это не то, что мы хотим, нужно самому переопределить этот метод.
+Но нужно помнить, что если объекты равные по результату вызова isEqual:, то они должны возвращать одинаковые значения  при вызове hash.
 
 
 --
+
+## hash
+
+Хэш — это число.
+Равные объекты должны возвращать одинаковый хэш.
+Но объекты с одинаковым хэш-кодами не обязательно равны.
+
+
+--
+
+
 
 ## Как реализовать их самому?
 
@@ -1678,7 +1681,7 @@ The ***NSCopying*** protocol declares a method for providing functional copies o
 
 ## Если коротко
 
-<li> *isEqual:* — обычно достаточно проверить на равенство все свойства</li>
+<li> *isEqual:* — обычно достаточно проверить на равенство все свойства:</li>
 
 ```ObjectiveC
 - (BOOL)isEqual:(id)other
@@ -1687,13 +1690,13 @@ The ***NSCopying*** protocol declares a method for providing functional copies o
     	return NO;
     }
 	
-	return ([[other name] isEqualToString:self.name] &&
-		[[other surname] isEqualToString:self.surname] &&
-		[other age] == self.age);
+	return ([other.name isEqualToString:self.name] &&
+		[other.surname isEqualToString:self.surname] &&
+		other.age == self.age);
 }
 ```
 
-<li> *hash* — можно взять хэши от всех свойств и поксорить их.</li>
+<li> *hash* — можно взять хэш-коды по принципу:</li>
 
 ```ObjectiveC
 - (NSUInteger)hash {
