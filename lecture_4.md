@@ -95,7 +95,7 @@ typedef struct _NSRange {
 } NSRange;
 ```
 
-**NSRange** используется для описания непрерывного интервала целых чисел. Наиболее часто используется со строками, массивами, упорядоченными коллекциями для замены элементов или поиска вхождений. Если ничего найти не удалось, они будет возвращено **NSNotFound** в *location*
+**NSRange** используется для описания непрерывного интервала целых чисел. Наиболее часто используется со строками, массивами, упорядоченными коллекциями для замены элементов или поиска вхождений. Если ничего найти не удалось, будет возвращено **NSNotFound** в *location*
 
 
 --
@@ -591,7 +591,7 @@ for (NSString *city in cities) {
 ## Перебор элементов коллекции при помощи блока
 
 ```ObjectiveC
-NSArray *cities = @[@"Moscow", @"St. Petersburg", @"Kiev"];
+NSArray *cities = @[@"Moscow", @"St. Petersburg", @"Novosibirsk"];
 [cities enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 		NSLog(@"%@", obj);
 }];
@@ -701,7 +701,7 @@ NSMutableArray *array = [NSMutableArray arrayWithArray:@[@1, @2, @3]];
 
 --
 
-## NSDictionary это...
+## NSDictionary
 
 * Структура данных, хранящая пары *ключ:значение*
 * Ключи должны быть различны и должны удовлетворять протоколу **NSCopying**
@@ -1489,7 +1489,7 @@ NSLog(@"%@", dictionary[@1]);
 dictionary[@3] = @"three";
 ```
 
-Обращение к элементам коллекций идёт с помощью литерального синтексиса.
+Обращение к элементам коллекций идёт с помощью литерального синтаксиса.
 
 
 --
@@ -1598,7 +1598,7 @@ NSLog(@"%@", [dictionary objectForKeyedSubscript:@2]);
 @implementation Person
  
 - (id)copyWithZone:(NSZone *)zone {
-	Person *personCopy = [[[self class] allocWithZone:zone] init];
+	Person *personCopy = [[Person alloc] init];
 	personCopy->_name = [self.name copy];
 	personCopy->surname = [self.surname copy];
 	personCopy->age = self.age;
