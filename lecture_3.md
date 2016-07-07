@@ -418,6 +418,13 @@ if (error) {
 
 ----
 
+## Пример
+
+![](lecture_3_img/Graph_3.png)
+
+
+----
+
 ## Граф объектов приложения
 
 ![](lecture_3_img/Graph_2_1.png)
