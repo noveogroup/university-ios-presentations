@@ -82,7 +82,7 @@
 
 ## Объектный граф
 
-![](lecture_3_img/Graph_1.png)
+![](lecture_3_img/Graph_3.png)
 
 
 ----
@@ -413,16 +413,7 @@ if (error) {
 
 ## Пример
 
-```ObjectiveC
-@interface UITableView : UIScrollView <NSCoding>
-...
-@property (nonatomic, assign)
-    id<UITableViewDataSource> dataSource;
-@property (nonatomic, assign)
-    id<UITableViewDelegate> delegate;
-...
-@end
-```
+![](lecture_3_img/Graph_4.png)
 
 
 ----
@@ -430,13 +421,6 @@ if (error) {
 ## Граф объектов приложения
 
 ![](lecture_3_img/Graph_2_1.png)
-
-
-----
-
-## Граф объектов приложения
-
-![](lecture_3_img/Graph_2_2.png)
 
 
 ----
