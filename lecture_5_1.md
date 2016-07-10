@@ -502,16 +502,13 @@ BW
 ## UIViewController
 
 ```ObjectiveC
-**@interface DashboardVC : UIViewController**
-
+@interface DashboardVC : UIViewController
 @property (nonatomic) float speed;
-
 @end
 ```
 
 ```ObjectiveC
 @interface DashboardVC()
-
 @property (nonatomic) UILabel *speedLabel;
 @end
  
@@ -530,7 +527,6 @@ BW
 {
 	self.speedLabel.text = stringFromSpeedValue(self.speed);
 }
-
 @end
 ```
 
