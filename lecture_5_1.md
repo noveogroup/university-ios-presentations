@@ -2,7 +2,6 @@
 
 ### Noveo University — iOS
 
-#### Александр Горбунов
 
 
 ----
@@ -11,7 +10,7 @@
 
 * UIApplication, UIWindow, UIView, UILabel, UIButton
 * UIViewController, UINavigationController
-* Ориентации интерфейса
+* Interface orientation
 * Autolayouts
 * Interface Builder
 
@@ -24,16 +23,16 @@
   - текст,
   - кнопки,
   - картинки,
-  - списки, ...
+  - списки и д.р.
 * Обработка действий пользователя:
   - нажатия,
   - жесты,
   - набор текста,
-  - сворачивание/разворачивание приложения, ...
+  - сворачивание/разворачивание приложения и д.р.
 * Абстракции для работы с сущностями
   - цвет, шрифт,
   - устройство, экран, окно,
-  - NIB, layouts, …
+  - NIB, layouts и д.р.
 
 
 ----
@@ -78,7 +77,7 @@ if ([app canOpenURL:url]) {
   - переход в активное/неактивное состояние (например звонок), 
   - переход в background-режим (приложение свёрнуто, но исполняется),
   - завершение работы приложения
-* Получает локальные и push-уведомления
+* Получает локальные и удаленные уведомления
 
 
 ----
@@ -88,13 +87,16 @@ if ([app canOpenURL:url]) {
 AppDelegate.h
 ```ObjectiveC
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
+
 @property (nonatomic, strong) UIWindow *window;
+
 @end
 ```
 
 AppDelegate.m
 ```ObjectiveC
 @implementation AppDelegate
+
 - (BOOL)application:(UIApplication *)application
     didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
@@ -107,6 +109,7 @@ AppDelegate.m
 	[self.window makeKeyAndVisible];
 	return YES;
 }
+
 @end
 ```
 
@@ -126,7 +129,7 @@ AppDelegate.m
 ```
 -----
 
-<sup>*</sup> на самом деле — не совсем...
+<sup>*</sup> на самом деле — не совсем так.
 
 
 ----
@@ -148,7 +151,7 @@ AppDelegate.m
 
 ```ObjectiveC
 UIView *greenView = [[UIView alloc] init];
-greenView.frame = (CGRect) {200, 100, 60, 40};
+greenView.frame = (CGRect){200, 100, 60, 40};
 greenView.backgroundColor = [UIColor greenColor];
 [self.view addSubview:greenView];
 
@@ -164,13 +167,11 @@ redView.backgroundColor = [UIColor redColor];
 ## UIView
 
 ```ObjectiveC
-UIView *greenView = [[UIView alloc] init];
-greenView.frame = (CGRect) {200, 100, 60, 40};
+UIView *greenView = [[UIView alloc] initWithFrame:(CGRect){200, 100, 60, 40}];
 greenView.backgroundColor = [UIColor greenColor];
 [self.view addSubview:greenView];
 
-UIView *redView = [[UIView alloc] init];
-redView.frame = greenView.bounds;
+UIView *redView = [[UIView alloc] initWithFrame:greenView.bounds];
 redView.backgroundColor = [UIColor redColor];
 [self.view insertSubview:redView atIndex:0];
 ```
@@ -189,11 +190,11 @@ view.userInteractionEnabled = YES;
 view.tag = 42;
 
 for (UIView *subview in view.subviews) {
-	// ...
+	// do something with subviews
 }
 
 UIView *superview = view.superview;
-// ...
+// do something with superview
 ```
 
 
@@ -223,8 +224,8 @@ label.text = @"Hello, world!";
 
 `UIImage` — картинка в памяти
 * загружается из файла / ресурсов / бинарных данных в памяти
-* сохраняется в JPG и PNG
-* поддерживает растягивание фонов / рамок (аналог 9-patch)
+* сохраняется в JPG или PNG
+* поддерживает растягивание фонов / рамок
 * можно получить размер, ориентацию
 * автоматически выбирает версию ресурса (@2x, @3x)
 
@@ -283,7 +284,7 @@ button.backgroundColor = [UIColor clearColor];
 
 ## UIButton как UIControl
 
-`UIButton` — кнопка, реагирующая на *тапы*
+`UIButton` — кнопка, реагирующая на *нажатие (tap)*
 
 ```ObjectiveC
 UIButton *button = /* ... */;
@@ -350,7 +351,7 @@ self.input = [[UITextField alloc] initWithFrame:inputFrame];
 
 ## UIView
 
-* `UIView` — логическая организация элементов (контейнер), прямоугольники, полоски
+* `UIView` — логическая организация элементов (контейнер)
 * `UILabel` — вывод текста
 * `UITextField`, `UITextView` — редактирование текста
 * `UIWebView` — показ HTML
@@ -444,12 +445,6 @@ BW
 * ...
 
 
-----
-
-## UIViewController
-
-MVC… WTF?
-
 
 ----
 
@@ -472,6 +467,7 @@ MVC… WTF?
 
 ```ObjectiveC
 – initWithNibName:bundle:
+– initWithCoder:
 – viewDidLoad
 – viewWillAppear:
 – viewDidAppear:
@@ -492,6 +488,7 @@ MVC… WTF?
 ## UIViewController
 
 - `initWithNibName:bundle:` — designated initializer
+- `initWithCoder:` — designated initializer
 - `viewDidLoad` — `self.view` загружена
 - `viewWillAppear:` — начало анимации перехода на экран
 - `viewDidAppear:` — конец анимации перехода на экран
@@ -505,13 +502,16 @@ MVC… WTF?
 ## UIViewController
 
 ```ObjectiveC
-@interface DashboardVC : UIViewController
+**@interface DashboardVC : UIViewController**
+
 @property (nonatomic) float speed;
+
 @end
 ```
 
 ```ObjectiveC
 @interface DashboardVC()
+
 @property (nonatomic) UILabel *speedLabel;
 @end
  
@@ -530,6 +530,7 @@ MVC… WTF?
 {
 	self.speedLabel.text = stringFromSpeedValue(self.speed);
 }
+
 @end
 ```
 
@@ -540,12 +541,15 @@ MVC… WTF?
 
 ```ObjectiveC
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
+
 @property (strong, nonatomic) UIWindow *window;
+
 @end
 ```
 
 ```ObjectiveC
 @implementation AppDelegate
+
 - (BOOL)application:(UIApplication *)application
 	didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
@@ -558,6 +562,7 @@ MVC… WTF?
 	
 	return YES;
 }
+
 @end
 ```
 
@@ -566,7 +571,7 @@ MVC… WTF?
 
 ## UINavigationController
 
-`UINavigationController` — контейнерный VC, управляющий иерархией переходов между своими дочерними VC.
+`UINavigationController` — VC-контейнер, управляющий иерархией переходов между своими дочерними VC.
 
 ![](lecture_5_1_img/navigation_push.png)
 
@@ -577,6 +582,7 @@ MVC… WTF?
 
 ```ObjectiveC
 @implementation AppDelegate
+
 - (BOOL)application:(UIApplication *)application
 	didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
@@ -593,6 +599,7 @@ MVC… WTF?
 	
 	return YES;
 }
+
 @end
 ```
 
@@ -603,22 +610,26 @@ MVC… WTF?
 
 ```ObjectiveC
 @interface DashboardVC()
+
 @property (strong, nonatomic) IBOutlet UIButton *settingsButton;
+
 @end
 
-@implementation DashboardVC 
+@implementation DashboardVC
+
 - (IBAction)settingsButtonTap:(UIButton *)sender
 {
 	SettingsVC *settingsVC = [[SettingsVC alloc] init];
 	[self.navigationController pushViewController:settingsVC animated:YES];
 }
+
 @end
 ```
 
 
 ----
 
-## Ориентации интерфейса
+## Interface orientation
 
 ```ObjectiveC
 @implementation DashboardVC
@@ -648,11 +659,7 @@ MVC… WTF?
 
 * iPhone + iPad
 * portrait + landscape
-* динамический размер контента
-* ...
-
-![](lecture_5_1_img/fffuuu.png)
-<!-- .element: class="fragment"-->
+* динамический размер контента и другие случаи
 
 
 ----
@@ -787,7 +794,6 @@ MVC… WTF?
   - можно описать переходы между экранами
   - таблицу можно описать вместе с ячейками
   - статические таблицы
-  - ...
 
 
 ----
@@ -799,7 +805,6 @@ MVC… WTF?
 * Большие файлы очень трудно мёржить
 * Привносится множество проблем с идентификаторами
 * Нельзя работать с отдельно-взятым UIView
-* ...
 
 
 ----
@@ -829,8 +834,10 @@ MyVC *myVC = [myStoryboard instantiateViewControllerWithIdentifier:@"MyVC"];
 
 ```ObjectiveC
 @interface MyVC ()
+
 @property (nonatomic) IBOutlet UIButton *myButton;
 @property (nonatomic) IBOutletCollection(UILabel) NSArray <UILabel *> *myLabels;
+
 @end
 
 @implementation MyVC
@@ -844,3 +851,5 @@ MyVC *myVC = [myStoryboard instantiateViewControllerWithIdentifier:@"MyVC"];
 
 @end
 ```
+
+

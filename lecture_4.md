@@ -1600,8 +1600,8 @@ NSLog(@"%@", [dictionary objectForKeyedSubscript:@2]);
 - (id)copyWithZone:(NSZone *)zone {
 	Person *personCopy = [[Person alloc] init];
 	personCopy->_name = [self.name copy];
-	personCopy->surname = [self.surname copy];
-	personCopy->age = self.age;
+	personCopy->_surname = [self.surname copy];
+	personCopy->_age = self.age;
 	return personCopy;
 }
  
