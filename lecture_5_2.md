@@ -9,8 +9,7 @@
 
 * `UIView` subclassing
 * `CALayer`
-* Трансформации
-* Анимации
+* `Animations`
 * `UIScrollView`
 * `UITableView`
 * `UICollectionView`
