@@ -2,7 +2,6 @@
 
 ### Noveo University — iOS
 
-#### Александр Горбунов
 
 
 ----
@@ -12,8 +11,8 @@
 * Блоки в Objective-C
 * Потоки и очереди
 * `NSThread`
+* `Grand Central Dispatch`
 * `NSOperation`
-* Grand Central Dispatch
 
 
 ----
@@ -23,7 +22,6 @@
 * Функция
 * Может иметь входные параметры
 * Может возвращать значение
-* Не имеет имени<!-- .element: class="fragment" data-fragment-index="1" -->
 * Является объектом<!-- .element: class="fragment" data-fragment-index="1" -->
 * Может ссылаться на свой контекст<!-- .element: class="fragment" data-fragment-index="1" -->
 * Может модифицировать свой контекст<!-- .element: class="fragment" data-fragment-index="1" -->
@@ -37,10 +35,14 @@
 * Функция
 * Может иметь входные параметры
 * Может возвращать значение
-* Не имеет имени
 
+Блок, как локальная переменная:
 ```ObjectiveC
-^ (int a, int b) {
+returnType (^blockName)(parameterTypes) = ^returnType(parameters) {...};
+```
+Пример:
+```ObjectiveC
+(^blockName)(int, int) = ^ (int a, int b) {
     return a + b;
 }
 ```
@@ -50,9 +52,18 @@
 
 ## Блоки в Objective-C
 
-* Функция
 * Является объектом
 
+Блок, как свойство: 
+```ObjectiveC
+@property (nonatomic, copy) returnType (^blockName)(parameterTypes);
+```
+и typedef:
+```ObjectiveC
+typedef returnType (^TypeName)(parameterTypes);
+TypeName blockName = ^returnType(parameters) {...};
+```
+Пример:
 ```ObjectiveC
 typedef int(^blockType)(int, int);
 ```
@@ -73,7 +84,6 @@ int resultB = self.myBlock(3, 5);
 
 ## Блоки в Objective-C
 
-* Функция
 * Может ссылаться на свой контекст
 
 ```ObjectiveC
@@ -89,7 +99,6 @@ int b = 5;
 
 ## Блоки в Objective-C
 
-* Функция
 * Может модифицировать свой контекст
 
 ```ObjectiveC
@@ -105,7 +114,6 @@ __block int c;
 
 ## Блоки в Objective-C
 
-* Функция
 * Может захватывать свой контекст
 
 ```ObjectiveC
@@ -124,43 +132,21 @@ int b = 2;
 
 ## Блоки в Objective-C
 
-Передача объекта-блока в метод в качестве аргумента:
+Блок, как аргумент в вызове метода:
+```ObjectiveC
+[someObject someMethodThatTakesABlock:^returnType (parameters) {...}];
+```
 
+Пример:
 ```ObjectiveC
 NSArray *array = @[@0, @1, @2, @3, @4, @5, @6, @7];
-
 NSUInteger maxElements = 5;
-
-[array enumerateObjectsUsingBlock:
-	^(id obj, NSUInteger idx, BOOL *stop) {
-    	NSLog(@"Element %d : %@", idx, obj);
+[array enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+    	 NSLog(@"Element %d : %@", idx, obj);
 	    stop = idx >= maxElements;
-	}];
+}];
 ```
 
-
-----
-
-## Блоки в Objective-C
-
-Получение объекта-блока в метод в качестве аргумента:
-
-```ObjectiveC
-- (void)enumerateObjectsUsingBlock:(void(^)(id obj, NSUInteger idx, BOOL *stop))block
-{
-	if (!block) {
-		return;
-	}
-
-    BOOL stop = NO;
-    for (NSUInteger i = 0; i < self.count; i++) {
-        block(self[i], i, &stop);
-        if (stop) {
-            return;
-        }
-    }
-}
-```
 
 
 ----
@@ -202,9 +188,9 @@ NSUInteger maxElements = 5;
 
 ----
 
-## `NSThread`
+## Создание `NSThread`
 
-* Исполняем уже имеющийся метод в отдельном потоке:
+* Исполняем уже имеющийся метод:
 
   ```ObjectiveC
   NSThread *thread = [[NSThread alloc] initWithTarget:self
@@ -214,84 +200,6 @@ NSUInteger maxElements = 5;
   ```
 
 * Создаём подкласс `NSThread`, переопределяем метод `main`, у экземпляра класса вызываем `start`.
-
-
-----
-
-## `NSOperation`
-
-* Используется для логически обособленных задач
-* Потоки создаются автоматически
-* Поддержка отмены операций
-* Поддержка графа зависимостей между операциями
-* Поддержка приоритезации операций
-
-
-----
-
-## `NSOperation`
-
-Объявление и запуск двух блоковых операций:
-
-```ObjectiveC
-NSBlockOperation *operation1 = [NSBlockOperation blockOperationWithBlock:^{
-		...
-	}];
-	
-NSBlockOperation *operation2 = [NSBlockOperation blockOperationWithBlock:^{
-		...
-	}];
-	
-NSOperationQueue *queue = [[NSOperationQueue alloc] init];
-[queue addOperation:operation1];
-[queue addOperation:operation2];
-```
-
-
-----
-
-## `NSOperation`
-
-Задание приорететов и зависимостей операций:
-
-```ObjectiveC
-NSOperation *operation1, *operation2, *operation3;
-NSOperationQueue *queue;
-
-...
-
-operation1.queuePriority = NSOperationQueuePriorityLow;
-operation2.queuePriority = NSOperationQueuePriorityHigh;
-	
-[operation3 addDependency:operation1];
-[operation3 addDependency:operation2];
-	
-[queue addOperation:operation1];
-[queue addOperation:operation2];
-[queue addOperation:operation3];
-```
-
-
-----
-
-## `NSOperation`
-
-Объявление операции из метода и кастомного объекта-операции:
-
-```ObjectiveC
-NSOperation *operation1, *operation2;
-NSOperationQueue *queue;
-
-...
-	
-operation1 = [[NSInvocationOperation alloc] initWithTarget:self
-	selector:@selector(printCount) object:nil];
-	
-operation2 = [[MyCustomOperation alloc] init];
-	
-[queue addOperation:operation1];
-[queue addOperation:operation2];
-```
 
 
 ----
@@ -384,22 +292,26 @@ QUEUE 2: |————block 2————| |——block 3——|
 ## GCD группы
 
 ```ObjectiveC
-dispatch_queue_t queue =
-dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
 dispatch_group_t group = dispatch_group_create();
 	
-dispatch_async(queue, ^{
-dispatch_group_async(group, queue, ^{
-		// Do some work 1.
-		...
-	});
-    	
-// Do some work 2.
-...
-    	
+dispatch_group_enter(group);
+[SomeClassThatLoadsOffTheInternet getMyImages:^{
+  // do something with these.
+	dispatch_group_leave(group);
+});
+
+dispatch_group_enter(group);
+[SomeClassThatLoadsOffTheInternet getMyText:^{
+  // do something with these.
+	dispatch_group_leave(group);
+});
+
 dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
-// Do some work 3.
-...
+// or
+// dispatch_group_notify(group, queue, ^{
+//    ...
+// });
+
 ```
 
 ```
@@ -412,6 +324,87 @@ dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
 
 
 ----
+
+## `NSOperation`
+
+* Используется для логически обособленных задач
+* Потоки создаются автоматически
+* Поддержка отмены операций
+* Поддержка графа зависимостей между операциями
+* Поддержка приоритезации операций
+
+
+----
+
+## `NSOperation`
+
+Объявление и запуск двух блоковых операций:
+
+```ObjectiveC
+NSBlockOperation *operation1 = [NSBlockOperation blockOperationWithBlock:^{
+		...
+	}];
+	
+NSBlockOperation *operation2 = [NSBlockOperation blockOperationWithBlock:^{
+		...
+	}];
+	
+NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+[queue addOperation:operation1];
+[queue addOperation:operation2];
+```
+
+
+----
+
+## `NSOperation`
+
+Задание приорететов и зависимостей операций:
+
+```ObjectiveC
+NSOperation *operation1, *operation2, *operation3;
+NSOperationQueue *queue;
+
+...
+
+operation1.queuePriority = NSOperationQueuePriorityLow;
+operation2.queuePriority = NSOperationQueuePriorityHigh;
+	
+[operation3 addDependency:operation1];
+[operation3 addDependency:operation2];
+	
+[queue addOperation:operation1];
+[queue addOperation:operation2];
+[queue addOperation:operation3];
+```
+
+
+----
+
+## `NSOperation`
+
+Объявление операции из метода и кастомного объекта-операции:
+
+```ObjectiveC
+NSOperation *operation1, *operation2;
+NSOperationQueue *queue;
+
+...
+	
+operation1 = [[NSInvocationOperation alloc] initWithTarget:self
+	selector:@selector(printCount) object:nil];
+	
+operation2 = [[MyCustomOperation alloc] init];
+	
+[queue addOperation:operation1];
+[queue addOperation:operation2];
+```
+
+
+----
+
+
+
 
 ## Потокобезопасность
 
@@ -483,7 +476,7 @@ dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
 	
 	dispatch_async(dispatch_get_main_queue(), ^{
 			[self showCurrentData];
-		});
+	});
 }
 
 - (void)showCurrentData
@@ -492,27 +485,6 @@ dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
 }
 ```
 
-
-----
-
-## Потокобезопасность
-
-При работе с UI нужно перейти в главный поток.
-
-```ObjectiveC
-- (void)didReceiveSomeStringFromNetwork:(NSString *)someString
-{
-	self.someString = someString;
-
-	[self performSelectorOnMainThread:@selector(showCurrentData)
-		withObject:nil waitUntilDone:NO];
-}
-
-- (void)showCurrentData
-{
-	self.someLabel.text = self.someString;
-}
-```
 
 
 ----
@@ -522,7 +494,7 @@ dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
 При работе со свойствами из разных потоков имеет смысл объявить их как `atomic`.
 
 ```ObjectiveC
-@property (atomic) NSInteger count;
+@property (atomic) NSString *string;
 ```
 
 
@@ -541,7 +513,7 @@ dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
 
 ## Потокобезопасность
 
-Однако мы можем вынести обращения к такому свойству в отдельную очередь.
+Однако мы можем вынести обращения к такому свойству в последовательную очередь.
 
 ```ObjectiveC
 @property (atomic) NSMutableArray *tasks;
@@ -562,6 +534,8 @@ dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
 {
 	dispatch_async(self.tasksQueue, ^{
 			[self.tasks addObject:task];
-		});
+	});
 }
 ```
+
+
