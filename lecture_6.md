@@ -2,8 +2,6 @@
 
 ### Noveo University — iOS
 
-#### Александр Горбунов
-
 
 ----
 
@@ -228,7 +226,7 @@ PList (Property List) — стандартный для iOS и OS X формат
 
 ```ObjectiveC
 @interface Department ()
-@property (nonatomic, copy) NSArray *people;
+@property (nonatomic, copy) NSArray<Person *> *people;
 @end
 
 static NSString *peopleFilename() { return /*...*/; }
