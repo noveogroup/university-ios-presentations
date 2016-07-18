@@ -2,8 +2,6 @@
 
 ### Noveo University — iOS
 
-#### Семён Игнатов
-
 
 ----
 
@@ -61,7 +59,8 @@
    "phoneNumbers": [
        "812 123-1234",
        "916 123-4567"
-   ]
+   ],
+   "car" : null
 }
 ```
 
@@ -104,19 +103,19 @@ REST (representational state transfer) — это стиль архитекту�
 ## REST примеры
 * Скачать пользователей
 ```
-curl -X GET '.../users' 
+curl -X GET 'https://mws.com/users' 
 ```
 * Добавить пользователя
 ```
-curl -X POST -d '{"name" : "Kolyan"}' '.../users'
+curl -X POST -d '{"name" : "Kolyan"}' 'https://mws.com/users'
 ```
 * Изменить имя пользователя с персональным id = 251
 ```
-curl -X PATCH -d '{"name" : "Nikolay"}' '.../users/251'
+curl -X PATCH -d '{"name" : "Nikolay"}' 'https://mws.com/users/251'
 ```
-* Скачать список подписчиков пользователя 251
+* Скачать список подписчиков Николая
 ```
-curl -X GET '.../users/251/followers'
+curl -X GET 'https://mws.com/users/251/followers'
 ```
 
 
@@ -145,6 +144,11 @@ curl -X GET '.../users/251/followers'
 ----
 
 ## Загрузка в NSData
+```ObjectiveC
+NSURL *url = [NSURL URLWithString:@"http://server.org/some/path"];
+NSData *data = [NSData dataWithContentsOfURL:url];
+// Данные загружены, можно использовать
+```
 * Самый простой способ загрузить данные из сети (в одну строку)
 * Сам по себе способ синхронный (блокирует текущий поток)
 * Практически не применим в реальной работе:
@@ -153,16 +157,6 @@ curl -X GET '.../users/251/followers'
   - Нет управления заголовками
   - Нет докачки
   - …
-
-
-----
-
-## Загрузка в NSData
-```ObjectiveC
-NSURL *url = [NSURL URLWithString:@"http://server.org/some/path"];
-NSData *data = [NSData dataWithContentsOfURL:url];
-// Данные загружены, можно использовать
-```
 
 
 ----
@@ -222,8 +216,10 @@ dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 }
 
 - (void)downloadFunnyPuppies:(void(^)(NSArray<Puppy *> *))completion
+
     NSURL *puppiesURL = [NSURL URLWithString:
         @"https://mysupersite.com/v1.2/images/puppies"];
+
     NSMutableURLRequest *puppiesRequest = 
         [NSMutableURLRequest requestWithURL:puppiesURL];
     [puppiesRequest setValue:@"fr" forHTTPHeaderField:@"Accept-Language"];  
@@ -231,11 +227,14 @@ dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 
     NSURLSessionDataTask *task = [self.URLsession dataTaskWithRequest:puppiesRequest
         completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+
             NSDictionary *responseDict =[NSJSONSerialization JSONObjectWithData:data 
                 options:0 error:&jsonError];
             //... Error handling
+
             completion([self parsePuppies:responseDict]);
     }];
+
     [task resume];
 }
 ```
@@ -283,12 +282,6 @@ dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
     }];
 }
 ```
-
-
-----
-
-AFURLRequestSerializer
-af respoinse serializer
 
 
 ----
