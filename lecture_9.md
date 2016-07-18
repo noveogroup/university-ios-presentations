@@ -2,7 +2,6 @@
 
 ### Noveo University — iOS
 
-#### Александр Горбунов
 
 
 ----
@@ -25,7 +24,7 @@
 
 ## Key-Value Coding
 
-*... используя строковые идентификаторы...*
+*Используя строковые идентификаторы*
 
 Это позволяет решить к какому свойству обратиться *во время выполнения*.
 
@@ -45,7 +44,6 @@ NSString *valueC = [myObject valueForKeyPath:@"parentObject.someString"];
 @interface Person : NSObject
 @property (nonatomic, copy) NSString *name;
 @property (nonatomic, strong) NSNumber *age;
-...
 @end
 ```
 
@@ -114,17 +112,15 @@ for (NSDictionary *personDescription in personsDescriptions) {
 ```
 @property NSString *name;
 @property NSNumber *age;
-...
 ```
 ```
 {
 	"name": ...,
 	"age": ...,
-	...
 }
 ```
 
-Нужна осторожность: **мы отвечаем за совпадение ключей**!
+НО! **мы сами отвечаем за совпадение ключей**
 
 
 ----
@@ -210,7 +206,7 @@ NSArray <Person *> *bobs = [self.staff filteredArrayUsingPredicate:predicate];
 
 По умолчанию обращение по несуществующему ключу вызывает исключение, поэтому нужно реализовать одну из политик:
 * Гарантированно не обращаться к несуществующим ключам
-* Переопределить методы, обрабатывающие обращение к несуществующим ключам (`valueForUndefinedKey:` и `setValue:forUndefinedKey:`)
+* Переопределить методы, обрабатывающие обращение к несуществующим ключам `valueForUndefinedKey:` и `setValue:forUndefinedKey:`.
 
 
 ----
@@ -277,13 +273,13 @@ KVO — мощный механизм, который не терпит ошиб
   static void *const myContext = (void *)&myContext;
   ```
 
-* Подписываемся на изменения значений. (например в `init`)
+* Подписываемся на изменения значений (например в `init`).
   ```ObjectiveC
   [self.myPerson addObserver:self forKeyPath:@"name"
       options:NSKeyValueObservingOptionNew context:myContext];
   ```
 
-* Отписываемся от нотификаций. (например в dealloc)
+* Отписываемся от нотификаций (например в dealloc).
   ```ObjectiveC
   [self.myPerson removeObserver:self forKeyPath:@"name" context:myContext];
   ```
@@ -293,7 +289,7 @@ KVO — мощный механизм, который не терпит ошиб
 
 ## Key-Value Observing
 
-* Получаем и обрабатываем нотификации.
+* Получаем и обрабатываем нотификации
 
 ```ObjectiveC
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object
@@ -348,6 +344,14 @@ KVO поддерживает свойства, не имеющие под соб
 	return keyPaths;
 }
 ```
+или
+```ObjectiveC
++ (NSSet *)keyPathsForValuesAffectingFullName {
+    return [NSSet setWithObjects:@"lastName", @"firstName", nil];
+}
+
+```
+
 
 
 ----
@@ -391,13 +395,12 @@ NSMutableArray <Person *> *mutableStaff = [self mutableArrayValueForKey:@"staff"
 
 Для избавления от страданий создано много обёрток над API KVO.
 
-
 ReactiveCocoa
 
 ```ObjectiveC
 [RACObserve(model, keyname) subscribeNext:^(NSString *newValue) {
     	...
-	}];
+}];
 ```
 
 KVOBlocks
@@ -406,7 +409,7 @@ KVOBlocks
 [model addObserver:self forKeyPath:@"keyname" options:NSKeyValueObservingOptionNew
 	context:nil withBlock:^(NSDictionary *change, void *context) {
 		...
-	}];
+}];
 ```
 
 
@@ -417,3 +420,5 @@ KVOBlocks
 Чтобы обеспечить поддержку KVC/KVO для свойства, нужно соблюдать правила [руководства по KVC/KVO compliance](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/KeyValueCoding/Articles/Compliant.html). 
 
 По умолчанию свойства стандартных классов нельзя считать KVO-совместимыми, а документация явно указывает какие свойства обладают этим свойством.
+
+
