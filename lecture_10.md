@@ -2,25 +2,70 @@
 
 ### Noveo University — iOS
 
-#### Александр Горбунов
+#### Сивых Михаил
 
 
 ----
 
-## Сегодня
+## Событие
 
-* `UIResponder`, `UIEvent`
-* `UITouch`
-* `UIGestureRecognizer`
-* акселерометр, гироскоп
-* локальные нотификации
+Событие – абстракция инцидента или сигнала в реальном мире, который сообщает нам о перемещении чего-либо в новое состояние.
+
+Таким образом, под событием можно понимать переход объекта из одного состояния в другое.
+
+Пример:
+> * Создание объекта
+> * Уничтожение объекта
+
+
+----
+
+## Что может быть связано с событием?
+
+* Уникальный идентификатор события.
+* Значение.
+* Модель событий, которая принимает событие - что делать при получении.
+* Данные, которые передаются другому объекту.
 
 
 ----
 
 ## UIResponder
 
-`UIResponder` — "абстрактный" класс (родитель `UIViewController`, `UIView`, `UIApplication`), содержащий методы обработки событий (от клавиатуры, касаний, акселерометра, кнопок гарнитуры) и управляющий клавиатурой.
+Данный класс предоставляет интерфейс для объектов, которые обрабатывают или отвечают на события. Является родительским классом для `UIApplication`, `UIView` и их потомков (в том числе `UIWindow`). 
+
+> Обобщим их под названием responder.
+
+
+----
+
+## UIResponder
+
+```ObjectiveC
+- (UIResponder *)nextResponder; // default: nil
+- (BOOL)canBecomeFirstResponder; // default: NO
+- (BOOL)becomeFirstResponder;
+- (BOOL)canResignFirstResponder; // default: YES
+- (BOOL)resignFirstResponder;
+- (BOOL)isFirstResponder;
+```
+
+<!-- Рассказать о...
+UIViewController.view.nextResponder ~> UIViewController
+UIViewController.nextResponder ~> UIViewController.view.superview
+UIView.nextResponder ~> UIView.superview
+UIWindow.nextResponder ~> UIApplication
+UIApplication.nextResponder ~> nil
+-->
+
+```ObjectiveC
+@interface UIResponder (UIResponderInputViewAdditions)
+// Called and presented when object becomes first responder.  
+// Goes up the responder chain.
+@property (nonatomic, readonly, strong) UIView *inputView; // default: nil
+@property (nonatomic, readonly, strong) UIView *inputAccessoryView; // default: nil
+@end
+```
 
 
 ----
@@ -40,101 +85,61 @@
 
 ----
 
-## UIEvent
+## UIResponder
 
-`UIEvent` — класс для описания следующих типов событий:
-* Touch events (касания)
-* Motion events (акселерометр, гироскоп, тряска)
-* Remote-control events (кнопки гарнитуры: пауза, перемотка, ...)
+Существует три типа событий действий пользователя, которые может обрабатывать `UIResponder`
 
-События `UIEvent` приходят в объекты-респондеры (наследники класса `UIResponder`): `UIViewController`, `UIView`, `UIApplication`, `UIWindow` и их наследники.
+![](./lecture_10_img/UIEventType.png)
 
 
 ----
 
-## UITouch
+## UIResponder
 
-`UITouch` — класс, представляющий касание.
-
-* Каждый `UITouch` соответствует одному касанию (пальцу).
-* Объект `UITouch` живёт на протяжении всего жеста, при этом меняются его координаты и timestamp.
-* У `UITouch` можно спросить нынешние и предыдущие координаты относительно любого view или window.
-* `UITouch` хранит информацию о view, на которой начался жест и о количестве тапов в начале жеста.
-* Чтобы view отвечала на касания, нужно выставить свойство `userInteractionEnabled = YES`.
-* Один `UIEvent` типа `UIEventTypeTouches` содержит множество объектов `UITouch`.
-
-
-----
-
-## UITouch
-
-Для обработки касаний во View или ViewController нужно реализовать следующие методы `UIResponder`:
-
-* `touchesBegan:withEvent:`  
-  Вызывается один раз при старте жеста.
-* `touchesMoved:withEvent:`  
-  Вызывается постоянно во время движения пальца.
-* `touchesEnded:withEvent:`  
-  Вызывается один раз при окончании жеста.
-* `touchesCancelled:withEvent:`  
-Вызывается при отмене жеста (например если телефон поднесли к уху).
-
-
-----
-
-## UIGestureRecognizer
-
-`UIGestureRecognizer` — "абстрактный" класс, предоставляющий интерфейс для работы с жестами на более высоком уровне абстракции по сравнению с касаниями. Может оперировать такими понятиями как скорость перемещения, направление свайпа, уровень зума, угол поворота, длительность нажатия.
-
-![](./lecture_10_img/gestures.jpg)
-
-
-----
-
-## UIGestureRecognizer
-
-Конкретные реализации включают:
-* `UITapGestureRecognizer`
-* `UISwipeGestureRecognizer`
-* `UIPanGestureRecognizer`
-* `UIPinchGestureRecognizer`
-* `UIRotationGestureRecognizer`
-* `UIScreenEdgePanGestureRecognizer`
-* `UILongPressGestureRecognizer`
-
-
-----
-
-## UIGestureRecognizer
-
-* Объект конкретного класса `UIGestureRecognizer` добавляется на `UIView` и отслеживает события на этой view.
-* Рекогнайзеру задаётся пара target/action, в которую передаётся управление после совершения пользователем соответствующего жеста.
-* Рекогнайзер может иметь делегата, ответственного за разрешение конфликтов между несколькими рекогнайзерами на одной view.
-
-
-----
-
-## UIGestureRecognizer
+Обработка событий
 
 ```ObjectiveC
-@property (nonatomic) UIView *chip;
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event;
+- (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event;
+- (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event;
+- (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event;
 ```
 
 ```ObjectiveC
-- (void)viewDidLoad
-{
-	...
-	
-	UIRotationGestureRecognizer *gr = [[UIRotationGestureRecognizer alloc]
-		initWithTarget:self action:@selector(rotate:)];
-	
-	[self.chip addGestureRecognizer:gr];
-}
- 
-- (void)rotate:(UIRotationGestureRecognizer *)gr
-{
-	self.chip.transform = CGAffineTransformMakeRotation(gr.rotation);
-}
+- (void)motionBegan:(UIEventSubtype)motion withEvent:(UIEvent *)event;
+- (void)motionEnded:(UIEventSubtype)motion withEvent:(UIEvent *)event;
+- (void)motionCancelled:(UIEventSubtype)motion withEvent:(UIEvent *)event;
+```
+
+```ObjectiveC
+- (void)remoteControlReceivedWithEvent:(UIEvent *)event;
+```
+
+
+----
+
+## UITouch
+
+`UITouch` — класс, представляющий касание одного пальца. Объект `UITouch` живёт на протяжении всего жеста.
+
+```ObjectiveC
+@property(nonatomic,readonly) NSTimeInterval timestamp;
+@property(nonatomic,readonly) NSUInteger     tapCount;
+
+@property(nonatomic,readonly,strong) UIWindow *window;
+@property(nonatomic,readonly,strong) UIView   *view;
+
+// since iOS 9 for 3D touch
+@property(nonatomic,readonly) CGFloat force; 
+@property(nonatomic,readonly) CGFloat maximumPossibleForce;
+
+- (CGPoint)locationInView:(nullable UIView *)view;
+- (CGPoint)previousLocationInView:(nullable UIView *)view;
+```
+
+Чтобы `view` отвечала на касания, нужно выставить свойство 
+```ObjectiveC
+view.userInteractionEnabled = YES;
 ```
 
 
@@ -185,9 +190,211 @@ self.cmManager = [[CMMotionManager alloc] init];
 [self.cmManager startDeviceMotionUpdatesToQueue:[NSOperationQueue mainQueue]
 	withHandler:^(CMDeviceMotion *motion, NSError *error) {
 		// Динамика вращений: motion.rotationRate
+		// радиан в секунду для каждой координаты (x,y,z) 
+
 		// Динамика ускорений: motion.userAcceleration
-		// Текущая ориентация: motion.gravity
+		// Для каждой координаты (x,y,z)
+
+		// Текущая ориентация: motion.gravity 
+		// вектор силы тяжести (x,y,z) относительно устройства
+		
+		// ...
 	}];
+```
+
+
+----
+
+## UIGestureRecognizer
+
+`UIGestureRecognizer` — "абстрактный" класс, предоставляющий интерфейс для работы с жестами на более высоком уровне абстракции по сравнению с касаниями. 
+
+Служит для разделения логики определения жеста и логики реакции на жест.
+
+Может оперировать такими понятиями как скорость перемещения, направление свайпа, уровень зума, угол поворота, длительность нажатия.
+
+
+----
+
+## UIGestureRecognizer
+
+Конкретные реализации включают:
+* `UITapGestureRecognizer`
+* `UISwipeGestureRecognizer`
+* `UIPanGestureRecognizer`
+* `UIPinchGestureRecognizer`
+* `UIRotationGestureRecognizer`
+* `UIScreenEdgePanGestureRecognizer`
+* `UILongPressGestureRecognizer`
+
+
+----
+
+## UIGestureRecognizer states
+
+```ObjectiveC
+typedef NS_ENUM(NSInteger, UIGestureRecognizerState) {
+    UIGestureRecognizerStatePossible, // default
+    
+    UIGestureRecognizerStateBegan,
+    UIGestureRecognizerStateChanged,
+    UIGestureRecognizerStateEnded,  
+    UIGestureRecognizerStateCancelled, 
+    
+    UIGestureRecognizerStateFailed,
+    
+    UIGestureRecognizerStateRecognized = UIGestureRecognizerStateEnded
+};
+```
+
+Дискретные жесты не проходят через состояния `Began` и `Changed`.
+
+
+----
+
+## UIGestureRecognizer
+
+
+* Объект конкретного класса `UIGestureRecognizer` добавляется на `UIView` для отслеживания событий.
+* Имеет одну или несколько пар (target/action).
+* Может иметь делегата, ответственного за разрешение конфликтов между несколькими объектами `UIGestureRecognizer` на одной view:
+
+```ObjectiveC
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer;
+
+// default is NO. YES - гарантирует, NO - нет
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer 
+	shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)gr;
+
+// YES - гарантирует, NO - нет
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer 
+	shouldRequireFailureOfGestureRecognizer:(UIGestureRecognizer *)another;
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer 
+	shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)another;
+
+// Вызывается до touchesBegan:withEvent: 
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer 
+	   shouldReceiveTouch:(UITouch *)touch;
+```
+
+
+----
+
+## UIGestureRecognizer failure
+
+Можно создать связь между двумя объектами `UIGectureRecognizer` и без использования делегатов.
+
+```ObjectiveC
+@interface UIGestureRecognizer : NSObject
+- (void)requireGestureRecognizerToFail:
+									(UIGestureRecognizer *)otherGestureRecognizer;
+@end
+```
+
+Как пример, одиночное нажатие на экран можно распознаться, только если жест двойного нажатия не будет выявлен.
+
+
+----
+
+## UIGestureRecognizer 
+#### Пример
+
+```ObjectiveC
+@property (nonatomic) UIView *chip;
+```
+
+```ObjectiveC
+- (void)viewDidLoad
+{
+	...
+	
+	UIRotationGestureRecognizer *gr = [[UIRotationGestureRecognizer alloc]
+		initWithTarget:self action:@selector(rotate:)];
+	
+	[self.chip addGestureRecognizer:gr];
+}
+ 
+- (void)rotate:(UIRotationGestureRecognizer *)gr
+{
+	self.chip.transform = CGAffineTransformMakeRotation(gr.rotation);
+}
+```
+
+
+----
+
+## Уведомления
+
+Объект класса `NSNotificationCenter` (или просто центр уведомлений) обеспечивает механизм трансляции (broadcast) внутри программы. 
+
+По сути является таблицей отправки уведомлений. Может рассылать уведомления **только** внутри текущей программы.
+
+Каждая Cocoa программа имеет центр уведомления по умолчанию, и вам не нужно создавать его самим.
+
+```ObjectiveC
+[NSNotificationCenter defaultCenter]
+```
+
+
+----
+
+## Уведомления
+
+Создать подписку для уведомлений
+
+```ObjectiveC
+- (id<NSObject>) addObserverForName:object:queue:usingBlock:
+- (void) addObserver:selector:name:object:
+```
+
+Пример 
+
+```ObjectiveC
+NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+NSOperationQueue *mainQueue = [NSOperationQueue mainQueue];
+
+self = [center addObserverForName:NSCurrentLocaleDidChangeNotification object:nil
+    						queue:mainQueue usingBlock:^(NSNotification *note) {
+ 
+        NSLog(@"The user's locale changed to: %@", 
+        [[NSLocale currentLocale] localeIdentifier]);
+    }];
+```
+
+Чтобы отписаться от уведомлений
+
+```ObjectiveC
+NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+[center removeObserver:self];
+```
+
+
+----
+
+## Уведомления
+### Отправка
+
+```ObjectiveC
+@interface NSNotificationCenter : NSObject
+
+- (void)postNotification:(NSNotification *)notification;
+
+- (void)postNotificationName:(NSString *)notificationName object:(id)sender;
+
+- (void)postNotificationName:(NSString *)notificationName
+                      object:(id)notificationSender
+                    userInfo:(NSDictionary *)userInfo;
+@end
+```
+
+При этом объект `NSNotification` может быть создан следующим образом
+
+```ObjectiveC
++ (instancetype)notificationWithName:(NSString *)aName object:(id)anObject;
+
++ (instancetype)notificationWithName:(NSString *)aName
+                              object:(id)anObject
+                            userInfo:(NSDictionary *)userInfo;
 ```
 
 
@@ -235,3 +442,33 @@ notification.soundName = UILocalNotificationDefaultSoundName;
 	...
 }
 ```
+
+
+----
+
+## NSTimer
+
+Для создания таймера, чьи события будут обрабатываться на текущем цикле выполнения (NSRunLoop):
+
+```ObjectiveC
++ scheduledTimerWithTimeInterval:invocation:repeats:
++ scheduledTimerWithTimeInterval:target:selector:userInfo:repeats: 
+```
+
+Для создания таймера, который не будет добавлен в цикл выполнения:
+
+```ObjectiveC
++ timerWithTimeInterval:invocation:repeats:
++ timerWithTimeInterval:target:selector:userInfo:repeats:
+- initWithFireDate:interval:target:selector:userInfo:repeats:
+```
+
+В дальнейшем, чтобы таймер "пошëл", нужно будет вручную добавить его в подходящий вам цикл выполнения:
+
+```ObjectiveC
+@interface NSRunLoop : NSObject
+- (void)addTimer:(NSTimer *)aTimer forMode:(NSString *)mode;
+@end
+```
+
+
