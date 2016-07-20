@@ -34,7 +34,23 @@
 
 Данный класс предоставляет интерфейс для объектов, которые обрабатывают или отвечают на события. Является родительским классом для `UIApplication`, `UIView` и их потомков (в том числе `UIWindow`). 
 
-> Обобщим их под названием responder.
+
+----
+
+## UIView : UIResponder
+
+```ObjectiveC
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event;
+// Игнорирует все subview, которые 
+// 									* скрыты;
+// 									* userInteractionEnabled = NO;
+// 									* alpha < 0.01.
+
+- (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event;
+// Вызывается перед проверкой hittest для конкретного subview
+``` 
+
+![](./lecture_10_img/hittest.png)
 
 
 ----
@@ -43,6 +59,15 @@
 
 ```ObjectiveC
 - (UIResponder *)nextResponder; // default: nil
+```
+![](./lecture_10_img/nextResponder.png)
+
+
+----
+
+## UIResponder
+
+```ObjectiveC
 - (BOOL)canBecomeFirstResponder; // default: NO
 - (BOOL)becomeFirstResponder;
 - (BOOL)canResignFirstResponder; // default: YES
