@@ -2,7 +2,6 @@
 
 ### Noveo University — iOS
 
-#### Семён Игнатов
 
 
 ----
@@ -256,6 +255,11 @@ self.avPlayer.numberOfLoops = -1;
 
 ----
 
+## Видео
+
+
+----
+
 ## AVPlayerViewController
  
 * используется для показа видео
@@ -263,6 +267,13 @@ self.avPlayer.numberOfLoops = -1;
 * позволяет использовать стандартные контролы или реализовать свои
 * поддерживает паузу, перемотку, автостарт (по готовности буфера), закольцовывание
 * позволяет получать некоторые метаданные из потока
+
+
+----
+
+## AVPlayerViewController
+
+![](./lecture_11_img/Ios_8_avplyer_example_running.png)
 
 
 ----
@@ -298,6 +309,13 @@ self.avPlayerVC.view.frame = self.view.frame;
 
 ## UIImagePickerController
 ```UIImagePickerController``` —  универсальный способ получения картинок и видео из фотоальбомов устройства и с камеры. Предоставляет стандартные контролы для выбора картинок и управления камерой. 
+
+
+----
+
+## UIImagePickerController
+
+![](./lecture_11_img/ImagePickerController.png)
 
 
 ----
@@ -366,6 +384,13 @@ self.avPlayerVC.view.frame = self.view.frame;
 * В целях безопасности начиная с iOS 6 реализовано через XPC (контроллер создаётся в стороннем процессе, к которому у приложения нет доступа)
 
 ```MFMessageComposeViewController``` — аналогичное API для составления  SMS/MMS
+
+
+----
+
+## Email
+
+![](./lecture_11_img/EmailComposer.png)
 
 
 ----
