@@ -8,18 +8,18 @@
 		<meta name="apple-mobile-web-app-capable" content="yes">
 		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
-		<link rel="stylesheet" href="css/reveal.css">
-		<link rel="stylesheet" href="css/theme/noveo.css" id="theme">
+		<link rel="stylesheet" href="{{enginePath}}css/reveal.css">
+		<link rel="stylesheet" href="{{enginePath}}css/theme/noveo.css" id="theme">
 
 		<!-- Code syntax highlighting -->
-		<link rel="stylesheet" href="lib/css/magula.css">
+		<link rel="stylesheet" href="{{enginePath}}lib/css/magula.css">
 
 		<!-- Printing and PDF exports -->
 		<script>
 			var link = document.createElement( 'link' );
 			link.rel = 'stylesheet';
 			link.type = 'text/css';
-			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? '{{enginePath}}css/print/pdf.css' : '{{enginePath}}css/print/paper.css';
 			document.getElementsByTagName( 'head' )[0].appendChild( link );
 		</script>
 
@@ -31,25 +31,23 @@
 	<body>
 
 		<div class="ios-colored-triangle"></div>
-		<div class="noveo-logo"><img width=174px src="./css/theme/NoveoLogo.png"/></div>
+		<div class="noveo-logo"><img width=174px src="{{enginePath}}css/theme/NoveoLogo.png"/></div>
 
 		<div class="reveal">
 
 			<!-- Any section element inside of this container is displayed as a slide -->
 			<div class="slides">
-
-				<section data-markdown="lecture_9.md"  
+				<section data-markdown="{{SourceName}}"
 					data-separator="^\n\n----\n"  
 					data-separator-vertical="^\n\n--\n"  
-					data-separator-notes="^Note:"  
+					data-separator-notes="^Note:"
 					data-charset="UTF-8">
 				</section>
-								
 			</div>
 		</div>
 
-		<script src="lib/js/head.min.js"></script>
-		<script src="js/reveal.js"></script>
+		<script src="{{enginePath}}lib/js/head.min.js"></script>
+		<script src="{{enginePath}}js/reveal.js"></script>
 
 		<script>
 
@@ -58,19 +56,20 @@
 			Reveal.initialize({
 				controls: true,
 				progress: true,
-				history: true,
-				center: true,
+				history: false,
+				embedded: true,
+			    mouseWheel: true,
 
 				transition: 'slide', // none/fade/slide/convex/concave/zoom
 
 				// Optional reveal.js plugins
 				dependencies: [
-					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
-					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
-					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
-					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
-// 					{ src: 'plugin/zoom-js/zoom.js', async: true },
-// 					{ src: 'plugin/notes/notes.js', async: true }
+					{ src: '{{enginePath}}lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: '{{enginePath}}plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: '{{enginePath}}plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: '{{enginePath}}plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: '{{enginePath}}plugin/zoom-js/zoom.js', async: true },
+					{ src: '{{enginePath}}plugin/notes/notes.js', async: true }
 				]
 			});
 
