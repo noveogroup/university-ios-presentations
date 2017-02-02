@@ -5,10 +5,3 @@ python CreateLecture.py -s source/index.md -t templates/lecture_X.html
 for i in source/*.md; do
     python CreateLecture.py -s $i -t templates/lecture_X.html -d html
 done
-
-#copy resources
-mkdir public
-cp -r engine public/
-cp -r source public/
-cp -r html public/
-cp index.html public/
