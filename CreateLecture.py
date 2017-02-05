@@ -30,7 +30,7 @@ def main(argv):
 			engineroot = arg	
 	print 'Source file is ', sourcesile
 	print 'Template file is ', templatefile
-	print 'Output folder is ', templatefile
+	print 'Output folder is ', outpath
 
 	#working with relative paths from sources to engine.
 
