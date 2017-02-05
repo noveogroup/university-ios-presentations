@@ -3,5 +3,5 @@ python: '2.7'
 script: bash ./deploy.sh
 env:
   global:
-  - ENCRYPTION_LABEL: 5772ab32e2c2
+  - ENCRYPTION_LABEL: f848b3237882
   - COMMIT_AUTHOR_EMAIL: buildbot-ios@noveogroup.com
