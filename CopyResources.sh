@@ -1,6 +1,5 @@
 #copy resources
-mkdir public
-cp -r engine public/
-cp -r source public/
-cp -r html public/
-cp index.html public/
+mkdir out
+cp -r engine out/
+cp -r docs out/docs/
+cp index.html out/
