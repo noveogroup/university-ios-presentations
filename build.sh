@@ -1,7 +1,7 @@
 #generate index
-python CreateLecture.py -s source/index.md -t templates/lecture_X.html
+python CreateLecture.py -s docs/index.md -t templates/lecture_X.html -e engine
 
 #generate lections
-for i in source/*.md; do
-    python CreateLecture.py -s $i -t templates/lecture_X.html -d html
+for i in docs/lecture*.md; do
+    python CreateLecture.py -s $i -t templates/lecture_X.html -e engine -d docs
 done
