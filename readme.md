@@ -1,3 +1,5 @@
+[build status](https://travis-ci.org/noveogroup/university-ios-presentations.svg?branch=master)
+
 ## Создание лекции
 1. создать в директории `docs` новый **.md** файл (и, по необходимости, соответствующую директорию для картинок)
 2. в корневой директории запустить билд-скрипт: `sh build.sh`
