@@ -2,7 +2,7 @@
 set -e # Exit with nonzero exit code if anything fails
 
 SOURCE_BRANCH="master"
-TARGET_BRANCH="travis-test"
+TARGET_BRANCH="gh-pages"
 
 function doCompile {
   ./build.sh
@@ -38,6 +38,9 @@ ls out/
 
 # Run our compile script
 doCompile
+
+echo "out:"
+ls out/
 
 # Now let's go have some fun with the cloned repo
 cd out
