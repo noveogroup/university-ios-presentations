@@ -2,4 +2,4 @@
 pwd
 ls
 cp -r ./source/ ./out/
-ls
+ls out/
