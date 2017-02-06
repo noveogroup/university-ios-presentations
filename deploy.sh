@@ -25,10 +25,11 @@ SHA=`git rev-parse --verify HEAD`
 git clone $REPO out
 cd out
 git checkout $TARGET_BRANCH || git checkout --orphan $TARGET_BRANCH
-cd ..
 
 # Clean out existing contents
 git ls-files | xargs rm -rf
+
+cd ..
 
 echo "root:"
 ls
