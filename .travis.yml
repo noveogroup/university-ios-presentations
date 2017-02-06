@@ -5,3 +5,5 @@ env:
   global:
   - ENCRYPTION_LABEL: f848b3237882
   - COMMIT_AUTHOR_EMAIL: buildbot-ios@noveogroup.com
+before_install:
+ - chmod +x CopyResourcesGithub.sh
