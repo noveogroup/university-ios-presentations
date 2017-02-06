@@ -1,5 +1,5 @@
 #copy resources
 pwd
 ls
-cp -r ./source/
+cp -r ./source/ ./out/
 ls
