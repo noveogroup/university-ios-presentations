@@ -1,7 +1,7 @@
 /* global module:false */
 module.exports = function(grunt) {
 	var port = grunt.option('port') || 8000;
-	var base = grunt.option('base') || '.';
+	var base = grunt.option('base') || './source';
 
 	// Project configuration
 	grunt.initConfig({
@@ -26,24 +26,24 @@ module.exports = function(grunt) {
 				banner: '<%= meta.banner %>\n'
 			},
 			build: {
-				src: 'engine/js/reveal.js',
-				dest: 'engine/js/reveal.min.js'
+				src: 'source/engine/js/reveal.js',
+				dest: 'source/engine/js/reveal.min.js'
 			}
 		},
 
 		sass: {
 			core: {
 				files: {
-					'engine/css/reveal.css': 'engine/css/reveal.scss',
+					'source/engine/css/reveal.css': 'source/engine/css/reveal.scss',
 				}
 			},
 			themes: {
 				files: [
 					{
 						expand: true,
-						cwd: 'engine/css/theme/source',
+						cwd: 'source/engine/css/theme/source',
 						src: ['*.scss'],
-						dest: 'engine/css/theme',
+						dest: 'source/engine/css/theme',
 						ext: '.css'
 					}
 				]
@@ -52,14 +52,14 @@ module.exports = function(grunt) {
 
 		autoprefixer: {
 			dist: {
-				src: 'engine/css/reveal.css'
+				src: 'source/engine/css/reveal.css'
 			}
 		},
 
 		cssmin: {
 			compress: {
 				files: {
-					'engine/css/reveal.min.css': [ 'engine/css/reveal.css' ]
+					'source/engine/css/reveal.min.css': [ 'source/engine/css/reveal.css' ]
 				}
 			}
 		},
@@ -86,7 +86,7 @@ module.exports = function(grunt) {
 					exports: false
 				}
 			},
-			files: [ 'Gruntfile.js', 'engine/js/reveal.js' ]
+			files: [ 'Gruntfile.js', 'source/engine/js/reveal.js' ]
 		},
 
 		connect: {
@@ -102,12 +102,12 @@ module.exports = function(grunt) {
 
 		zip: {
 			'reveal-js-presentation.zip': [
-				'index.html',
-				'engine/css/**',
-				'engine/js/**',
-				'engine/lib/**',
-				'engine/images/**',
-				'engine/plugin/**',
+				'source/index.html',
+				'source/engine/css/**',
+				'source/engine/js/**',
+				'source/engine/lib/**',
+				'source/engine/images/**',
+				'source/engine/plugin/**',
 				'**.md'
 			]
 		},
@@ -117,22 +117,22 @@ module.exports = function(grunt) {
 				livereload: true
 			},
 			js: {
-				files: [ 'Gruntfile.js', 'engine/js/reveal.js' ],
+				files: [ 'Gruntfile.js', 'source/engine/js/reveal.js' ],
 				tasks: 'js'
 			},
 			theme: {
-				files: [ 'engine/css/theme/source/*.scss', 'engine/css/theme/template/*.scss' ],
+				files: [ 'source/engine/css/theme/source/*.scss', 'source/engine/css/theme/template/*.scss' ],
 				tasks: 'css-themes'
 			},
 			css: {
-				files: [ 'engine/css/reveal.scss' ],
+				files: [ 'source/engine/css/reveal.scss' ],
 				tasks: 'css-core'
 			},
 			html: {
-				files: [ 'index.html']
+				files: [ 'source/index.html']
 			},
 			markdown: {
-				files: [ 'source/*.md' ]
+				files: [ 'source/docs/*.md' ]
 			}
 		}
 
