@@ -1,5 +1,5 @@
 node_modules
 out
 public
-docs/*.html
-index.html
+source/docs/*.html
+source/index.html

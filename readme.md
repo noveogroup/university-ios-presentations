@@ -1,4 +1,4 @@
-[build status](https://travis-ci.org/noveogroup/university-ios-presentations.svg?branch=master)
+![build status](https://travis-ci.org/noveogroup/university-ios-presentations.svg?branch=master)
 
 ## Создание лекции
 1. создать в директории `docs` новый **.md** файл (и, по необходимости, соответствующую директорию для картинок)
