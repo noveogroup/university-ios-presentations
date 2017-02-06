@@ -1,2 +1,4 @@
 #copy resources
-cp -r source/ ./
+pwd
+ls
+cp -r ./source/ ./
