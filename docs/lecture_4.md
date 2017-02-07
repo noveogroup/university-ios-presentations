@@ -8,11 +8,11 @@
 ## План лекции
 
 * Что такое Foundation?
-* Строки (NSString)
-* Коллекции (NSArray, NSDictionary, NSSet)
-* Обертки (NSData, NSValue, NSNumber)
-* Дата и время (NSDate)
-* Ошибки (NSError, NSException)
+* Строки (`NSString`)
+* Обертки (`NSData`, `NSValue`, `NSNumber`)
+* Коллекции (`NSArray`, `NSDictionary`, `NSSet`)
+* Дата и время (`NSDate`)
+* Ошибки (`NSError`, `NSException`)
 * Бонус
 
 
@@ -60,21 +60,21 @@ NSString *objCString = @"Hello world";
 ## - stringWithFormat:
 
 ```ObjectiveC
-int year = 2014;
+int year = 2017;
 NSString *message = [NSString stringWithFormat:@"Today is year %d", year];
-// Today is year 2014
+// Today is year 2017
 
 NSString *anotherMessage =
 	[NSString stringWithFormat:@"Previous message was '%@'", message];
-// Previous message was 'Today is year 2014'
+// Previous message was 'Today is year 2017'
 ```
 
-Самый часто используемый метод у строк
+Самый часто используемый метод у строк.
 
 
 --
 
-## Спецификаторы формата
+## Спецификаторы формата (format specifier)
 
 Точно такие же, как у printf + <font color="red">`%@`</font> для объектов
 
@@ -224,6 +224,353 @@ NSString *st = [[NSMutableString alloc] initWithString:@"Mutable string"];
 
 ----
 
+## NSValue
+
+
+--
+
+## Назначение
+
+`NSValue` представляет собой простой контейнер для `Objective-C` и `C` данных и применяется для создания объектов из скалярных данных.
+
+Объекты класса `NSValue` способны сохранить любые скаларные данные, такие как, `int`, `float`, `char`, указатели, структуры, `id`. Созданный объект являются не изменяемыми и может разместить только один элемент данных.
+
+
+--
+
+## Хранить можно не все
+
+Объекты класса `NSValue` могу размещать данные с постоянной длинной, вы не можете сохранить в объекте `C`-строки, массивы переменной длины, структуры или другие данные неопределенной длинны.
+
+
+--
+
+## Создание NSValue
+
+```ObjectiveC
+- (instancetype)initWithBytes:(const void *)value objCType:(const char *)type;
++ (NSValue *)valueWithBytes:(const void *)value objCType:(const char *)type;
+```
+
+Где взять этот самый `objCType`?
+
+
+--
+
+## @encode
+
+В Objective-C у любого типа существует его внутреннее представление в виде строки С. 
+
+Его можно получить с помощью **@encode**
+
+Например, **@encode(id) == <font color="red">"@"</font>**
+
+
+--
+
+## -getValue: и objCType
+
+```ObjectiveC
+- (void)getValue:(void *)value;
+```
+
+Копирует значение в заданный буфер. Он должен быть достаточно большого размера.
+
+```ObjectiveC
+@property (readonly) const char *objCType
+```
+
+Возвращает `C`-строку с описанием типа данных хранимых в объекте класса `NSValue`.
+
+
+--
+
+## Пример
+
+```ObjectiveC
+typedef struct Str {
+	int x;
+	char y;
+} MyStruct;
+MyStruct s = (MyStruct){.x = 100, .y = 'x'};
+NSValue *val = [NSValue value:&s withObjCType:@encode(MyStruct)];
+	
+MyStruct s2;
+[val getValue:&s2];
+	
+NSLog(@"%i, %c", s2.x, s2.y);
+```
+
+
+--
+
+## Полезные методы
+
+```ObjectiveC
++ valueWithPoint: // для CGPoint
++ valueWithRange: // для NSRange
++ valueWithRect: // для CGRect
++ valueWithSize: // для CGSize
+
+– pointValue
+– pointerValue
+– rangeValue
+– rectValue
+```
+
+
+--
+
+## Дополнительно
+
+[NSValue на NSHipster](http://nshipster.com/nsvalue/)
+
+[Type Encodings на NSHipster](http://nshipster.com/type-encodings/)
+
+[NSValue в документации Apple](https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/NumbersandValues/NumbersandValues.pdf)
+
+
+----
+
+## NSNumber
+
+
+--
+
+## Назначение
+
+Класс `NSNumber` является подклассом `NSValue`, объекты которого позволяют хранить значения скалярных числовых типов языка `С`. 
+
+
+--
+
+## Создание NSNumber
+
+```ObjectiveC
+- (NSNumber *)initWithChar:(char)value;
+- (NSNumber *)initWithUnsignedChar:(unsigned char)value;
+- (NSNumber *)initWithShort:(short)value;
+- (NSNumber *)initWithUnsignedShort:(unsigned short)value;
+- (NSNumber *)initWithInt:(int)value;
+- (NSNumber *)initWithUnsignedInt:(unsigned int)value;
+- (NSNumber *)initWithLong:(long)value;
+- (NSNumber *)initWithUnsignedLong:(unsigned long)value;
+- (NSNumber *)initWithLongLong:(long long)value;
+- (NSNumber *)initWithUnsignedLongLong:(unsigned long long)value;
+- (NSNumber *)initWithFloat:(float)value;
+- (NSNumber *)initWithDouble:(double)value;
+- (NSNumber *)initWithBool:(BOOL)value;
+- (NSNumber *)initWithInteger:(NSInteger)value NS_AVAILABLE(10_5, 2_0);
+- (NSNumber *)initWithUnsignedInteger:(NSUInteger)value NS_AVAILABLE(10_5, 2_0);
+```
+
+--
+
+## Пример
+
+```ObjectiveC
+NSNumber *pi = [NSNumber numberWithFloat:3.1415];
+NSNumber *i = [NSNumber initWithInt:2];
+```
+
+Долго и нудно :)
+
+
+--
+
+## Создание NSNumber по-новому 
+
+```ObjectiveC
+NSNumber *pi = @3.1415;
+NSNumber *i = @2;
+	
+NSNumber *someSum = @(3.1415 + 2.71);
+```
+
+на самом деле, тут продолжает вызываться
+метод *numberWithFloat:*, *initWithInt:* или подобныt, просто
+теперь компилятор это делает сам.
+
+
+--
+
+## Получить число
+
+```ObjectiveC
+@property (readonly) char charValue;
+@property (readonly) unsigned char unsignedCharValue;
+@property (readonly) short shortValue;
+@property (readonly) unsigned short unsignedShortValue;
+@property (readonly) int intValue;
+@property (readonly) unsigned int unsignedIntValue;
+@property (readonly) long longValue;
+@property (readonly) unsigned long unsignedLongValue;
+@property (readonly) long long longLongValue;
+@property (readonly) unsigned long long unsignedLongLongValue;
+@property (readonly) float floatValue;
+@property (readonly) double doubleValue;
+@property (readonly) BOOL boolValue;
+@property (readonly) NSInteger integerValue NS_AVAILABLE(10_5, 2_0);
+@property (readonly) NSUInteger unsignedIntegerValue NS_AVAILABLE(10_5, 2_0);
+@property (readonly, copy) NSString *stringValue;
+```
+
+
+--
+
+## Дополнительные методы
+
+Также `NSNumber` можно сравнивать
+```ObjectiveC
+- (NSComparisonResult)compare:(NSNumber *)otherNumber;
+- (BOOL)isEqualToNumber:(NSNumber *)number;
+```
+
+
+--
+
+## Вопрос
+
+```ObjectiveC
+NSNumber *pi = @3.1415;
+NSLog(@"%?", pi);
+```
+
+Какой `format specifier` нужно подставить вместо <font color="green">**%?**</font> ?	
+
+<fragment>
+Нужно использовать <font color="red">**%@**</font>, так как NSNumber — это объект.
+</fragment>
+<!-- .element: class="fragment" data-fragment-index="3" -->
+
+
+--
+
+## Вопрос
+
+Что будет, если поместить в `NSNumber` число одного типа, а обратно пытаться получить другое?
+
+```ObjectiveC
+NSNumber *e = @2.71;
+[e intValue];
+[e boolValue];
+```
+
+--
+
+## Дополнительно
+
+[NSNumber на RyPress](http://rypress.com/tutorials/objective-c/data-types/nsnumber)
+
+[NSDecimalNumber на RyPress](http://rypress.com/tutorials/objective-c/data-types/nsdecimalnumber)
+
+----
+
+## NSData + NSMutableData
+
+
+--
+
+## NSData
+
+**NSData** - представляет собой объект Cocoa для работы с бинарными данными.
+Многие методы для работы с интернетом возвращают **NSData** в качестве результата.
+
+
+--
+
+## bytes & length
+
+В общем **NSData** — это указатель на данные *bytes* и размер данных *length* (в байтах).
+
+```ObjectiveC
+- (id)initWithBytes:(const void *)bytes
+    length:(NSUInteger)length;
+
+@property (readonly) NSUInteger length;
+@property (readonly) const void *bytes NS_RETURNS_INNER_POINTER;
+```
+
+
+--
+
+## Пример
+
+```ObjectiveC
+int x = 2014;
+NSData *data = [NSData dataWithBytes:&x length:sizeof(x)];
+NSLog(@"%@", data); // de070000
+```
+
+
+--
+
+## Инициализация NSData
+
+```ObjectiveC
+- (instancetype)initWithBytes:(nullable const void *)bytes
+		length:(NSUInteger)length;
+- (instancetype)initWithBytesNoCopy:(void *)bytes length:(NSUInteger)length;
+- (instancetype)initWithBytesNoCopy:(void *)bytes
+		length:(NSUInteger)length
+		freeWhenDone:(BOOL)b;
+- (nullable instancetype)initWithContentsOfFile:(NSString *)path
+		options:(NSDataReadingOptions)readOptionsMask
+		error:(NSError **)errorPtr;
+- (nullable instancetype)initWithContentsOfURL:(NSURL *)url
+		options:(NSDataReadingOptions)readOptionsMask
+		error:(NSError **)errorPtr;
+- (nullable instancetype)initWithContentsOfFile:(NSString *)path;
+- (nullable instancetype)initWithContentsOfURL:(NSURL *)url;
+- (instancetype)initWithData:(NSData *)data;
+```
+
+
+--
+
+## Сохранение в файл/URL
+
+```ObjectiveC
+- (BOOL)writeToFile:(NSString *)path atomically:(BOOL)useAuxiliaryFile;
+- (BOOL)writeToURL:(NSURL *)url atomically:(BOOL)atomically;
+- (BOOL)writeToFile:(NSString *)path
+    options:(NSDataWritingOptions)writeOptionsMask
+    error:(NSError **)errorPtr;
+- (BOOL)writeToURL:(NSURL *)url
+    options:(NSDataWritingOptions)writeOptionsMask
+    error:(NSError **)errorPtr;
+```
+
+
+--
+
+## Поиск/получение подданных
+
+```ObjectiveC
+- (NSRange)rangeOfData:(NSData *)dataToFind
+    options:(NSDataSearchOptions)mask
+    range:(NSRange)searchRange;
+
+- (NSData *)subdataWithRange:(NSRange)range;
+```
+
+
+--
+
+## NSDataSearchOptions
+
+```ObjectiveC
+typedef NS_OPTIONS(NSUInteger, NSDataSearchOptions) {
+	NSDataSearchBackwards = 1UL << 0,
+	NSDataSearchAnchored = 1UL << 1
+};
+```
+
+
+----
+
+
+
 ## Коллекции
 
 
@@ -231,7 +578,7 @@ NSString *st = [[NSMutableString alloc] initWithString:@"Mutable string"];
 
 ## Коллекции
 
-Хранилища для разнородных элементов.
+Коллекции используются для хранения и управления группами объектов.
 
 * Основные: <font color="red">*NSArray*</font>, <font color="red">*NSDictionary*</font>, <font color="red">*NSSet*</font>
 * Специализированные: *NSCountedSet*, *NSOrderedSet*, *NSIndexSet*, *NSCharacterSet*
@@ -256,60 +603,24 @@ NSArray, NSDictionary, NSSet - <font color="red">неизменяемые</font>
 
 NSMutableArray, NSMutableDictionary, NSMutableSet - <font color="green">изменяемые</font>.
 
-
---
-
-## Изменяемые коллекции
-
-Наследуются от неизменяемых коллекций.
-Доступны все методы неизменяемые коллекцию + добавляются свои собствнные методы.
-
-<font color="red">Нельзя изменять коллекцию, пока ее перебираешь!</font>
-
-
---
-
-## Пример
-
-```ObjectiveC
-NSMutableArray *cities = 
-	[NSMutableArray arrayWithArray:@[@"Moscow", @"St. Petersburg", @"Novosibirsk"]];
-[cities enumerateObjectsUsingBlock:^(NSString *obj, NSUInteger idx, BOOL *stop) {
-		if ([obj length] > 4) {
-			[cities removeObject:obj];
-		}
-	}];
-```
-
-<font color="red">**\*\*\* Terminating app due to uncaught exception 'NSGenericException', reason: '\*\*\* Collection <__NSArrayM: 0x100401c80> was mutated while being enumerated.'**</font>
-
-
---
-
-## Правильная реализация
-
-```ObjectiveC
-NSMutableArray *cities =
-	[NSMutableArray arrayWithArray:@[@"Moscow", @"St. Petersburg", @"Novosibirsk"]];
-NSArray *copy = [cities copy];
-[copy enumerateObjectsUsingBlock:^(NSString *obj, NSUInteger idx, BOOL *stop) {
-    	if ([obj length] > 4) {
-			[cities removeObject:obj];
-		}
-	}];
-```
+Изменяемые коллекции наследуются от неизменяемых коллекций.
+Для них доступны все методы неизменяемыех коллекций + добавляются свои собствнные методы.
 
 
 --
 
 ## Типизированные коллекции (Lightweight Generics)
 
+Lightweight Generics позволяет классам в Objective-C быть параметрируемыми по типу, с которым они работают.
+
 ```ObjectiveC
 NSMutableArray<NSString *> *array = [NSMutableArray array];
-[array addObject:@5];
+[array addObject:@"Some string"];
+
+[array addObject:@5]; 
+// Предупреждение на уровне компиляции, но программа будет успешно выполнена!
 ```
 
-Вызовет предупреждение компилятора, но программа будет успешно выполнена!
 
 <div>
 ```ObjectiveC
@@ -333,16 +644,6 @@ NSSet<NSString *> *set = [NSSet setWithArray:@[@"one", @"two", @"three"]];
 
 --
 
-## NSNull
-
-```ObjectiveC
-[NSNull null]; // синглтон.
-```
-На равенство можно проверять с помощью **==**, но все же лучше использовать *-isEqual:*.
-
-
---
-
 ## Пример
 
 ```ObjectiveC
@@ -362,38 +663,6 @@ NSArray *array = @[xObj, rangeObj, pointerObj, [NSNull null]];
 // получение данных
 NSValue *value = (NSValue *)array[1];
 NSLog(@"%@", value); // NSRange: {10, 3}
-```
-
-
---
-
-## Идентичность и эквивалентность
-
-```ObjectiveC
-obj1 == obj2
-```
-
-проверка, что **obj1** и **obj2** ссылаются на один и тот же объект (<font color="red">**не то, что нам нужно**</font>).
-</br></br>
-<div>
-```ObjectiveC
-[obj1 isEqual:obj2];
-```
-
-проверка, что **obj1** и **obj2** идентичны (<font color="green">**то, что нужно**</font>).
-</div>
-<!-- .element: class="fragment" -->
-
-
---
-
-## Идентичность и эквивалентность
-
-
-```ObjectiveC
-- (BOOL)isEqualToArray:(NSArray *)otherArray;
-- (BOOL)isEqualToDictionary:(NSDictionary *)otherDictionary;
-- (BOOL)isEqualToSet:(NSSet *)otherSet;
 ```
 
 
@@ -690,8 +959,9 @@ NSMutableArray *array = [NSMutableArray arrayWithArray:@[@1, @2, @3]];
 
 ## Задание для самостоятельного изучения
 
-1. Прочитать документацию к NSArray,
-2. Прочитать документацию к NSMutableArray.
+1. [NSArray](https://developer.apple.com/reference/foundation/nsarray)
+2. [NSArray на RyPress](http://rypress.com/tutorials/objective-c/data-types/nsarray)
+2. [NSMutableArray](https://developer.apple.com/reference/foundation/nsmutablearray)
 
 
 ----
@@ -703,9 +973,10 @@ NSMutableArray *array = [NSMutableArray arrayWithArray:@[@1, @2, @3]];
 
 ## NSDictionary
 
-* Структура данных, хранящая пары *ключ:значение*
-* Ключи должны быть различны и должны удовлетворять протоколу **NSCopying**
-* Обычно в качестве ключей берут **NSString**
+* Структура данных, хранящая пары *ключ:значение*.
+* Ключи должны быть различны и должны удовлетворять протоколу **NSCopying**.
+* Обычно в качестве ключей берут **NSString**.
+* Может быть типизированный и нетипизированный.
 
 
 --
@@ -770,8 +1041,9 @@ weather[@"Moscow"] = @-1;
 
 ## Дополнительно
 
-1. Прочитать документацию к NSDictionary,
-2. Прочитать документацию к NSMutableDictionary.
+1. [NSDictionary](https://developer.apple.com/reference/foundation/nsdictionary)
+2. [NSDictionary на RyPress](http://rypress.com/tutorials/objective-c/data-types/nsdictionary)
+2. [NSMutableDictionary](https://developer.apple.com/reference/foundation/nsmutabledictionary)
 
 
 ----
@@ -783,17 +1055,17 @@ weather[@"Moscow"] = @-1;
 
 ## Назначение
 
-* Хранит неупорядоченный набор различных элементов.
-* NSSet - неизменяемые объекты
-* NSMutableSet - изменяемые объекты, можно производить с ними теоретико-множественные операции
+* Используется для хранения неупорядоченного набора различных элементов.
+* `NSSet` - неизменяемые объекты, `NSMutableSet` - изменяемые объекты, можно производить с ними теоретико-множественные операции.
+* Может быть типизированным и нетипизированным.
 
 
 --
 
 ## Использование
 
-* Получить из NSArray и вернуть NSArray со всеми элементами (нельзя рассчитывать на определенный порядок)
-* Проверять утверждения  x∈A, A⊆B и A∩B = ∅
+* Получить из `NSArray` и вернуть `NSArray` со всеми элементами (нельзя рассчитывать на определенный порядок)
+* Проверять утверждения  `x∈A`, `A⊆B` и `A∩B = ∅`
 * Фильтровать
 
 
@@ -909,349 +1181,7 @@ Bugatti */
 
 ----
 
-## NSValue
 
-
---
-
-## Назначение
-
-NSValue представляет собой простой контейнер для C данных и Objective-C и применяется для создания объектов из скалярных данных.
-
-Может хранить что угодно (почти - см. следующий слайд), но в основном используется для хранения struct - для остального есть NSData и NSNumber. 
-
-
---
-
-## Хранить можно не все
-
-Объекты класса NSValue могу размещать данные с постоянной длинной, вы не можете сохранить в объекте C-строки, массивы переменной длины, структуры или другие данные неопределенной длинны.
-
-Следующий код не верен:
-```ObjectiveC
-char *cstring = "This is a string.";  
-NSValue *value = [NSValue value:cstring withObjCType:@encode(char *)]; 
-```
-
-
---
-
-## Получить/вернуть
-
-```ObjectiveC
-– initWithBytes:objCType:
-+ valueWithBytes:objCType:
-
-+ valueWithNonretainedObject:
-+ valueWithPointer:
-+ valueWithPoint:
-+ valueWithRange:
-+ valueWithRect:
-+ valueWithSize:
-
-– getValue:
-– objCType
-
-– nonretainedObjectValue
-– pointerValue
-– pointValue
-– rangeValue
-– rectValue
-– sizeValue
-```
-
-
---
-
-## valueWithBytes:objCType:
-
-```ObjectiveC
-+ (NSValue *)valueWithBytes:(const void *)value objCType:(const char *)type;
-```
-
-Где взять этот самый objCType?
-
-
---
-
-## @encode
-
-В Objective-C у любого типа существует его внутреннее представление в виде строки С. 
-
-Его можно получить с помощью **@encode**
-
-Например, **@encode(id) == <font color="red">"@"</font>**
-
-
---
-
-## getValue:
-
-```ObjectiveC
-- (void)getValue:(void *)value;
-```
-
-Копирует значение в заданный буфер. Он должен быть достаточно большого размера.
-
-
---
-
-## Пример
-
-```ObjectiveC
-typedef struct Str {
-	int x;
-	char y;
-} MyStruct;
-MyStruct s = (MyStruct){.x = 100, .y = 'x'};
-NSValue *val = [NSValue value:&s withObjCType:@encode(MyStruct)];
-	
-MyStruct s2;
-[val getValue:&s2];
-	
-NSLog(@"%i, %c", s2.x, s2.y);
-```
-
-
---
-
-## Полезные методы
-
-```ObjectiveC
-+ valueWithPoint: // для CGPoint
-+ valueWithRange: // для NSRange
-+ valueWithRect: // для CGRect
-+ valueWithSize: // для CGSize
-
-– pointValue
-– pointerValue
-– rangeValue
-– rectValue
-```
-
-
---
-
-## Дополнительно
-
-[NSValue на NSHipster](http://nshipster.com/nsvalue/)
-
-[Type Encodings на NSHipster](http://nshipster.com/type-encodings/)
-
-[NSValue в документации Apple](https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/NumbersandValues/NumbersandValues.pdf)
-
-
-----
-
-## NSNumber
-
-
---
-
-## Назначение
-
-Класс NSNumber является подклассом NSValue, объекты которого позволяют хранить значения скалярных числовых типов языка С. 
-
-
---
-
-## Создание NSNumber
-
-```ObjectiveC
-NSNumber *pi = [NSNumber numberWithFloat:3.1415];
-NSNumber *e = [NSNumber numberWithFloat:2.71];
-```
-
-Долго и нудно :)
-
-
---
-
-## Создание NSNumber по-новому 
-
-```ObjectiveC
-NSNumber *pi = @3.1415;
-NSNumber *e = @2.71;
-	
-NSNumber *ePlusPi = @(3.1415 + 2.71);
-```
-
-на самом деле, тут продолжает вызываться
-метод *numberWithFloat:* или подобный, просто
-теперь компилятор это делает сам
-
-
---
-
-## Получить число
-
-```ObjectiveC
-- (char)charValue;
-- (unsigned char)unsignedCharValue;
-- (short)shortValue;
-- (unsigned short)unsignedShortValue;
-- (int)intValue;
-- (unsigned int)unsignedIntValue;
-- (long)longValue;
-- (unsigned long)unsignedLongValue;
-- (long long)longLongValue;
-- (unsigned long long)unsignedLongLongValue;
-- (float)floatValue;
-- (double)doubleValue;
-- (BOOL)boolValue;
-- (NSInteger)integerValue NS_AVAILABLE(10_5, 2_0);
-- (NSUInteger)unsignedIntegerValue NS_AVAILABLE(10_5, 2_0);
-- (NSString *)stringValue;
-```
-
-
---
-
-## Дополнительные методы
-
-Также NSNumber можно сравнивать
-```ObjectiveC
-- (NSComparisonResult)compare:(NSNumber *)otherNumber;
-- (BOOL)isEqualToNumber:(NSNumber *)number;
-```
-
-
---
-
-## Вопрос
-
-```ObjectiveC
-NSNumber *pi = @3.1415;
-NSLog(@"%?", pi);
-```
-
-Какой format specifier нужно подставить вместо <font color="green">**%?**</font> ?	
-
-<fragment>
-Нужно использовать <font color="red">**%@**</font>, так как NSNumber — это объект.
-</fragment>
-<!-- .element: class="fragment" data-fragment-index="3" -->
-
-
---
-
-## Задания
-
-1. Узнать, что такое **NS_AVAILABLE**
-2. Что будет, если поместить в NSNumber число одного типа, а обратно пытаться получить другое?
-```ObjectiveC
-NSNumber *e = @2.71;
-[e intValue];
-[e boolValue];
-```
-3. Почитать про NSDecimalNumber
-
-[NSDecimalNumber на RyPress](http://rypress.com/tutorials/objective-c/data-types/nsdecimalnumber.html)
-
-
-----
-
-## NSData + NSMutableData
-
-
---
-
-## NSData
-
-NSData - представляет собой объект Cocoa для работы с бинарными данными.
-Многие методы для работы с интернетом возвращают **NSData** в качестве результата.
-
-
---
-
-## bytes & length
-
-В целом **NSData** — это указатель на данные *bytes* и размер данных *length* (в байтах).
-
-```ObjectiveC
-- (id)initWithBytes:(const void *)bytes
-    length:(NSUInteger)length;
-
-- (NSUInteger)length;
-- (const void *)bytes NS_RETURNS_INNER_POINTER;
-```
-
-
---
-
-## Пример
-
-```ObjectiveC
-int x = 2014;
-NSData *data = [NSData dataWithBytes:&x length:sizeof(x)];
-NSLog(@"%@", data); // de070000
-```
-
-
---
-
-## Инициализация NSData
-
-```ObjectiveC
-- (id)initWithBytes:(const void *)bytes length:(NSUInteger)length;
-- (id)initWithBytesNoCopy:(void *)bytes length:(NSUInteger)length;
-- (id)initWithBytesNoCopy:(void *)bytes
-    length:(NSUInteger)length
-    freeWhenDone:(BOOL)b;
-- (id)initWithContentsOfFile:(NSString *)path
-    options:(NSDataReadingOptions)readOptionsMask
-    error:(NSError **)errorPtr;
-- (id)initWithContentsOfURL:(NSURL *)url
-    options:(NSDataReadingOptions)readOptionsMask
-    error:(NSError **)errorPtr;
-- (id)initWithContentsOfFile:(NSString *)path;
-- (id)initWithContentsOfURL:(NSURL *)url;
-- (id)initWithData:(NSData *)data;
-```
-
-
---
-
-## Сохранение в файл/URL
-
-```ObjectiveC
-- (BOOL)writeToFile:(NSString *)path atomically:(BOOL)useAuxiliaryFile;
-- (BOOL)writeToURL:(NSURL *)url atomically:(BOOL)atomically;
-- (BOOL)writeToFile:(NSString *)path
-    options:(NSDataWritingOptions)writeOptionsMask
-    error:(NSError **)errorPtr;
-- (BOOL)writeToURL:(NSURL *)url
-    options:(NSDataWritingOptions)writeOptionsMask
-    error:(NSError **)errorPtr;
-```
-
-
---
-
-## Поиск/получение подданных
-
-```ObjectiveC
-- (NSRange)rangeOfData:(NSData *)dataToFind
-    options:(NSDataSearchOptions)mask
-    range:(NSRange)searchRange;
-
-- (NSData *)subdataWithRange:(NSRange)range;
-```
-
-
---
-
-## NSDataSearchOptions
-
-```ObjectiveC
-typedef NS_OPTIONS(NSUInteger, NSDataSearchOptions) {
-	NSDataSearchBackwards = 1UL << 0,
-	NSDataSearchAnchored = 1UL << 1
-};
-```
-
-
-----
 
 ## NSDate
 
@@ -1470,7 +1400,8 @@ NSException *myException = [[NSException alloc] initWithName:@"ExceptionName"
 ## О чем будем говорить
 
 * Object Subscripting
-* NSCopying, isEqual:, hash
+* NSCopying,
+* Equality & Identity, -isEqual:, -hash
 
 
 --
@@ -1540,7 +1471,7 @@ NSLog(@"%@", [dictionary objectForKeyedSubscript:@2]);
 - (void)setObject:(id)obj forKeyedSubscript:(id <NSCopying>)key;
 ```
 
-чтобы использовать удобный синтаксис, реализуйте один или несколько методов из приведенных выше
+Чтобы использовать удобный синтаксис, реализуйте один или несколько методов из приведенных выше.
 
 
 --
@@ -1558,12 +1489,12 @@ NSLog(@"%@", [dictionary objectForKeyedSubscript:@2]);
 
 **NSCopying** протокол объявляет метод для обеспечения функциональной копии объекта. Точное значение "копии" может варьироваться от класса к классу, но копия должна быть функционально самостоятельным объектом со значениями идентичными оригинальным на момент создания копии.
 
-**NSString** и **NSNumber** поддерживают этот протокол. А как реализовать его в своем классе?
-
 
 --
 
-## Единственный метод
+## protocol NSCopying
+
+`NSCopying` объявляет один метод, `-copyWithZone:`, но копирование обычно вызывается удобным методом `copy`. Метод `copy` определен для всех объектов, наследуемых от `NSObject` и просто вызывает `-copyWithZone:` с зоной по умолчанию.
 
 ```ObjectiveC
 @protocol NSCopying
@@ -1576,7 +1507,7 @@ NSLog(@"%@", [dictionary objectForKeyedSubscript:@2]);
 
 --
 
-## Как реализовать?
+## Детали реализация
 
 * Если суперкласс поддерживает **NSCopying**, вызывайте *[super copyWithZone:zone]*;
 * Если нет, используйте *alloc-init*
@@ -1620,10 +1551,40 @@ NSLog(@"%@", [dictionary objectForKeyedSubscript:@2]);
 
 --
 
+## Идентичность и эквивалентность
+
+- Идентичность. Два объекта могут быть идентичными друг другу, если они указывают на тот же адрес памяти.
+
+
+```ObjectiveC
+obj1 == obj2
+```
+
+- Эквивалентность. Два объекта могут быть одинаковыми или эквивалентными друг другу, если они имеют общий набор наблюдаемых свойств.
+
+```ObjectiveC
+[obj1 isEqual:obj2];
+```
+
+--
+
+## Идентичность и эквивалентность
+
+```ObjectiveC
+- (BOOL)isEqual:(NSObject *)otherObject;
+- (BOOL)isEqualToArray:(NSArray *)otherArray;
+- (BOOL)isEqualToDictionary:(NSDictionary *)otherDictionary;
+- (BOOL)isEqualToSet:(NSSet *)otherSet;
+- (BOOL)isEqualToString:(NSString *)otherString;
+```
+
+
+--
+
 ## Равенство объектов
 
 Есть много ситуаций, когда требуется проверить, равны объекты или нет. Например:
-* когда добавляем пару ключ:значение в dictionary
+* когда добавляем пару ключ:значение в `dictionary`
 * когда добавляем элемент в множество
 * когда ищем объект (*indexOfObject:* у *NSArray*)
 
@@ -1656,7 +1617,7 @@ NSLog(@"%@", [dictionary objectForKeyedSubscript:@2]);
 Т.е. объект эквивалентен только сам себе.
 
 Если это не то, что мы хотим, нужно самому переопределить этот метод.
-Но нужно помнить, что если объекты равные по результату вызова isEqual:, то они должны возвращать одинаковые значения  при вызове hash.
+Но нужно помнить, что если объекты равные по результату вызова `-isEqual:`, то они должны возвращать одинаковые значения при вызове `hash`.
 
 
 --
@@ -1670,26 +1631,16 @@ NSLog(@"%@", [dictionary objectForKeyedSubscript:@2]);
 
 --
 
-
-
-## Как реализовать их самому?
-
-На эту тему есть [хорошая статья](https://www.mikeash.com/pyblog/friday-qa-2010-06-18-implementing-equality-and-hashing.html).
-
-
---
-
-## Если коротко
-
-<li> *isEqual:* — обычно достаточно проверить на равенство все свойства:</li>
+## Простая реализация
 
 ```ObjectiveC
-- (BOOL)isEqual:(id)other
-{
+- (BOOL)isEqual:(id)other {
+	if (other == self) {
+		return YES;
+	}
 	if (![other isKindOfClass:[self class]]) {
     	return NO;
-    }
-	
+   }
 	return ([other.name isEqualToString:self.name] &&
 		[other.surname isEqualToString:self.surname] &&
 		other.age == self.age);
@@ -1705,9 +1656,6 @@ NSLog(@"%@", [dictionary objectForKeyedSubscript:@2]);
 ```
 
 
-(Однако это может быть не самый лучший способ — см. статью)
-
-
 --
 
 ## И самое главное
@@ -1721,18 +1669,7 @@ NSLog(@"%@", [dictionary objectForKeyedSubscript:@2]);
 
 [Object Subscripting](http://nshipster.com/object-subscripting/)
 
+[Equality](http://nshipster.com/equality)
+
 [Implementing Equality and Hashing](https://www.mikeash.com/pyblog/friday-qa-2010-06-18-implementing-equality-and-hashing.html)
-
-
-
-
-
-
-
-
-
-
-
-
-
 
