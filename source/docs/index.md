@@ -2,6 +2,7 @@
 
 Онлайн-презентации
 
+* [0. Intro](docs/lecture_0.html)
 * [1. Objective-C](docs/lecture_1.html)
 * [2. Шаблоны ООП](docs/lecture_2.html)
 * [3. Управление памятью](docs/lecture_3.html)
