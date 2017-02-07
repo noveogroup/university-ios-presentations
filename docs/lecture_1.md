@@ -19,7 +19,7 @@
 
 * объектно-ориентированный язык
 * включает все возможности C
-* богатый runtime
+* богатый runtime. "The runtime is the implementation of the syntatic 'objective' sugar on top of C"
 * язык поддерживается CLang и GCC
 * платформонезависимый
 * Objective-C++ (взаимодействие Objective-C и C++ кода с некоторыми ограничениями)
@@ -107,7 +107,7 @@ implementation-файлы содержат **реализации** методо
 
 Объявление класса, реализующего протокол:
 
-    @interface Number : NSObject <Printable>
+    @interface Number : NSObject <Printable, Drawable>
         ...
     @end
 
@@ -129,6 +129,12 @@ implementation-файлы содержат **реализации** методо
 Можно добавить методы, не прибегая к наследованию.
 
 Категорий может быть несколько.
+
+<fragment>
+Обычно, файлы с объявлением и реализацией категории выглядят как `Number+Formatting.h`
+</fragment>
+<!-- .element: class="fragment" -->
+
 
 
 ----
@@ -174,6 +180,23 @@ implementation-файлы содержат **реализации** методо
         Number *number_A;
         Number *number_B;
     ...
+
+
+----
+
+## Культура .h-файлов
+
+Вместо 
+    
+```
+    #import "Number.h"
+```
+
+лучше по возможности использовать 
+
+```
+    @class Number;
+```
 
 
 ----
@@ -411,7 +434,7 @@ implementation-файлы содержат **реализации** методо
 
 ## Объекты в Objective-C
 
-`ClassName *p` — указатель на объект конкретного класса
+`ClassName *p` — указатель на объект конкретного класса (`NSObject *`, `Number *`)
 
 `self` — указатель на текущий объект (у которого вызван метод), аналог `this`
 
@@ -478,8 +501,12 @@ implementation-файлы содержат **реализации** методо
 Обращение к полю:
 
 ```ObjectiveC
-	Number *number = ...;
-	number->publicIVar = 8;
+    publicIvar = 4;
+```
+
+```ObjectiveC
+    Number *number = ...;
+    number->publicIvar = 8;
 ```
 
 
@@ -558,6 +585,21 @@ implementation-файлы содержат **реализации** методо
 @property (nonatomic, readonly) int c;
 @property (nonatomic, copy) NSString *s;
 @end
+```
+
+
+----
+
+## Поля и свойства объекта
+
+```ObjectiveC
+    @property NSNumber *number;
+```
+
+Эквивалентно
+
+```ObjectiveC
+    @property (atomic, strong, readwrite) NSNumber *number;
 ```
 
 
@@ -701,5 +743,21 @@ for (id object in array) {
 	if ([object isKindOfClass:[Circle class]]) {
 		[object performSelector:@selector(draw)];
 	}
+    if ([object isMemberOfClass:[Circle class]]) {
+        [((Circle *)object) draw]
+    }
 }
 ```
+
+
+----
+
+## Богатые возможности runtime
+
+* Вызов метода просто по строке: `[number performSelector:NSSelectorFromString(@"someString")]`
+* Получить список полей класса: `class_copyPropertyList(...)`
+* [Associated objects](http://nshipster.com/associated-objects/) 
+* [Method swizzling](http://nshipster.com/method-swizzling/)
+* [Class swizzling/generation](https://github.com/Inferis/Objective-C-Runtime/tree/master/example%20code)
+<!-- .element: class="fragment" -->
+
