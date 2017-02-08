@@ -69,14 +69,14 @@ NSString *anotherMessage =
 // Previous message was 'Today is year 2017'
 ```
 
-Самый часто используемый метод у строк
+Самый часто используемый метод у строк.
 
 
 --
 
 ## Спецификаторы формата (format specifier)
 
-Точно такие же, как у `printf` + <font color="red">`%@`</font> для объектов
+Точно такие же, как у `printf` + <font color="red">`%@`</font> для объектов.
 
 Основные:
 * <font color="blue">`%d`</font>, <font color="blue">`%i`</font> - для `int`
@@ -95,7 +95,7 @@ typedef struct _NSRange {
 } NSRange;
 ```
 
-**NSRange** используется для описания непрерывного интервала целых чисел. Наиболее часто используется со строками, массивами, упорядоченными коллекциями для замены элементов или поиска вхождений. Если ничего найти не удалось, будет возвращено **NSNotFound** в `location`
+**NSRange** используется для описания непрерывного интервала целых чисел. Наиболее часто используется со строками, массивами, упорядоченными коллекциями для замены элементов или поиска вхождений. Если ничего найти не удалось, будет возвращено **NSNotFound** в `location`.
 
 
 --
@@ -124,7 +124,7 @@ unichar ch = [@"Abcdef" characterAtIndex:3];
 NSLog(@"%c", ch); // d
 ```
 
-Довольно редко используются
+Довольно редко используются.
 
 
 --
@@ -144,7 +144,7 @@ NSString *otherFullName = [[fullName stringByReplacingOccurrencesOfString:surnam
 // Steven King
 ```
 
-Методы, создающие новую строку из имеющейся, обычно начинаются со `stringBy...`
+Методы, создающие новую строку из имеющейся, обычно начинаются со `stringBy...`..
 
 
 --
@@ -261,9 +261,9 @@ NSString *st = [[NSMutableString alloc] initWithString:@"Mutable string"];
 
 В Objective-C у любого типа существует его внутреннее представление в виде строки С. 
 
-Его можно получить с помощью **@encode**
+Его можно получить с помощью **@encode**.
 
-Например, **@encode(id) == <font color="red">"@"</font>**
+Например, **@encode(id) == <font color="red">"@"</font>**.
 
 
 --
@@ -574,6 +574,22 @@ typedef NS_OPTIONS(NSUInteger, NSDataSearchOptions) {
 ----
 
 
+## NSNull
+
+Класс `NSNull` представляет из себя контейнер для `NULL` или `nil`, применяется для его размещения в коллекциях и др., которые не позволяют размещать `NULL/nil` значения в явном виде.
+
+У класса есть единственный метод:
+
+```ObjectiveC
++ (NSNull *)null; // синглтон
+```
+
+Более подробно о `nil, Nil, NULL, NSNull` можно узнать [в статье](http://nshipster.com/nil/)
+
+
+
+----
+
 
 ## Коллекции
 
@@ -587,7 +603,7 @@ typedef NS_OPTIONS(NSUInteger, NSDataSearchOptions) {
 * Основные: <font color="red">`NSArray`</font>, <font color="red">`NSDictionary`</font>, <font color="red">`NSSet`</font>
 * Специализированные: `NSCountedSet`, `NSOrderedSet`, `NSIndexSet`, `NSCharacterSet`
 * Могут быть изменяемые <i>mutable</i> и неизменяемые <i>immutable</i>
-* Могут быть типизированные и нетипизированные <i>(`NSArray < NSString \*>`, `NSDictionary< Car \*>`, `NSSet< UIView \*>`)</i>
+* Могут быть типизированные и нетипизированные <i>(`NSArray < NSString *>`, `NSDictionary< Car *>`, `NSSet< UIView *>`)</i>
 
 
 --
@@ -640,10 +656,10 @@ NSSet<NSString *> *set = [NSSet setWithArray:@[@"one", @"two", @"three"]];
 
 ## Как поместить в коллекцию нечто, что не является Objective-C объектом?
 
-* число (`int, float, BOOL, NSInteger, …`) - используем <font color="blue">`NSNumber`</font>
+* Число (`int, float, BOOL, NSInteger, …`) - используем <font color="blue">`NSNumber`</font>.
 * `C struct` - <font color="blue">`NSValue`</font>
-* бинарные данные (`void *`) - <font color="blue">`NSData`</font>
-* отсутствие данных (`nil`) - <font color="blue">`NSNull`</font>
+* Бинарные данные (`void *`) - <font color="blue">`NSData`</font>.
+* Отсутствие данных (`nil`) - <font color="blue">`NSNull`</font>.
 
 
 --
@@ -688,7 +704,7 @@ NSLog(@"%@", value); // NSRange: {10, 3}
 
 ## Создание массивов
 
-Создание нетипизированного массива.
+Создание нетипизированного массива
 ```ObjectiveC
 NSArray *array = @[@1, @"Objective-C"];
 NSArray *array2 = [NSArray arrayWithArray:array];
@@ -696,7 +712,7 @@ NSArray *array3 = [[NSArray alloc] initWithArray:array];
 ```
 
 <div>
-Создание типизированного массива.
+Создание типизированного массива
 ```ObjectiveC
     NSArray<NSString *> *array = @[@1, @"Objective-C"];
     NSArray<NSObject *> *array2 = [NSArray arrayWithArray:array];
@@ -715,9 +731,9 @@ NSArray *array3 = [[NSArray alloc] initWithArray:array];
 
 ## Создание нового массива на основе имеющегося
 
-* Дополнить имеющийся массив
-* Получить подмассив из имеющегося массива
-* Сортировать имеющийся массив
+* Дополнить имеющийся массив.
+* Получить подмассив из имеющегося массива.
+* Сортировать имеющийся массив.
 
 
 --
@@ -798,7 +814,7 @@ typedef NS_ENUM(NSInteger, NSComparisonResult) {
 	passingTest:(BOOL (^)(id obj, NSUInteger idx, BOOL *stop))predicate;
 ```
 
-\+ еще несколько методов
+\+ еще несколько методов.
 
 
 --
@@ -828,9 +844,9 @@ typedef NS_ENUM(NSInteger, NSComparisonResult) {
 
 ## Перебор элементов коллекции
 
-* В обычном цикле (подходит для массивов)
-* С помощью цикла `for-in` (fast enumeration)
-* С помощью блока
+* В обычном цикле (подходит для массивов).
+* С помощью цикла `for-in` (fast enumeration).
+* С помощью блока.
 
 
 --
@@ -856,7 +872,7 @@ for (NSString *city in cities) {
 }
 ```
 
-Ограничение: не поддерживает индексацию
+Ограничение: не поддерживает индексацию.
 
 
 --
@@ -1007,7 +1023,7 @@ for (NSString *city in weather) {
 [weather allKeys];
 [weather allValues];
 ```
-Обратите внимание, что их порядок не обязан совпадать
+Обратите внимание, что их порядок не обязан совпадать.
 
 
 --
@@ -1068,9 +1084,9 @@ weather[@"Moscow"] = @-1;
 
 ## Использование
 
-* Получение из `NSArray` и возвращение `NSArray` со всеми элементами (нельзя рассчитывать на определенный порядок)
-* Проверка утверждения  `x∈A`, `A⊆B` и `A∩B = ∅`
-* Фильтрация
+* Получение из `NSArray` и возвращение `NSArray` со всеми элементами (нельзя рассчитывать на определенный порядок).
+* Проверка утверждения  `x∈A`, `A⊆B` и `A∩B = ∅`.
+* Фильтрация.
 
 
 --
@@ -1204,9 +1220,9 @@ Bugatti */
 
 ## Операции, доступные для NSDate
 
-* Сравнение дат
-* Преобразование даты в строку
-* Изменение даты
+* Сравнение дат.
+* Преобразование даты в строку.
+* Изменение даты.
 
 
 --
@@ -1274,7 +1290,7 @@ NSDate *tomorrowDate = [currentDate dateByAddingTimeInterval:dayInterval];
 ## Ошибки бывают двух видов
 
 
-1. Ошибки программирования, например, деление на 0, выход за границы массива, ...
+1. Ошибки программирования, например, деление на 0, выход за границы массива, …
 </br>**NSException**
 
 2. Проблемы пользовательского уровня, например, не удалось загрузить файл, не удалось создать объект, …
@@ -1292,7 +1308,7 @@ NSString *yandexString = [NSString stringWithContentsOfURL:yandex
 	encoding:NSUTF8StringEncoding error:&error];
 ```
 
-**NSError** всегда передается как указатель на указатель
+**NSError** всегда передается как указатель на указатель.
 
 
 --
@@ -1405,7 +1421,7 @@ NSException *myException = [[NSException alloc] initWithName:@"ExceptionName"
 ## О чем будем говорить
 
 * Object Subscripting
-* NSCopying,
+* NSCopying
 * Equality & Identity, -isEqual:, -hash
 
 
@@ -1484,8 +1500,8 @@ NSLog(@"%@", [dictionary objectForKeyedSubscript:@2]);
 ## NSCopying
 
 Мы его уже встречали 2 раза:
-* На прошлом слайде
-* У **NSDictionary** ключ должен удовлетворять **NSCopying**
+* На прошлом слайде.
+* У **NSDictionary** ключ должен удовлетворять **NSCopying**.
 
 
 --
@@ -1514,9 +1530,9 @@ NSLog(@"%@", [dictionary objectForKeyedSubscript:@2]);
 
 ## Детали реализация
 
-* Если суперкласс поддерживает **NSCopying**, вызывайте `[super copyWithZone:zone]`;
-* Если нет, используйте `alloc-init`
-* Если объект в принципе неизменяемый, можно вернуть `self`
+* Если суперкласс поддерживает **NSCopying**, вызывайте `[super copyWithZone:zone]`.
+* Если нет, используйте `alloc-init`.
+* Если объект в принципе неизменяемый, можно вернуть `self`.
 
 
 --
@@ -1533,7 +1549,7 @@ NSLog(@"%@", [dictionary objectForKeyedSubscript:@2]);
  
 @implementation Person
  
-- (id)copyWithZone:(NSZone *)zone {
+- (instancetype)copyWithZone:(NSZone *)zone {
 	Person *personCopy = [[Person alloc] init];
 	personCopy->_name = [self.name copy];
 	personCopy->_surname = [self.surname copy];
@@ -1572,6 +1588,7 @@ obj1 == obj2
 [obj1 isEqual:obj2];
 ```
 
+
 --
 
 ## Идентичность и эквивалентность
@@ -1590,9 +1607,9 @@ obj1 == obj2
 ## Равенство объектов
 
 Есть много ситуаций, когда требуется проверить, равны объекты или нет. Например:
-* когда добавляем пару ключ:значение в `dictionary`
-* когда добавляем элемент в множество
-* когда ищем объект (`indexOfObject:` у `NSArray`)
+* когда добавляем пару ключ:значение в `dictionary`,
+* когда добавляем элемент в множество,
+* когда ищем объект (`indexOfObject:` у `NSArray`).
 
 
 --
