@@ -78,6 +78,13 @@
 
 ----
 
+## Полезная информация
+
+Стиль кодирования и другая полезная информация доступны в [репозитории](https://gitlab.school.noveogroup.com/iOS/helpful-info)
+
+
+----
+
 ## Кураторы:
 
 * Семён Игнатов: [**@signatov**](https://noveo-ios-2017w.slack.com/messages/@signatov/), room 15
