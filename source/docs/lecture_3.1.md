@@ -1,8 +1,6 @@
-# 3 Управление памятью
+# 2 Основы управления памятью, блоки
 
 ### Noveo University — iOS
-
-#### Дмитрий Горев
 
 
 ----
@@ -10,8 +8,8 @@
 ## Сегодня
 
 * Основы управления памятью
-* Manual Retain-Release
 * Automatic Reference Counting
+* Блоки
 
 
 ----
@@ -65,11 +63,6 @@
 
 ----
 
-# Manual Retain-Release
-
-
-----
-
 ## Основные положения
 
 * Управление памятью объектов базируется на объектом "владении" (ownership)
@@ -82,65 +75,7 @@
 
 ## Объектный граф
 
-![](lecture_3_img/Graph_3.png)
-
-
-----
-
-## Основные положения
-
-* Вы владеете любым объектом, который создаете (методами `alloc`, `new`, `copy`, `mutableCopy`)
-* Вы можете стать владельцем объекта (сохранив его от преждевременного уничтожения), вызвав его метод `retain`
-* Когда объект вам больше не нужен, вы отпускаете его методом `release` или `autorelease`
-* Вы не должны отказываться от владения объектом если вы его не создавали
-* Вы не владеете объектами, возвращенными по ссылке
-
-
-----
-
-## Кто такие "вы"?
-
-* Подпрограмма
-  * Метод объекта
-  * Метод класса
-  * Функция
-* Объект
-  * ivar
-
-
-----
-
-## Пример
-
-```
-  Pupil *aPupil = [[Pupil alloc] init];
-  // ...
-  NSString *name = aPupil.name;
-  // ...
-  [aPupil release];
-  aPupil = nil;
-```
-
-```
-  - (NSString *)fullName
-  {
-    NSString *fullName = 
-      [[[NSString alloc] initWithFormat:@”%@ %@”,
-      self.surname, self.name] autorelease];
-
-    return fullName;
-  }
-```
-
-
-----
-
-## Под капотом
-
-* Выделение памяти под объект (и его переменные) происходит в методе класса `alloc`
-* Высвобождение памяти и ресурсов происходит в методе объекта `dealloc`
-* Каждый объект имеет свойство-счетчик ссылок (счетчик владельцев) `retainCount`
-* Объект умирает (вызывается метод `dealloc`) когда счетчик ссылок достигает нуля
+![](lecture_3.1_img/Graph_3.png)
 
 
 ----
@@ -175,392 +110,98 @@ NSMutableArray *arrayCopy = [array mutableCopy]; //1
 
 ----
 
-## Владение объектами в пределах подпрограммы
-
-* Создаем объекты когда они нужны
-* Освобождаем когда они больше не нужны
-* Отложенно освобождаем для возвращения "наверх"
+## Используя ARC, вам не нужно заниматься ручным управлением памяти!
 
 
 ----
 
-## Пример
+## ARC
 
-```ObjectiveC
-- (NSString *)getTimeOfDate:(NSDate *)date
-{
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    dateFormatter.date = @"hh:mm";
-    NSString *dateString = [dateFormat stringFromDate:date];
-    [dateFormat release];
+Концептуально - это то же ручное управление, но:
 
-    return dateString;
-}
-```
-Упрощенный вариант
-```ObjectiveC
-- (NSString *)getTimeOfDate:(NSDate *)date
-{
-    NSDateFormatter *dateFormatter = [[[NSDateFormatter alloc] init] autorelease];
-    dateFormatter.date = @"hh:mm";
-    return [dateFormat stringFromDate:date];
-}
-```
+* Вызовы `retain`, `release`, `autorelease` добавляются автоматически на этапе компиляции. Прямые вызовы этих методов запрещены.
+* Автоматически формируется метод `dealloc`. Вызов `super dealloc` запрещен.
+* Объект существует ровно столько, сколько необходимо, но не более того.
+* ARC не запускает дополнительных фоновых процессов в runtime. 
+* **ARC не решает проблему циклических ссылок (retain cycle)**
 
 
 ----
 
-## Пример
+## ARC
 
-```ObjectiveC
-NSString *appendNewLineToString(NSString *string)
-{
-    NSString *result = [[NSString alloc] initWithFormat:@"%@\n", string];
-    [result autorelease];
-    return result;
-}
-```
-Упрощенный вариант
-```ObjectiveC
-NSString *appendNewLineToString(NSString *string)
-{
-    return [[[NSString alloc] initWithFormat:@"%@\n", string] autorelease];
-}
-```
-Еще проще
-```ObjectiveC
-NSString *appendNewLineToString(NSString *string)
-{
-    return [NSString stringWithFormat:@"%@\n", string];
-}
-```
+Ссылки бывают:
+
+* Сильные (strong) - означает "владею". Увеличивате счетчик ссылок.
+* Слабые (weak, assign, unsafe_unretained) - означает "интересуюсь". **Не** увеличивает счетчик ссылок.
+
+По умолчанию все ссылки сильные.
 
 
 ----
 
-## Пример
+## ARC - пример
 
 ```ObjectiveC
-NSError *error = nil;
-NSString *string =
-    [[NSString alloc]
-        initWithContentsOfFile:fileName encoding:NSUTF8StringEncoding error:&error];
-if (error) {
-    //error processing
-}
-//...
-[string release];
+@interface Creature : NSObject
+
+@property (nonatomic, strong) NSNumber *calories;
+@property (nonatomic, strong) NSArray<Creature *> *stomach;
+@property (nonatomic, strong) Creature *devourer;
+
+@end
 ```
 
+Циклическая зависимость<!-- .element: class="fragment" data-fragment-index="1" -->
 
-----
-
-## Управление памятью в пределах объекта
-
-Для грамотного владения объектом нужно:
-* Создать объект либо завладеть объектом, полченным извне
-* Сохранить ссылку на объект в переменной объекта-владыки
-* Освободить объект и занулить ссылку когда он больше не нужен
+![](lecture_3.1_img/l3.1_retain_cycle.png)<!-- .element: class="fragment" data-fragment-index="1" -->
 
 
 ----
 
-## Пример
+## ARC - пример
+
+Creatue не владеет своим пожирателем!
 
 ```ObjectiveC
-@interface Person : NSObject {
-    NSString *_lastName;
-}
+@interface Creature : NSObject
+
+@property (nonatomic, strong) NSNumber *calories;
+@property (nonatomic, strong) NSArray<Creature *> *stomach;
+@property (nonatomic, weak) Creature *devourer;
+
+@end
+```
+
+![](lecture_3.1_img/l3.1_weak_ref.png)
+<!-- .element: class="fragment" -->
+
+
+----
+
+## Циклические ссылки
+
+Но и созданиями в своём желудке он тоже не владеет
+
+```ObjectiveC
+@class Creature;
+
+@interface CreatureWeakWrapper : NSObject
+@property (nonatomic, weak) Creature *creature;
 @end
 
-@implementation Person
+@interface Creature : NSObject
 
-- (void)setLastName:(NSString *)lastName
-{
-    [lastName retain];
-    [_lastName release];
-    _lastName = lastName;
-}
-
-- (NSString *)lastName
-{
-    return _lastName
-}
+@property (nonatomic, strong) NSNumber *calories;
+@property (nonatomic, strong) NSArray<CreatureWeakWrapper *> *stomach;
+@property (nonatomic, weak) Creature *devourer;
 
 @end
 ```
 
 
-----
-
-## То же самое
-
-```ObjectiveC
-@interface Person : NSObject {
-    NSString *_lastName;
-}
-@property (retain) NSString *lastName;
-@end
-
-@implementation Person
-@synthesize lastName = _lastName;
-@end
-```
-Еще проще (c XCode 4.4)
-```ObjectiveC
-@interface Person : NSObject
-@property (retain) NSString *lastName;
-@end
-
-@implementation Person
-@end
-```
-
-
-----
-
-## Пример
-
-```ObjectiveC
-@interface Person : NSObject
-@property (retain) NSString *firstName;
-@property (retain) NSString *lastName;
-@end
-
-@implementation Person
-
-- (void)setNewFirstName:(NSString *)firstName lastName:(NSString *)lastName
-{
-    self.firstName = firstName;
-    self.lastName = lastName;
-}
-
-@end
-```
-
-
-----
-
-## dealloc
-
-* Вызывается системой когда объект умирает (больше не имеет владельцев)
-* Вручную нельзя вызывать
-* Служит для освобождения всех объектов-рабов и ресурсов
-* Где-то в `[NSObject dealloc]` (или рядом) происходит низкоуровневое высвобождение памяти, отведенной под объект и его переменные
-* Реализация метода должна высвободить внутренние объекты (по ссылкам-переменным, объявленным в классе), и вызвать `[super dealloc]`
-* Не стоит использовать сеттеры и геттеры
-* Нельзя помещать код, управляющий системными ресурсами
-
-
-----
-
-## Пример
-
-```ObjectiveC
-@interface ExtendedPerson : Person
-@property (retain) NSNumber *age;
-@property (retain) NSDate *birthDate;
-@end
-
-@implementation ExtendedPerson
-
-- (void)dealloc
-{
-    [_age release];
-    _age = nil;
-    [_birthDate release];
-    _birthDate = nil;
-    [super dealloc];
-}
-
-@end
-```
-
-
-----
-
-## Типичные ошибки
-
-* Неуравновешенное колчество вызовов методов создания+владения и освобождения
-  * Обращением к мертвым объектам - зомби
-  * Бессмертные объекты (и их подчиненные) - утечки памяти
-* Циклические неуправляемые сильные связи
-
-
-----
-
-## Классификаторы времени жизни
-
-К свойствам объектов применимы следующие классификаторы
-* `assign` (по умолчанию для объектов, единственный вариант для скалярных типов)
-* `retain`
-* `copy`
-
-А также
-* `readwrite`
-* `readonly`
-
-
-----
-
-## Пример
-
-```ObjectiveC
-- (void)setRetainString:(NSString *)string
-{
-    [_retainString release];
-    _retainString = [string retain];
-}
-
-- (void)setCopyString:(NSString *)string
-{
-    [_copyString release];
-    _copyString = [string copy];
-}
-
-- (void)setAssignString:(NSString *)string
-{
-    _assignString = string;
-}
-```
-
-
-----
-
-## "Слабое" связывание объектов
-
-* Классификатор `assign`
-* Решает проблему циклических ссылок
-* Не оказывает влияния на счетчик ссылок
-
-
-----
-
-## Пример
-
-![](lecture_3_img/Graph_4.png)
-
-
-----
-
-## Пример
-
-![](lecture_3_img/Graph_3.png)
-
-
-----
-
-## Граф объектов приложения
-
-![](lecture_3_img/Graph_2_1.png)
-
-
-----
-
-# Autorelease Pools
-
-
-----
-
-## Autorelease pools
-
-* Механизм, предоставляющий возможность отказаться от прав владения объектом, избегая немедленного высвобождения памяти
-* Все объекты, получившие сообщение `autorelease`, остаются в памяти до тех пор, пока жив pool, в котором объект получил это сообщение
-
-
-----
-
-## Autorelease pools
-
-Обычно вам не нужно создавать подобного рода объекты, за исключением нескольких особых случаев
-* Приложение, которое не базируется на UI framework
-* Цикл, порождающий множество временных объектов
-* Многопоточное приложение: каждый новый поток должен иметь собственный `autorelease pool` к моменту запуска.
-
-
-----
-
-## Принцип действия
-
-* `Autorelease pool` Запоминает объекты, которым был послан `autorelease`
-* При уничтожении рассылает сообщение `release` всем своим объектам
-* Число рассылаемых сообщений `release` равно числу разосланных `autorelease`
-
-
-----
-
-## Пример
-
-```ObjectiveC
-{
-    NSAutoreleasePool *pool =
-        [[NSAutoreleasePool alloc] init];
-
-    // Code that creates autoreleased objects.
-
-    [pool release];
-}
-```
-
-
-----
-
-## Литература
-
-* [Memory Management Policy](https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/MemoryMgmt/Articles/mmRules.html#//apple_ref/doc/uid/20000994-BAJHFBGH)
-* [Practical Memory Management](https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/MemoryMgmt/Articles/mmPractical.html#//apple_ref/doc/uid/TP40004447-SW1)
-
-
-----
-
-# Automatic Reference Counting
-
-
-----
-
-## Переход на ARC
-
-* Концептуально ARC идентичен MRR
-* В отличии от MRR, подсчет ссылок осуществляется автоматически
-* Все необходимые для управления памятью вызовы расставляются за вас на этапе компиляции
-
-
-----
-
-## Преимущества ARC
-
-* Лишен недостатков, присущих ручным способам управления памятью
-* Уменьшает объем кода
-* Уменьшает время разработки
-* Нарушение установленных правил управления памятью приводит к ошибке компиляции
-
-
-----
-
-## Когда использовать ARC?
-
-“You are strongly encouraged to use ARC for new projects.”
-
-Copyright © 2012 Apple Inc. All Rights Reserved.
-
-
-----
-
-## Ограничения ARC
-
-Запрещено вызывать:
-* `retain`
-* `release` (`autorelease`)
-* `[super dealloc]`
-
-
-----
-
-## Классификаторы времени жизни
-
-* `strong` ( = `retain`, по умолчанию для объектов)
-* `weak`
-* `unsafe_unretained` ( = `assign`)
+![](lecture_3.1_img/l3.1_weak_wrapper.png)
+<!-- .element: class="fragment" -->
 
 
 ----
@@ -596,43 +237,6 @@ MyClass *__unsafe_unretained unsafeReference = ...;
 
 ----
 
-## Включение/выключение ARC
-
-При помощи флагов компилятора
-* -fobjc-arc
-* -fno-objc-arc
-
-
-----
-
-# Autorelease Pool Blocks
-
-
-----
-
-## Autorelease Pool Blocks
-
-* Концептуально блоки ничем не отличаются от объектов,
-* Отличие состоит только в синтаксической записи.
-
-
-----
-
-## Пример
-
-```ObjectiveC
-{
-    @autoreleasepool {
-        // Code that creates autoreleased objects.
-    }
-    ...
-}
-
-```
-
-
-----
-
 ## Диагностика управления памятью
 
 * Clang Static Analyzer
@@ -641,20 +245,279 @@ MyClass *__unsafe_unretained unsafeReference = ...;
 
 ----
 
-## Темы для самостоятельного изучения
+# Блоки в Objective-C
 
-[Особенности управления памятью в Core Foundation с использованием ARC](https://developer.apple.com/library/ios/releasenotes/ObjectiveC/RN-TransitioningToARC/Introduction/Introduction.html#//apple_ref/doc/uid/TP40011226-CH1-SW1)
+
+----
+
+## Блок
+
+* Функция
+* Может иметь входные параметры
+* Может возвращать значение
+* Является объектом<!-- .element: class="fragment" data-fragment-index="1" -->
+* Может ссылаться на свой контекст<!-- .element: class="fragment" data-fragment-index="1" -->
+* Может модифицировать свой контекст<!-- .element: class="fragment" data-fragment-index="1" -->
+* Может захватывать свой контекст<!-- .element: class="fragment" data-fragment-index="1" -->
+
+
+----
+
+## Блоки в Objective-C
+
+* Функция
+* Может иметь входные параметры
+* Может возвращать значение
+
+Блок, как локальная переменная:
+```ObjectiveC
+returnType (^blockName)(parametersTypes) = ^returnType(parameters) {...};
+```
+
+Пример:
+```ObjectiveC
+int (^summ)(int, int) = ^(int a, int b) {
+    return a + b;
+}
+
+int s = summ(1,2);
+```
+
+
+----
+
+## Блоки в Objective-C
+
+* Является объектом
+
+Блок, как свойство: 
+```ObjectiveC
+@property (nonatomic, copy) returnType (^blockName)(parameterTypes);
+```
+и typedef:
+```ObjectiveC
+typedef returnType (^TypeName)(parameterTypes);
+TypeName blockName = ^returnType(parameters) {...};
+```
+
+Пример:
+```ObjectiveC
+typedef int(^blockType)(int, int);
+```
+```ObjectiveC
+@property (nonatomic, copy) blockType mySumm;
+```
+```ObjectiveC
+blockType summ = ^(int a, int b) {
+    return a + b;
+}
+self.myBlock = block;
+int resultA = block(3, 5);
+int resultB = self.myBlock(3, 5);
+```
+
+
+----
+
+## Блоки в Objective-C
+
+* Может ссылаться на свой контекст
+
+```ObjectiveC
+int b = arc4random_uniform(10);
+
+int (^increase)(int) = ^(int a) {
+    return a + b;
+}
+
+int s = increase(5);
+```
+
+
+----
+
+## Блоки в Objective-C
+
+* Может модифицировать свой контекст (модификатор __block)
+
+```ObjectiveC
+__block int c;
+
+void (^saveSummToC)(int, int) = ^(int a, int b) {
+    c = a + b;
+}
+```
+
+
+----
+
+## Блоки в Objective-C
+
+* Может захватывать свой контекст
+
+```ObjectiveC
+NSString *firstName = @"James";
+NSString *lastName = @"Bond";
+
+int nameLength = name.length;
+
+void (^captureContext)() = ^() {
+    NSString *fullName = [name stringByAppendingString:lastName]; //"JamesBond"
+    
+    NSString *calculatedLastName = [fullName substringFromIndex:nameLength];
+    NSLog(@"%@", calculatedLastName); //"Bond"
+}
+```
+
+
+----
+
+## Блоки в Objective-C
+
+Блок, как аргумент в вызове метода:
+```ObjectiveC
+[someObject someMethodThatTakesABlock:^returnType(parameters){...}];
+```
+
+Пример:
+```ObjectiveC
+NSArray<NSString *> *array = @[@"a", @"s", @"d", @"f", @"g", @"h"];
+NSUInteger maxElements = 5;
+[array enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+       NSLog(@"Element %d : %@", idx, obj);
+      stop = idx >= maxElements;
+}];
+```
+
+
+----
+
+
+## Блоки в Objective-C
+
+```ObjectiveC
+- (void)randomlyCallSuccess:(void(^)(int a))success
+    orFailure:(void(^)())failure
+{
+    int randomNumber = arc4random_uniform(100);
+    if (randomNumber%2 == 0) {
+        success(randomNumber);
+    }
+    else {
+        failure();
+    }
+}
+```
+
+```ObjectiveC
+void (^callRandom)() = ^(){
+    [self randomlyCallSuccess:^(int a) {
+            NSLog(@"%d", a);
+        }
+        orFailure:^{
+            NSLog(@"failed");
+        }];
+};
+
+while (1) {
+    sleep(0.5);
+    callRandom();
+}
+```
+
+Осторожнее со вложенностью!<!-- .element: class="fragment" data-fragment-index="1" -->
+
+
+----
+
+## Блоки в Objective-C
+
+```ObjectiveC
+@interface Number : NSObject
+
+@property (nonatomic, copy) void (^changedCallback)();
+
+@end
+
+@implementation Number
+
+- (void)configure
+{
+    self.changedCallback = ^(){
+        NSLog(@"%@", self.description);
+    };
+}
+
+@end
+```
+
+циклическая зависимость<!-- .element: class="fragment" data-fragment-index="1" -->
+
+
+----
+
+## Блоки в Objective-C
+
+```ObjectiveC
+@interface Number : NSObject
+
+@property (nonatomic, copy) void (^changedCallback)();
+
+@end
+
+@implementation Number
+
+- (void)configure
+{
+    typeof(self) __weak wself = self;
+    self.changedCallback = ^(){
+        NSLog(@"%@", wself.description);
+    };
+}
+
+@end
+```
+
+
+----
+
+## Блоки в Objective-C
+
+Чтобы избежать ситуации, когда объект будет уничтожен во время исполнения блока
+
+```ObjectiveC
+@interface Number : NSObject
+
+@property (nonatomic, copy) void (^changedCallback)();
+
+@end
+
+@implementation Number
+
+- (void)configure
+{
+    typeof(self) __weak wself = self;
+    self.changedCallback = ^(){
+        typeof(wself) __strong sself = wself;
+        NSLog(@"%@", sself.description);
+        NSLog(@"I repeat: %@", sself.description);
+    };
+}
+
+@end
+```
 
 
 ----
 
 ## Справочная литература
 
-[Advanced Memory Management Programming Guide](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/MemoryMgmt/Articles/MemoryMgmt.html#//apple_ref/doc/uid/10000011-SW1)
+[Block declaration cheatsheet](http://fuckingblocksyntax.com/)
 
-[Transitioning to ARC Release Notes](https://developer.apple.com/library/ios/releasenotes/ObjectiveC/RN-TransitioningToARC/Introduction/Introduction.html#//apple_ref/doc/uid/TP40011226-CH1-SW11)
-
-[Toll-Free Bridged Types](https://developer.apple.com/library/ios/documentation/CoreFoundation/Conceptual/CFDesignConcepts/Articles/tollFreeBridgedTypes.html#//apple_ref/doc/uid/TP40010677)
+[Официальная документация](https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/ProgrammingWithObjectiveC/WorkingwithBlocks/WorkingwithBlocks.html)
 
 [ARC Best Practices](http://amattn.com/p/arc_best_practices.html)
 
+[Transitioning to ARC Release Notes](https://developer.apple.com/library/ios/releasenotes/ObjectiveC/RN-TransitioningToARC/Introduction/Introduction.html#//apple_ref/doc/uid/TP40011226-CH1-SW11)
+
+[Toll-Free Bridged Types*](https://developer.apple.com/library/ios/documentation/CoreFoundation/Conceptual/CFDesignConcepts/Articles/tollFreeBridgedTypes.html#//apple_ref/doc/uid/TP40010677)

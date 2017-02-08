@@ -82,7 +82,7 @@
 
 ## Объектный граф
 
-![](lecture_3_img/Graph_3.png)
+![](lecture_3.2_img/Graph_3.png)
 
 
 ----
@@ -438,21 +438,21 @@ if (error) {
 
 ## Пример
 
-![](lecture_3_img/Graph_4.png)
+![](lecture_3.2_img/Graph_4.png)
 
 
 ----
 
 ## Пример
 
-![](lecture_3_img/Graph_3.png)
+![](lecture_3.2_img/Graph_3.png)
 
 
 ----
 
 ## Граф объектов приложения
 
-![](lecture_3_img/Graph_2_1.png)
+![](lecture_3.2_img/Graph_2_1.png)
 
 
 ----
