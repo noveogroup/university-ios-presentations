@@ -42,13 +42,13 @@
 
 ## C string vs NSString
 
-C string
+`C string`
 
 ```ObjectiveC
 const char *cString = "Hello world";
 ```
 
-NSString
+`NSString`
 
 ```ObjectiveC
 NSString *objCString = @"Hello world";
@@ -69,19 +69,19 @@ NSString *anotherMessage =
 // Previous message was 'Today is year 2017'
 ```
 
-Самый часто используемый метод у строк.
+Самый часто используемый метод у строк
 
 
 --
 
 ## Спецификаторы формата (format specifier)
 
-Точно такие же, как у printf + <font color="red">`%@`</font> для объектов
+Точно такие же, как у `printf` + <font color="red">`%@`</font> для объектов
 
 Основные:
-* <font color="blue">`%d`</font>, <font color="blue">`%i`</font> - для int
-* <font color="blue">`%f`</font> - для float
-* <font color="blue">`%s`</font> - для строки C
+* <font color="blue">`%d`</font>, <font color="blue">`%i`</font> - для `int`
+* <font color="blue">`%f`</font> - для `float`
+* <font color="blue">`%s`</font> - для строки `C`
 
 
 --
@@ -95,7 +95,7 @@ typedef struct _NSRange {
 } NSRange;
 ```
 
-**NSRange** используется для описания непрерывного интервала целых чисел. Наиболее часто используется со строками, массивами, упорядоченными коллекциями для замены элементов или поиска вхождений. Если ничего найти не удалось, будет возвращено **NSNotFound** в *location*
+**NSRange** используется для описания непрерывного интервала целых чисел. Наиболее часто используется со строками, массивами, упорядоченными коллекциями для замены элементов или поиска вхождений. Если ничего найти не удалось, будет возвращено **NSNotFound** в `location`
 
 
 --
@@ -144,7 +144,7 @@ NSString *otherFullName = [[fullName stringByReplacingOccurrencesOfString:surnam
 // Steven King
 ```
 
-Методы, создающие новую строку из имеющейся, обычно начинаются со stringBy...
+Методы, создающие новую строку из имеющейся, обычно начинаются со `stringBy...`
 
 
 --
@@ -307,15 +307,15 @@ NSLog(@"%i, %c", s2.x, s2.y);
 ## Полезные методы
 
 ```ObjectiveC
-+ valueWithPoint: // для CGPoint
++ valueWithCGPoint:
++ valueWithCGSize:
++ valueWithCGRect:
 + valueWithRange: // для NSRange
-+ valueWithRect: // для CGRect
-+ valueWithSize: // для CGSize
 
-– pointValue
-– pointerValue
-– rangeValue
-– rectValue
+@property(nonatomic, readonly) CGPoint CGPointValue;
+@property(nonatomic, readonly) CGSize CGSizeValue;
+@property(nonatomic, readonly) CGRect CGRectValue;
+@property (readonly) NSRange rangeValue;
 ```
 
 
@@ -364,6 +364,7 @@ NSLog(@"%i, %c", s2.x, s2.y);
 - (NSNumber *)initWithUnsignedInteger:(NSUInteger)value NS_AVAILABLE(10_5, 2_0);
 ```
 
+
 --
 
 ## Пример
@@ -388,7 +389,7 @@ NSNumber *someSum = @(3.1415 + 2.71);
 ```
 
 на самом деле, тут продолжает вызываться
-метод *numberWithFloat:*, *initWithInt:* или подобныt, просто
+метод `numberWithFloat:`, `initWithInt:` или подобные, просто
 теперь компилятор это делает сам.
 
 
@@ -421,6 +422,7 @@ NSNumber *someSum = @(3.1415 + 2.71);
 ## Дополнительные методы
 
 Также `NSNumber` можно сравнивать
+
 ```ObjectiveC
 - (NSComparisonResult)compare:(NSNumber *)otherNumber;
 - (BOOL)isEqualToNumber:(NSNumber *)number;
@@ -456,6 +458,7 @@ NSNumber *e = @2.71;
 [e boolValue];
 ```
 
+
 --
 
 ## Дополнительно
@@ -463,6 +466,7 @@ NSNumber *e = @2.71;
 [NSNumber на RyPress](http://rypress.com/tutorials/objective-c/data-types/nsnumber)
 
 [NSDecimalNumber на RyPress](http://rypress.com/tutorials/objective-c/data-types/nsdecimalnumber)
+
 
 ----
 
@@ -481,7 +485,7 @@ NSNumber *e = @2.71;
 
 ## bytes & length
 
-В общем **NSData** — это указатель на данные *bytes* и размер данных *length* (в байтах).
+В общем **NSData** — это указатель на данные *bytes* и размер данных *length* (в байтах)
 
 ```ObjectiveC
 - (id)initWithBytes:(const void *)bytes
@@ -580,31 +584,31 @@ typedef NS_OPTIONS(NSUInteger, NSDataSearchOptions) {
 
 Коллекции используются для хранения и управления группами объектов.
 
-* Основные: <font color="red">*NSArray*</font>, <font color="red">*NSDictionary*</font>, <font color="red">*NSSet*</font>
-* Специализированные: *NSCountedSet*, *NSOrderedSet*, *NSIndexSet*, *NSCharacterSet*
-* Могут быть изменяемые <i>mutable<i> и неизменяемые <i>immutable<i>
-* Могут быть типизированные и нетипизированные <i>(NSArray < NSString \*>, NSDictionary< Car \*>, NSSet< UIView \*>)</i>
+* Основные: <font color="red">`NSArray`</font>, <font color="red">`NSDictionary`</font>, <font color="red">`NSSet`</font>
+* Специализированные: `NSCountedSet`, `NSOrderedSet`, `NSIndexSet`, `NSCharacterSet`
+* Могут быть изменяемые <i>mutable</i> и неизменяемые <i>immutable</i>
+* Могут быть типизированные и нетипизированные <i>(`NSArray < NSString \*>`, `NSDictionary< Car \*>`, `NSSet< UIView \*>`)</i>
 
 
 --
 
 ## Коллекции «на каждый день»
 
-* <font color="blue">NSArray</font> - массив - упорядоченная коллекция, которые позволяют индексировать доступ к содержимому.
-* <font color="blue">NSDictionary</font> - словарь - неупорядоченный набор, который позволяют получить доступ к содержимому с помощью ключа-значения.
-* <font color="blue">NSSet</font> - набор (множество) - неупорядоченная коллекция объектов.
+* <font color="blue">`NSArray`</font> - массив - упорядоченная коллекция, которые позволяют индексировать доступ к содержимому.
+* <font color="blue">`NSDictionary`</font> - словарь - неупорядоченный набор, который позволяют получить доступ к содержимому с помощью ключа-значения.
+* <font color="blue">`NSSet`</font> - набор (множество) - неупорядоченная коллекция объектов.
 
 
 --
 
 ## Mutable и Immutable
 
-NSArray, NSDictionary, NSSet - <font color="red">неизменяемые</font>. После их создания ни добавить, ни удалить элементы нельзя.
+`NSArray`, `NSDictionary`, `NSSet` - <font color="red">неизменяемые</font>. После их создания ни добавить, ни удалить элементы нельзя.
 
-NSMutableArray, NSMutableDictionary, NSMutableSet - <font color="green">изменяемые</font>.
+`NSMutableArray`, `NSMutableDictionary`, `NSMutableSet` - <font color="green">изменяемые</font>.
 
 Изменяемые коллекции наследуются от неизменяемых коллекций.
-Для них доступны все методы неизменяемыех коллекций + добавляются свои собствнные методы.
+Для них доступны все методы неизменяемых коллекций, плюс добавляются свои собственные методы.
 
 
 --
@@ -627,7 +631,7 @@ NSMutableArray<NSString *> *array = [NSMutableArray array];
 NSDictionary<NSString *, NSNumber *> *dictionary = @{@"five": @5};
 NSSet<NSString *> *set = [NSSet setWithArray:@[@"one", @"two", @"three"]];
 ```
-Не будет хуже, если все коллекции в вашей программе будут типизированными
+Не будет хуже, если все коллекции в вашей программе будут типизированными.
 </div>
 <!-- .element: class="fragment" -->
 
@@ -636,10 +640,10 @@ NSSet<NSString *> *set = [NSSet setWithArray:@[@"one", @"two", @"three"]];
 
 ## Как поместить в коллекцию нечто, что не является Objective-C объектом?
 
-* число (*int, float, BOOL, NSInteger, …*) - используем <font color="blue">NSNumber</font>
-* C struct - <font color="blue">NSValue</font>
-* бинарные данные (*void **) - <font color="blue">NSData</font>
-* отсутствие данных (*nil*) - <font color="blue">NSNull</font>
+* число (`int, float, BOOL, NSInteger, …`) - используем <font color="blue">`NSNumber`</font>
+* `C struct` - <font color="blue">`NSValue`</font>
+* бинарные данные (`void *`) - <font color="blue">`NSData`</font>
+* отсутствие данных (`nil`) - <font color="blue">`NSNull`</font>
 
 
 --
@@ -676,7 +680,7 @@ NSLog(@"%@", value); // NSRange: {10, 3}
 ## NSArray
 
 * Упорядоченный набор объектов.
-* Нумерация начинается с 0, объекты могут быть любого класса.
+* Нумерация начинается с `0`, объекты могут быть любого класса.
 * Может быть типизированный и нетипизированный.
 
 
@@ -702,7 +706,7 @@ NSArray *array3 = [[NSArray alloc] initWithArray:array];
 <!-- .element: class="fragment" -->
 
 <fragment>
-Обычно методам объекта (*-initWithArray:*) соответствует метод класса (*+arrayWithArray:*) с похожим названием.
+Обычно методам объекта (`-initWithArray:`) соответствует метод класса (`+arrayWithArray:`) с похожим названием.
 </fragment>
 <!-- .element: class="fragment" -->
 
@@ -825,7 +829,7 @@ typedef NS_ENUM(NSInteger, NSComparisonResult) {
 ## Перебор элементов коллекции
 
 * В обычном цикле (подходит для массивов)
-* С помощью цикла for-in (fast enumeration)
+* С помощью цикла `for-in` (fast enumeration)
 * С помощью блока
 
 
@@ -957,11 +961,11 @@ NSMutableArray *array = [NSMutableArray arrayWithArray:@[@1, @2, @3]];
 
 --
 
-## Задание для самостоятельного изучения
+## Дополнительно
 
-1. [NSArray](https://developer.apple.com/reference/foundation/nsarray)
+1. [NSArray в документации Apple](https://developer.apple.com/reference/foundation/nsarray)
 2. [NSArray на RyPress](http://rypress.com/tutorials/objective-c/data-types/nsarray)
-2. [NSMutableArray](https://developer.apple.com/reference/foundation/nsmutablearray)
+2. [NSMutableArray в документации Apple](https://developer.apple.com/reference/foundation/nsmutablearray)
 
 
 ----
@@ -1064,9 +1068,9 @@ weather[@"Moscow"] = @-1;
 
 ## Использование
 
-* Получить из `NSArray` и вернуть `NSArray` со всеми элементами (нельзя рассчитывать на определенный порядок)
-* Проверять утверждения  `x∈A`, `A⊆B` и `A∩B = ∅`
-* Фильтровать
+* Получение из `NSArray` и возвращение `NSArray` со всеми элементами (нельзя рассчитывать на определенный порядок)
+* Проверка утверждения  `x∈A`, `A⊆B` и `A∩B = ∅`
+* Фильтрация
 
 
 --
@@ -1106,8 +1110,9 @@ A⊆B
 ## Фильтрация
 
 ```ObjectiveC
-- (NSSet *)objectsPassingTest:(BOOL (^)(id obj, BOOL *stop))predicate NS_AVAILABLE(10_6, 4_0);
-- (NSSet *)objectsWithOptions:(NSEnumerationOptions)opts passingTest:(BOOL (^)(id obj, BOOL *stop))predicate NS_AVAILABLE(10_6, 4_0);
+- (NSSet *)objectsPassingTest:(BOOL (^)(id obj, BOOL *stop))predicate;
+- (NSSet *)objectsWithOptions:(NSEnumerationOptions)opts
+		passingTest:(BOOL (^)(id obj, BOOL *stop))predicate;
 ```
 
 
@@ -1509,9 +1514,9 @@ NSLog(@"%@", [dictionary objectForKeyedSubscript:@2]);
 
 ## Детали реализация
 
-* Если суперкласс поддерживает **NSCopying**, вызывайте *[super copyWithZone:zone]*;
-* Если нет, используйте *alloc-init*
-* Если объект в принципе неизменяемый, можно вернуть *self*
+* Если суперкласс поддерживает **NSCopying**, вызывайте `[super copyWithZone:zone]`;
+* Если нет, используйте `alloc-init`
+* Если объект в принципе неизменяемый, можно вернуть `self`
 
 
 --
@@ -1547,6 +1552,7 @@ NSLog(@"%@", [dictionary objectForKeyedSubscript:@2]);
 Теперь можно использовать класс **Person** как ключ в **NSDictionary**.
 
 Иногда это бывает нужно.
+
 
 
 --
@@ -1586,7 +1592,7 @@ obj1 == obj2
 Есть много ситуаций, когда требуется проверить, равны объекты или нет. Например:
 * когда добавляем пару ключ:значение в `dictionary`
 * когда добавляем элемент в множество
-* когда ищем объект (*indexOfObject:* у *NSArray*)
+* когда ищем объект (`indexOfObject:` у `NSArray`)
 
 
 --
@@ -1605,7 +1611,7 @@ obj1 == obj2
 
 ## isEqual:
 
-в **NSObject** *isEqual:* реализован так:
+в **NSObject** `isEqual:` реализован так:
 
 ```ObjectiveC
 - (BOOL)isEqual:(id)other
@@ -1647,7 +1653,7 @@ obj1 == obj2
 }
 ```
 
-<li> *hash* — можно взять хэш-коды по принципу:</li>
+`hash` — можно взять хэш-коды по принципу:
 
 ```ObjectiveC
 - (NSUInteger)hash {
@@ -1660,7 +1666,7 @@ obj1 == obj2
 
 ## И самое главное
 
-Если вы переопределили *-isEqual:*, <font color="red">**обязательно**</font> нужно переопределить *hash*.
+Если вы переопределили `-isEqual:`, <font color="red">**обязательно**</font> нужно переопределить `hash`.
 
 
 --
