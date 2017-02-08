@@ -9,7 +9,7 @@
 
 * Что такое Foundation?
 * Строки (`NSString`)
-* Обертки (`NSData`, `NSValue`, `NSNumber`)
+* Обертки (`NSData`, `NSValue`, `NSNumber`, `NSNull`)
 * Коллекции (`NSArray`, `NSDictionary`, `NSSet`)
 * Дата и время (`NSDate`)
 * Ошибки (`NSError`, `NSException`)
@@ -576,7 +576,7 @@ typedef NS_OPTIONS(NSUInteger, NSDataSearchOptions) {
 
 ## NSNull
 
-Класс `NSNull` представляет из себя контейнер для `NULL` или `nil`, применяется для его размещения в коллекциях и др., которые не позволяют размещать `NULL/nil` значения в явном виде.
+Класс `NSNull` представляет из себя контейнер для `NULL` или `nil`, применяется для их размещения в коллекциях и др., которые не позволяют размещать `NULL/nil` значения в явном виде.
 
 У класса есть единственный метод:
 
@@ -584,7 +584,7 @@ typedef NS_OPTIONS(NSUInteger, NSDataSearchOptions) {
 + (NSNull *)null; // синглтон
 ```
 
-Более подробно о `nil, Nil, NULL, NSNull` можно узнать [в статье](http://nshipster.com/nil/)
+Более подробно о `nil, Nil, NULL, NSNull` можно узнать [в статье](http://nshipster.com/nil/).
 
 
 
