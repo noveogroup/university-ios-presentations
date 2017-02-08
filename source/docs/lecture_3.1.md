@@ -110,7 +110,21 @@ NSMutableArray *arrayCopy = [array mutableCopy]; //1
 
 ----
 
-## Используя ARC, вам не нужно заниматься ручным управлением памяти!
+## Пример
+
+![](lecture_3.1_img/l3.1_apple_example.png)
+
+
+----
+
+## Пример
+
+![](lecture_3.1_img/Graph_2_2.png)
+
+
+----
+
+## Используя ARC, вам не нужно заниматься ручным управлением памяти
 
 
 ----
@@ -161,7 +175,7 @@ NSMutableArray *arrayCopy = [array mutableCopy]; //1
 
 ## ARC - пример
 
-Creatue не владеет своим пожирателем!
+Creature не владеет своим пожирателем!
 
 ```ObjectiveC
 @interface Creature : NSObject
@@ -436,6 +450,7 @@ while (1) {
 @interface Number : NSObject
 
 @property (nonatomic, copy) void (^changedCallback)();
+@property (nonatomic, getter = isEven) BOOL even;
 
 @end
 
@@ -444,7 +459,7 @@ while (1) {
 - (void)configure
 {
     self.changedCallback = ^(){
-        NSLog(@"%@", self.description);
+        NSLog(@"%@ %d", self.description, _even);
     };
 }
 
