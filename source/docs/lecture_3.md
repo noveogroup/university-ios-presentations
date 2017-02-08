@@ -46,14 +46,14 @@
 
 
 ----
-<!--
+
 ## Проблемы ручного управления памятью
 
 * Освобождение (перезапись) данных, которые все еще используются
 * Исполнение программы без освобождения памяти, занятой более ненужными данными
 
 
----->
+----
 
 ## Эффективное управление памятью
 
@@ -73,7 +73,7 @@
 ## Основные положения
 
 * Управление памятью объектов базируется на объектом "владении" (ownership)
-* К управлению связями между объектами следует подходить с позиции "объектных графов"
+* К управлению связями между объектами следует подходить с позиции "объектных графов". *Объектный граф - группа объектов, которые соединены в сеть по средствам установления тех или иных отношений между ними.*
 * Объект живет пока имеет одного или нескольких владельцев
 * Объект умирает когда больше не имеет владельцев
 
@@ -106,6 +106,31 @@
   * Функция
 * Объект
   * ivar
+
+
+----
+
+## Пример
+
+```
+  Pupil *aPupil = [[Pupil alloc] init];
+  // ...
+  NSString *name = aPupil.name;
+  // ...
+  [aPupil release];
+  aPupil = nil;
+```
+
+```
+  - (NSString *)fullName
+  {
+    NSString *fullName = 
+      [[[NSString alloc] initWithFormat:@”%@ %@”,
+      self.surname, self.name] autorelease];
+
+    return fullName;
+  }
+```
 
 
 ----
@@ -257,7 +282,7 @@ if (error) {
     _lastName = lastName;
 }
 
-- (NSString *)getLastName
+- (NSString *)lastName
 {
     return _lastName
 }
@@ -476,6 +501,14 @@ if (error) {
     [pool release];
 }
 ```
+
+
+----
+
+## Литература
+
+* [Memory Management Policy](https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/MemoryMgmt/Articles/mmRules.html#//apple_ref/doc/uid/20000994-BAJHFBGH)
+* [Practical Memory Management](https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/MemoryMgmt/Articles/mmPractical.html#//apple_ref/doc/uid/TP40004447-SW1)
 
 
 ----
