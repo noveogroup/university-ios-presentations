@@ -559,17 +559,6 @@ NSLog(@"%@", data); // de070000
 ```
 
 
---
-
-## NSDataSearchOptions
-
-```ObjectiveC
-typedef NS_OPTIONS(NSUInteger, NSDataSearchOptions) {
-	NSDataSearchBackwards = 1UL << 0,
-	NSDataSearchAnchored = 1UL << 1
-};
-```
-
 
 ----
 
