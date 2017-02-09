@@ -1316,10 +1316,11 @@ NSString *yandexString = [NSString stringWithContentsOfURL:yandex
 ## Информация об ошибке
 
 ```ObjectiveC
-- (NSInteger)code; // код ошибки
-- (NSString *)domain;  // домен ошибки (напр., NSCocoaErrorDomain)
+@property (readonly, copy) NSErrorDomain domain; // NSString *domain
+// домен ошибки (напр., NSCocoaErrorDomain)
 // могут существовать ошибки с одним кодом, но разными доменами
-- (NSDictionary *)userInfo;  // дополнительная информация
+@property (readonly) NSInteger code; // код ошибки
+@property (readonly, copy) NSDictionary *userInfo; // дополнительная информация
 ```
 
 
