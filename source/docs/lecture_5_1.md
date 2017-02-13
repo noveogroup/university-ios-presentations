@@ -40,12 +40,12 @@
 ## UIApplication
 
 * Объект-синглтон `[UIApplication sharedApplication]`
-* Владеет окном
-* Управляет статус-баром и иконкой
-* Управляет работой приложения в background-режиме
-* Рассылает уведомления о смене состояния приложения
-* Осуществляет переход в другие приложения (открывает URL) 
-* Имеет делегата
+* Владеет окном.
+* Управляет статус-баром и иконкой.
+* Управляет работой приложения в background-режиме.
+* Рассылает уведомления о смене состояния приложения.
+* Осуществляет переход в другие приложения (открывает URL).
+* Имеет делегата.
 
 
 ----
@@ -54,9 +54,6 @@
 
 ```ObjectiveC
 UIApplication *app = [UIApplication sharedApplication];
-
-NSInteger x = self.news.count;
-[app setApplicationIconBadgeNumber:x];
 	
 NSURL *url = [NSURL URLWithString:@"http://google.com"];
 if ([app canOpenURL:url]) {
@@ -69,15 +66,15 @@ if ([app canOpenURL:url]) {
 
 ## UIApplicationDelegate
 
-* В каждом приложении есть класс реализующий этот протокол
-* Это место, с которого начинается исполнение прикладного кода
+* В каждом приложении есть класс реализующий этот протокол.
+* Это место, с которого начинается исполнение прикладного кода.
 * Обрабатывает события жизненного цикла приложения:
   - запуск,
   - сворачивание/разворачивание,
   - переход в активное/неактивное состояние (например звонок), 
   - переход в background-режим (приложение свёрнуто, но исполняется),
-  - завершение работы приложения
-* Получает локальные и удаленные уведомления
+  - завершение работы приложения.
+* Получает локальные и удаленные уведомления.
 
 
 ----
@@ -88,7 +85,7 @@ AppDelegate.h
 ```ObjectiveC
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
-@property (nonatomic, strong) UIWindow *window;
+@property (strong, nonatomic) UIWindow *window;
 
 @end
 ```
@@ -97,17 +94,10 @@ AppDelegate.m
 ```ObjectiveC
 @implementation AppDelegate
 
-- (BOOL)application:(UIApplication *)application
-    didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{
-	CGRect windowFrame = [UIScreen mainScreen].bounds;
-	self.window = [[UIWindow alloc] initWithFrame:windowFrame];
-
-	ViewController *viewController = [[ViewController alloc] init];
-	self.window.rootViewController = viewController;
-	
-	[self.window makeKeyAndVisible];
-	return YES;
+- (BOOL)application:(UIApplication *)application 
+	didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    // Override point for customization after application launch.
+    return YES;
 }
 
 @end
@@ -136,13 +126,13 @@ AppDelegate.m
 
 ## UIView
 
-* Базовый класс для всего, что видит пользователь
-* Сама по себе `UIView` — просто прямоугольник
-* Умеет отрисовывать себя и перехватывать события внутри прямоугольника
+* Базовый класс для всего, что видит пользователь.
+* Сама по себе `UIView` — просто прямоугольник.
+* Умеет отрисовывать себя и перехватывать события внутри прямоугольника.
 * Объекты `UIView` и его наследников выстраиваются в дерево:
-  - `UIView` содержит 0 или несколько вложенных объектов — subview
-  - `UIView` имеет 0 или 1 объект-контейнер — superview
-  - `UIView` верхнего уровня лежит в окне `UIWindow`
+  - `UIView` содержит 0 или несколько вложенных объектов — subview,
+  - `UIView` имеет 0 или 1 объект-контейнер — superview,
+  - `UIView` верхнего уровня лежит в окне `UIWindow`.
 
 
 ----
@@ -222,12 +212,12 @@ label.text = @"Hello, world!";
 
 ## UIImage, UIImageView
 
-`UIImage` — картинка в памяти
-* загружается из файла / ресурсов / бинарных данных в памяти
-* сохраняется в JPG или PNG
-* поддерживает растягивание фонов / рамок
-* можно получить размер, ориентацию
-* автоматически выбирает версию ресурса (@2x, @3x)
+`UIImage` — картинка в памяти:
+* загружается из файла / ресурсов / бинарных данных в памяти,
+* сохраняется в JPG или PNG,
+* поддерживает растягивание фонов / рамок,
+* можно получить размер, ориентацию,
+* автоматически выбирает версию ресурса (@1x, @2x, @3x).
 
 
 ----
@@ -235,10 +225,10 @@ label.text = @"Hello, world!";
 ## UIImage, UIImageView
 
 
-`UIImageView` — картинка на экране
-* показывает `UIImage`
-* масштабирует до нужного размера (кадрирует / добавляет поля / растягивает / сжимает)
-* поддерживает циклическую анимацию массива `UIImage`
+`UIImageView` — картинка на экране:
+* показывает `UIImage`,
+* масштабирует до нужного размера (кадрирует / добавляет поля / растягивает / сжимает),
+* поддерживает циклическую анимацию массива `UIImage`.
 
 
 ----
@@ -262,7 +252,7 @@ imageView.image = image_2;
 
 ## UIButton как UIView
 
-`UIButton` — кнопка с текстом, фоновой картинкой и иконкой
+`UIButton` — кнопка с текстом, фоновой картинкой и иконкой.
 
 ```ObjectiveC
 UIImage *buttonBGImageN = [UIImage imageNamed:@"button.png"];
@@ -288,7 +278,8 @@ button.backgroundColor = [UIColor clearColor];
 
 ```ObjectiveC
 UIButton *button = /* ... */;
-[button addTarget:self action:@selector(buttonTap:)
+[button addTarget:self
+	action:@selector(buttonTap:)
 	forControlEvents:UIControlEventTouchUpInside];
 ```
 
@@ -307,7 +298,7 @@ UIButton *button = /* ... */;
 `UIControl` — наследник `UIView`, от которого в свою очередь наследуются контролы — элементы UI, принимающие и порождающие события.
 
 ```ObjectiveC
-UIButton *x;
+UIButton *button;
 /*
  *	@[
  *		<target, action, events>,
@@ -319,7 +310,7 @@ UIButton *x;
 ```
 
 ```ObjectiveC
-[x addTarget:target action:action forControlEvents:events];
+[button addTarget:target action:action forControlEvents:events];
 ```
 
 
@@ -327,15 +318,16 @@ UIButton *x;
 
 ## UITextField
 
-`UITextField` — однострочное редактируемое текстовое поле
+`UITextField` — однострочное редактируемое текстовое поле.
 
 ```ObjectiveC
 self.label = [[UILabel alloc] initWithFrame:labelFrame];
 [self.view addSubview:self.label];
 	
-self.input = [[UITextField alloc] initWithFrame:inputFrame];
-[self.view addSubview:self.input];
-[self.input addTarget:self action:@selector(textChanged:)
+self.textField = [[UITextField alloc] initWithFrame:inputFrame];
+[self.view addSubview:self.textField];
+[self.textField addTarget:self
+	action:@selector(textChanged:)
 	forControlEvents:UIControlEventEditingChanged];
 
 // ...
@@ -351,19 +343,19 @@ self.input = [[UITextField alloc] initWithFrame:inputFrame];
 
 ## UIView
 
-* `UIView` — логическая организация элементов (контейнер)
-* `UILabel` — вывод текста
-* `UITextField`, `UITextView` — редактирование текста
-* `UIWebView` — показ HTML
-* `UIImageView` — показ картинок
-* `UIButton` — кнопка
-* `UISwitch`, `UISlider`, `UIStepper` — выключатель, регулятор, ступенчатый регулятор
-* `UIToolbar`, `UITabBar`, `UINavigationBar` — панели
-* `UIActivityIndicatorView` — спиннер
-* `UITableView`, `UITableViewCell` — список
-* `UICollectionView`, `UICollectionViewCell` — коллекция
-* `UIScrollView` — область прокрутки
-* `UIPickerView` — выбор варианта
+* `UIView` — логическая организация элементов (контейнер).
+* `UILabel` — вывод текста.
+* `UITextField`, `UITextView` — редактирование текста.
+* `UIWebView` — отображение HTML.
+* `UIImageView` — отображение картинок.
+* `UIButton` — кнопка.
+* `UISwitch`, `UISlider`, `UIStepper` — выключатель, регулятор, ступенчатый регулятор.
+* `UIToolbar`, `UITabBar`, `UINavigationBar` — панели.
+* `UIActivityIndicatorView` — спиннер.
+* `UITableView`, `UITableViewCell` — список.
+* `UICollectionView`, `UICollectionViewCell` — отображение коллекций.
+* `UIScrollView` — область с прокрутки.
+* `UIPickerView` — выбор варианта.
 
 
 ----
@@ -374,17 +366,17 @@ self.input = [[UITextField alloc] initWithFrame:inputFrame];
 
 RGB
 ```ObjectiveC
-[UIColor colorWithRed:r/255.0f green:g/255.0f blue:b/255.0f alpha:a/255.0f]
+[UIColor colorWithRed:r/255.0f green:g/255.0f blue:b/255.0f alpha:a/255.0f];
 ```
 
 HSV
 ```ObjectiveC
-[UIColor colorWithHue:h/255.0f saturation:s/255.0f brightness:v/255.0f alpha:a/255.0f]
+[UIColor colorWithHue:h/255.0f saturation:s/255.0f brightness:v/255.0f alpha:a/255.0f];
 ```
 
 BW
 ```ObjectiveC
-[UIColor colorWithWhite:w/255.0f alpha:a/255.0f]
+[UIColor colorWithWhite:w/255.0f alpha:a/255.0f];
 ```
 
 
@@ -409,12 +401,12 @@ BW
 
 Шрифт по имени
 ```ObjectiveC
-[UIFont fontWithName:@"Helvetica-Bold" size:20]
+[UIFont fontWithName:@"Helvetica-Bold" size:20];
 ```
 
 Стандартный шрифт
 ```ObjectiveC
-[UIFont systemFontOfSize:[UIFont systemFontSize]]
+[UIFont systemFontOfSize:[UIFont systemFontSize]];
 ```
 
 
@@ -475,10 +467,7 @@ BW
 – viewDidDisappear:
 – viewWillLayoutSubviews
 – viewDidLayoutSubviews
-– preferredStatusBarStyle
-– prefersStatusBarHidden
-– shouldAutorotate
-– supportedInterfaceOrientations
+– didReceiveMemoryWarning
 ...
 ```
 
@@ -653,9 +642,9 @@ BW
 
 ## Вёрстка интерфейса
 
-* iPhone + iPad
-* portrait + landscape
-* динамический размер контента и другие случаи
+* iPhone + iPad,
+* portrait + landscape,
+* динамический размер контента и другие случаи.
 
 
 ----
@@ -666,8 +655,8 @@ BW
   - `CGRect frame`,
   - `CGRect bounds`,
   - `CGPoint center`.
-* `frame` и `center` считаются в системе координат superview
-* `bounds` – геометрия view в её собственной системе координат
+* `frame` и `center` считаются в системе координат superview.
+* `bounds` – геометрия view в её собственной системе координат.
 
 
 ----
@@ -675,8 +664,8 @@ BW
 ## Вёрстка интерфейса
 
 Система координат UIKit:
-* `x` — слева направо, `y` — сверху вниз
-* единица измерения — pt
+* `x` — слева направо, `y` — сверху вниз,
+* единица измерения — pt.
 
 
 ----
@@ -684,20 +673,20 @@ BW
 ## Вёрстка интерфейса
 
 * Manual layout
-  - Полный контроль
-  - Никакой автоматизации
+  - Полный контроль.
+  - Никакой автоматизации.
 * Springs & struts (`UIViewAutoresizing`)
-  - Легко освоить
-  - Удобно задавать и в IB и из кода
-  - Легко анимировать
-  - Легко кастомизировать
-  - Не помогает при динамическом контенте
+  - Легко освоить.
+  - Удобно задавать и в IB и из кода.
+  - Легко анимировать.
+  - Легко кастомизировать.
+  - Не помогает при динамическом контенте.
 * Autolayout (`NSLayoutConstraint`)
-  - Сложно освоить
-  - Неудобный редактор в IB и муторно задавать из кода
-  - Помогает при динамическом контенте
-  - Помогает при вёрстке под разные экраны
-  - Медленно работает
+  - Сложно освоить.
+  - Неудобный редактор в IB и муторно задавать из кода.
+  - Помогает при динамическом контенте.
+  - Помогает при вёрстке под разные экраны.
+  - Медленно работает.
 
 
 ----
@@ -779,17 +768,17 @@ BW
 ## Interface Builder
 
 * XIB
-  - работает с `UIView`
-  - визуальное описание иерархии и свойств view
-  - привязка свойств (`IBOutlet`)
-  - привязка action-методов (`IBAction`)
-  - привязка внешних объектов
+  - работает с `UIView`,
+  - визуальное описание иерархии и свойств view,
+  - привязка свойств (`IBOutlet`),
+  - привязка action-методов (`IBAction`),
+  - привязка внешних объектов.
 * Storyboard
-  - работает с `UIViewController`
-  - несколько экранов в одном файле
-  - можно описать переходы между экранами
-  - таблицу можно описать вместе с ячейками
-  - статические таблицы
+  - работает с `UIViewController`,
+  - несколько экранов в одном файле,
+  - можно описать переходы между экранами,
+  - таблицу можно описать вместе с ячейками,
+  - статические таблицы.
 
 
 ----
@@ -797,10 +786,10 @@ BW
 ## Interface Builder
 
 Следует очень аккуратно использовать Storyboards:
-* Большие файлы тормозят во время редактирования
-* Большие файлы очень трудно мёржить
-* Привносится множество проблем с идентификаторами
-* Нельзя работать с отдельно-взятым UIView
+* Большие файлы тормозят во время редактирования.
+* Большие файлы очень трудно мёржить.
+* Привносится множество проблем с идентификаторами.
+* Нельзя работать с отдельно взятым `UIView`.
 
 
 ----
