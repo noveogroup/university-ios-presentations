@@ -8,8 +8,8 @@
 
 ## Сегодня
 
-* UIApplication, UIWindow, UIView, UILabel, UIButton
-* UIViewController, UINavigationController
+* `UIApplication`, `UIWindow`, `UIView`, `UILabel`, `UIButton`
+* `UIViewController`, `UINavigationController`
 * Interface orientation
 * Autolayouts
 * Interface Builder
@@ -247,7 +247,7 @@ imageView.image = image_2;
 
 ## UIButton как UIView
 
-`UIButton` — кнопка с текстом, фоновой картинкой и иконкой.
+`UIButton` — представляет собой view, который имеет текст, фоновую картинку и иконку.
 
 ```ObjectiveC
 UIImage *buttonBGImageN = [UIImage imageNamed:@"button.png"];
@@ -269,7 +269,7 @@ button.backgroundColor = [UIColor clearColor];
 
 ## UIButton как UIControl
 
-`UIButton` — кнопка, реагирующая на *нажатие (tap)*
+`UIButton` — представляет собой view, который выполняет свой собственный код в ответ на действия пользователя (*tap*).
 
 ```ObjectiveC
 UIButton *button = /* ... */;
@@ -343,7 +343,7 @@ self.textField = [[UITextField alloc] initWithFrame:inputFrame];
 * `UITextField`, `UITextView` — редактирование текста.
 * `UIWebView` — отображение HTML.
 * `UIImageView` — отображение картинок.
-* `UIButton` — кнопка.
+* `UIButton` — кнопка, реагирующая на действия пользователя.
 * `UISwitch`, `UISlider`, `UIStepper` — выключатель, регулятор, ступенчатый регулятор.
 * `UIToolbar`, `UITabBar`, `UINavigationBar` — панели.
 * `UIActivityIndicatorView` — спиннер.
@@ -438,7 +438,7 @@ BW
 ## UIViewController
 
 * Связывает модель с представлением.
-* Управляет жизненным циклом своего view.
+* Управляет жизненным циклом своего `view`.
 * Обрабатывает события (действия пользователя).
 * Обеспечивает логическую организацию приложения (разбивка по экранам).
 
@@ -471,14 +471,31 @@ BW
 
 ## UIViewController
 
-- `initWithNibName:bundle:` — designated initializer
-- `initWithCoder:` — designated initializer
-- `viewDidLoad` — `self.view` загружена
-- `viewWillAppear:` — начало анимации перехода на экран
-- `viewDidAppear:` — конец анимации перехода на экран
-- `viewWillDisappear:` — начало анимации перехода с экрана
-- `viewDidDisappear:` — конец анимации перехода с экрана
-- `viewDidLayoutSubviews` — после изменения лейаута `view`
+![](lecture_5_1_img/view_lifecycle.png)
+
+
+
+----
+
+## UIViewController
+
+Создание `UIViewController`:
+`- initWithNibName:bundle:` — designated initializer
+`- initWithCoder:` — designated initializer
+
+Обработка изменения состояния view:
+`- viewDidLoad` — `self.view` загружена
+`- viewWillAppear:` — начало анимации перехода на экран
+`- viewDidAppear:` — конец анимации перехода на экран
+`- viewWillDisappear:` — начало анимации перехода с экрана
+`- viewDidDisappear:` — конец анимации перехода с экрана
+`- viewWillLayoutSubviews`, `- viewDidLayoutSubviews` — изменениt лейаута `view`
+
+Обработка memory warning:
+`- didReceiveMemoryWarning`
+
+Уничтожение:
+`- dealloc`
 
 
 ----
