@@ -480,22 +480,22 @@ BW
 ## UIViewController
 
 Создание `UIViewController`:
-`- initWithNibName:bundle:` — designated initializer
-`- initWithCoder:` — designated initializer
+* `- initWithNibName:bundle:` — designated initializer
+* `- initWithCoder:` — designated initializer
 
 Обработка изменения состояния view:
-`- viewDidLoad` — `self.view` загружена
-`- viewWillAppear:` — начало анимации перехода на экран
-`- viewDidAppear:` — конец анимации перехода на экран
-`- viewWillDisappear:` — начало анимации перехода с экрана
-`- viewDidDisappear:` — конец анимации перехода с экрана
-`- viewWillLayoutSubviews`, `- viewDidLayoutSubviews` — изменениt лейаута `view`
+* `- viewDidLoad` — `self.view` загружена
+* `- viewWillAppear:` — начало анимации перехода на экран
+* `- viewDidAppear:` — конец анимации перехода на экран
+* `- viewWillDisappear:` — начало анимации перехода с экрана
+* `- viewDidDisappear:` — конец анимации перехода с экрана
+* `- viewWillLayoutSubviews`, `- viewDidLayoutSubviews` — изменениt лейаута `view`
 
 Обработка memory warning:
-`- didReceiveMemoryWarning`
+* `- didReceiveMemoryWarning`
 
 Уничтожение:
-`- dealloc`
+* `- dealloc`
 
 
 ----
