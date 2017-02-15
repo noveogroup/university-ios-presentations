@@ -19,10 +19,10 @@
 
 ## UIView subclassing
 
-* `- (id)initWithFrame:(CGRect)frame` — designated initializer
-* `- (id)initWithCoder:(NSCoder *)aCoder` — designated initializer при создании объекта view из XIB/Storyboard
-* `- (void)layoutSubviews` — определяет расположение вложенных view
-* `- (void)updateConstraints` — определяет расположение вложенных view
+* `- (instancetype)initWithFrame:(CGRect)frame` — designated initializer
+* `- (instancetype)initWithCoder:(NSCoder *)aDecoder` — designated initializer при создании объекта view из XIB/Storyboard
+* `- (void)layoutSubviews` — определяет расположение своих subviews
+* `- (void)updateConstraints` — определяет расположение своих subviews
 * `- (void)drawRect:(CGRect)rect` — выполняет отрисовку полностью кастомной view
 * `- (CGSize)sizeThatFits:(CGSize)size` — предпочтительный размер
 * `- (CGSize)intrinsicContentSize` — предпочтительный размер
@@ -39,7 +39,6 @@
 * `CGAffineTransform transform`
 * `CGFloat alpha`
 * `UIColor backgroundColor`
-* ~~`CGRect contentStretch`~~
 
 
 ----
@@ -69,8 +68,8 @@
 
 ```ObjectiveC
 [UIView animateWithDuration:2 animations:^{
-		view.transform = CGAffineTransformRotate(view.transform, M_PI / 3.0);
-	}];
+	view.transform = CGAffineTransformRotate(view.transform, M_PI / 3.0);
+}];
 ```
 
 
@@ -78,15 +77,28 @@
 
 ## UIView animation
 
-При использовании автолейаутов можно анимировать константу констрейнта.
+При использовании Auto Layout нужно анимировать константу констрейнта.
 
 ```ObjectiveC
-self.buttonBottom.constant = 40.0f;
-[self.view setNeedsUpdateConstraints];
+@interface ViewController ()
 
-[UIView animateWithDuration:0.25f animations:^{
+@property (nonatomic) IBOutlet NSLayoutConstraint *buttonTop;
+
+@end
+
+@implementation ViewController
+
+- (void)changeButtonTop
+{
+	self.buttonTop.constant = 40.0f;
+	[self.view setNeedsUpdateConstraints];
+
+	[UIView animateWithDuration:0.25f animations:^{
 	   [self.view layoutIfNeeded];
 	}];
+}
+
+@end
 ```
 
 
@@ -107,6 +119,9 @@ self.buttonBottom.constant = 40.0f;
 
 `CALayer` можно использовать для простенькой кастомизации view: тень, рамка, закруглённые края, градиент.
 
+* `CGPoint position`
+* `CGRect bounds`
+* `CGRect frame`
 * `CGPoint anchorPoint`
 * `CGColorRef borderColor`
 * `CGFloat borderWidth`
@@ -124,7 +139,7 @@ self.buttonBottom.constant = 40.0f;
 
 `CALayer` можно использовать для простенькой кастомизации view: тень, рамка, закруглённые края, градиент.
 
-В реальности лучше использовать картинки и маски, т.к. это даёт больше гибкости и работает ощутимо быстрее.
+НО! В реальности лучше использовать картинки и маски, т.к. это даёт больше гибкости и работает ощутимо быстрее.
 
 
 ----
@@ -151,9 +166,9 @@ self.button.layer.borderColor = [UIColor blackColor].CGColor;
 
 ## UIScrollView
 
-* Прокрутка по контенту, который не влезает полностью в область отображения
-* Анимированная навигация по областям контента или отдельным экранам (паджинация)
-* Масштабирование контента с помощью стандартных жестов
+* Прокрутка по контенту, который не влезает полностью в область отображения.
+* Анимированная навигация по областям контента или отдельным экранам (пагинация).
+* Масштабирование контента с помощью стандартных жестов.
 
 
 ----
@@ -195,9 +210,9 @@ self.button.layer.borderColor = [UIColor blackColor].CGColor;
 
 ## UIScrollView
 
-Без автолейаутов — руками высчитываем и устанавливаем `contentSize`.
+Без Auto Layout — руками высчитываем и устанавливаем `contentSize`.
 
-С автолейаутами — привязываем контент со всех сторон к ScrollView. При этом `contentSize` высчитывается автоматически и руками не меняется.
+С Auto Layout — привязываем контент со всех сторон к `UIScrollView`. При этом `contentSize` высчитывается автоматически и руками не меняется.
 
 
 ----
@@ -240,11 +255,11 @@ self.button.layer.borderColor = [UIColor blackColor].CGColor;
 
 ## UITableView
 
-* Список однородных элементов (ячейки могут быть разного типа, но основной смысл всё-таки в повторении)
-* Стандартная схема для переиспользования объектов
-* Реакция на прокрутку, нажатие, свайпы
-* Стандартная реализация добавления/удаления/перемещения, включая анимации
-* Ячейки таблицы принадлежат классу `UITableViewCell` (или его наследникам)
+* Список однородных элементов (ячейки могут быть разного типа, но основной смысл всё-таки в повторении).
+* Стандартная схема для переиспользования объектов.
+* Реакция на прокрутку, нажатие, свайпы.
+* Стандартная реализация добавления/удаления/перемещения, включая анимации.
+* Ячейки таблицы принадлежат классу `UITableViewCell` (или его наследникам).
 
 
 ----
@@ -270,16 +285,16 @@ self.button.layer.borderColor = [UIColor blackColor].CGColor;
 ## UITableView
 
 Необходимый минимум для работы с таблицей:
-* создать объект-таблицу и поместить его на видимую view
-* задать DataSource (объект должен отвечать протоколу `UITableViewDataSource`)
+* создать объект-таблицу и поместить его на видимую view.
+* задать DataSource (объект должен отвечать протоколу `UITableViewDataSource`).
 * в DataSource переопределить следующие методы:
 
 ```ObjectiveC
-- (UITableViewCell *)tableView:(UITableView *)tableView
-	cellForRowAtIndexPath:(NSIndexPath *)indexPath;
-	
 - (NSInteger)tableView:(UITableView *)tableView
 	numberOfRowsInSection:(NSInteger)section;
+	
+- (UITableViewCell *)tableView:(UITableView *)tableView
+	cellForRowAtIndexPath:(NSIndexPath *)indexPath;
 ```
 
 
@@ -288,8 +303,8 @@ self.button.layer.borderColor = [UIColor blackColor].CGColor;
 ## UITableView
 
 Для обработки нажатия на элемент списка необходимо:
-* задать Delegate (объект должен отвечать протоколу UITableViewDelegate)
-* в Delegate переопределить метод
+* задать Delegate (объект должен отвечать протоколу `UITableViewDelegate`)
+* в Delegate переопределить метод:
 
 ```ObjectiveC
 - (void)tableView:(UITableView *)tableView
@@ -339,7 +354,7 @@ self.button.layer.borderColor = [UIColor blackColor].CGColor;
 
 ## UITableView
 
-При использовании автолейаутов для ячеек можно автоматизировать вычисление высоты. Размер ячеек не должен отличаться слишком сильно, а заданная оценка высоты должна быть правдоподобной.
+При использовании Auto Layout для ячеек можно автоматизировать вычисление высоты. Размер ячеек не должен отличаться слишком сильно, а заданная оценка высоты должна быть правдоподобной.
 
 ```ObjectiveC
 self.tableView.estimatedRowHeight = 100.0;
@@ -351,10 +366,10 @@ self.tableView.rowHeight = UITableViewAutomaticDimension;
 
 ## UICollectionView
 
-* Двумерная коллекция (однородных) элементов
-* Работа с коллекцией очень похожа на `UITableView`
-* Мощные средства кастомизации лейаута элементов
-* Можно менять лейаут на лету
-* Можно менять геометрию ячеек, не перезагружая их
+* Двумерная коллекция (однородных) элементов.
+* Работа с коллекцией очень похожа на `UITableView`.
+* Мощные средства кастомизации лейаута элементов.
+* Можно менять лейаут на лету.
+* Можно менять геометрию ячеек, не перезагружая их.
 
 
