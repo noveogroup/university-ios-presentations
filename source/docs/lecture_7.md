@@ -30,9 +30,9 @@
 
 ### Поток
 
-* "Бесконечные" и пошаговые вычисления
-* Организация RunLoop
-* Явное управление порядком исполнения
+* "Бесконечные" и пошаговые вычисления.
+* Организация RunLoop.
+* Явное управление порядком исполнения.
 
 
 ----
@@ -132,6 +132,7 @@ dispatch_async(queue, ^{
 ...
 ```
 
+
 ----
 
 ## GCD типы очередей
@@ -184,7 +185,8 @@ QUEUE 2: |————block 2————| |——block 3——|
 ```ObjectiveC
 dispatch_group_t group = dispatch_group_create(); // Создание новой группы
 	
-dispatch_group_enter(group); // Метка о входе в группу, увеличивает кол-во незавершенных задач
+dispatch_group_enter(group); // Метка о входе в группу,
+// увеличивает кол-во незавершенных задач
 [SomeClassThatLoadsOffTheInternet getMyImages:^{ // do something with these.
 	dispatch_group_leave(group); // Метка о завершении работы и выходе из группы
 });
@@ -207,7 +209,7 @@ dispatch_group_wait(group, DISPATCH_TIME_FOREVER); // or
 
 ----
 
-## `NSOperation/NSOperationQueue`
+## `NSOperation / NSOperationQueue`
 
 * Потоки создаются автоматически, если необходимо.
 * Используется для логически обособленных задач.
@@ -317,8 +319,8 @@ operation2 = [[MyCustomOperation alloc] init];
 
 	static dispatch_once_t predicate;
 	dispatch_once(&predicate, ^{
-			_sharedInstance = [[Singleton alloc] init];
-		});
+		_sharedInstance = [[Singleton alloc] init];
+	});
 
 	return _sharedInstance;
 }
@@ -357,7 +359,7 @@ operation2 = [[MyCustomOperation alloc] init];
 	self.someString = someString;
 	
 	dispatch_async(dispatch_get_main_queue(), ^{
-			[self showCurrentData];
+		[self showCurrentData];
 	});
 }
 
@@ -415,7 +417,7 @@ operation2 = [[MyCustomOperation alloc] init];
 - (void)addTask:(Task *)task
 {
 	dispatch_async(self.tasksQueue, ^{
-			[self.tasks addObject:task];
+		[self.tasks addObject:task];
 	});
 }
 ```
