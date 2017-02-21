@@ -89,6 +89,26 @@
 
 ----
 
+## GCD - Synchronous vs. Asynchronous
+
+
+- Synchronous - `dispatch_sync`
+- Asynchronous - `dispatch_async`
+
+
+
+----
+
+
+## GCD - типы очередей
+
+- С последовательным выполнением задач (Serial) 
+- С параллельным выполнением задач (Concurrent)
+
+
+
+----
+
 ## GCD
 
 Пример выполнения асинхронной операции:
@@ -135,26 +155,7 @@ dispatch_async(queue, ^{
 
 ----
 
-## GCD типы очередей
-
-- С последовательным выполнением задач (Serial) 
-- С параллельным выполнением задач (Concurrent)
-
-
-
-----
-
-## GCD Synchronous vs. Asynchronous
-
-
-- Synchronous - `dispatch_sync`
-- Asynchronous - `dispatch_async`
-
-
-
-----
-
-## GCD очереди
+## GCD
 
 ```ObjectiveC
 dispatch_queue_t queue1 = dispatch_queue_create("MyQueue1", NULL); // Serial queue
@@ -180,7 +181,7 @@ QUEUE 2: |————block 2————| |——block 3——|
 
 ----
 
-## GCD группы
+## GCD - группы
 
 ```ObjectiveC
 dispatch_group_t group = dispatch_group_create(); // Создание новой группы
@@ -211,11 +212,14 @@ dispatch_group_wait(group, DISPATCH_TIME_FOREVER); // or
 
 ## `NSOperation / NSOperationQueue`
 
-* Потоки создаются автоматически, если необходимо.
 * Используется для логически обособленных задач.
 * Поддержка отмены операций.
 * Поддержка графа зависимостей между операциями.
 * Поддержка приоритезации операций.
+* Повторное использование операций.
+* Контроль над всей очередью (пауза, возобновление, отмена всех запросов).
+* Эффективное использование системных ресурсов (потоки создаются автоматически, если необходимо).
+
 
 
 ----
@@ -317,8 +321,8 @@ operation2 = [[MyCustomOperation alloc] init];
 {
 	static Singleton *_sharedInstance = nil;
 
-	static dispatch_once_t predicate;
-	dispatch_once(&predicate, ^{
+	static dispatch_once_t token;
+	dispatch_once(&token, ^{
 		_sharedInstance = [[Singleton alloc] init];
 	});
 
@@ -409,14 +413,23 @@ operation2 = [[MyCustomOperation alloc] init];
 {
 	self = [super init];
     if (self) {
-        _tasksQueue = dispatch_queue_create("com.mydomain.myapp.tasksQueue", NULL);
+        _tasksQueue = dispatch_queue_create("com.myDomain.myApp.tasksQueue", NULL);
     }
     return self;
 }
 
+- (Task *)taskByIndex:(NSUInteger)index
+{
+	__block Task *localTask = nil;
+	dispatch_sync(self.tasksQueue, ^{ // Синхронное чтение
+		localTask = [self.tasks objectAtIndex:index];
+	});
+	return localTask;
+}
+
 - (void)addTask:(Task *)task
 {
-	dispatch_async(self.tasksQueue, ^{
+	dispatch_async(self.tasksQueue, ^{ // Асинхронная запись
 		[self.tasks addObject:task];
 	});
 }
