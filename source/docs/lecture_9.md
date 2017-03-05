@@ -442,8 +442,10 @@ NSMutableArray<Person *> *mutableStaff = [self mutableArrayValueForKey:@"staff"]
 
 ## Key-Value Observing
 
-Чтобы обеспечить поддержку KVC/KVO для свойства, нужно соблюдать правила [руководства по KVC/KVO compliance](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/KeyValueCoding/Articles/Compliant.html). 
-
-По умолчанию свойства стандартных классов нельзя считать KVO-совместимыми, а документация явно указывает какие свойства обладают этим свойством.
+Справочная литература:
+* [Key-value observing](https://developer.apple.com/library/content/documentation/General/Conceptual/DevPedia-CocoaCore/KVO.html)
+* [Key-Value Observing Programming Guid](https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/KeyValueObserving/KeyValueObserving.html#//apple_ref/doc/uid/10000177-BCICJDHA)
+* [Understanding Key-Value Observing and Coding](http://www.appcoda.com/understanding-key-value-observing-coding/)
+* [Key-Value Coding and Observing](https://www.objc.io/issues/7-foundation/key-value-coding-and-observing/)
 
 
