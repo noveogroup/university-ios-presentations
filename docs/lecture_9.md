@@ -19,8 +19,13 @@
 
 **KVC** — механизм, позволяющий обращаться к значению (`Value`) свойства объекта, используя строковые идентификаторы — ключи (`Key`).
 
-* `KVC` основывается на методах протокола `NSKeyValueCoding`.
-* Ключи можно выстраивать в цепочку (`KeyPath`), обращаясь к вложенным свойствам. 
+`KVC` основывается на методах протокола `NSKeyValueCoding`.
+
+`KVC` предоставляет:
+* Доступ к свойствам объекта.
+* Доступ к свойствам в коллекциях. Вызов операторов коллекций на объектах в коллекциях.
+* Доступ к скалярным свойствам.
+* Доступ к свойствам по `KeyPath`.
 
 
 ----
@@ -244,6 +249,20 @@ predicate = [NSPredicate predicateWithFormat:@"age >= 19 AND age < 26"];
 - (NSString *)name {...}
 - (void)setName:(NSString *)name {...}
 ```
+
+
+----
+
+## Key-Value Coding
+
+Справочная литература:
+* [Key-value coding](https://developer.apple.com/library/content/documentation/General/Conceptual/DevPedia-CocoaCore/KeyValueCoding.html)
+* [About Key-Value Coding](https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/KeyValueCoding/)
+* [KVC Collection Operators](http://nshipster.com/kvc-collection-operators/)
+* [NSPredicate](https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/Predicates/AdditionalChapters/Introduction.html#//apple_ref/doc/uid/TP40001798-SW1)
+* [NSPredicate](https://developer.apple.com/reference/foundation/nspredicate?language=objc)
+* [NSPredicate](http://nshipster.com/nspredicate/)
+
 
 
 ----
