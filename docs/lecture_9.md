@@ -213,6 +213,7 @@ predicate = [NSPredicate predicateWithFormat:@"age >= 19 AND age < 26"];
     NSArray<Person *> *somePersons = [department.staff filteredArrayUsingPredicate:predicate];
 ```
 
+
 ----
 
 ## Key-Value Coding
