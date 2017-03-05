@@ -210,7 +210,7 @@ NSPredicate *predicate = [NSPredicate predicateWithFormat:@"name CONTAINS 'Bob'"
 NSArray <Person *> *bobs = [department.staff filteredArrayUsingPredicate:predicate];
 
 predicate = [NSPredicate predicateWithFormat:@"age >= 19 AND age < 26"];
-    NSArray<Person *> *somePersons = [department.staff filteredArrayUsingPredicate:predicate];
+NSArray<Person *> *somePersons = [department.staff filteredArrayUsingPredicate:predicate];
 ```
 
 
@@ -270,16 +270,16 @@ predicate = [NSPredicate predicateWithFormat:@"age >= 19 AND age < 26"];
 
 ## Key-Value Observing
 
-**KVO** — механизм, автоматизирующий нотификацию об изменениях свойств объекта. KVO является стандартной (встроенной) реализацией паттерна Observer.
+**KVO** — механизм, автоматизирующий нотификацию об изменениях свойств объекта. `KVO` является стандартной (встроенной) реализацией паттерна `Observer`.
 
 
 ----
 
 ## Key-Value Observing
 
-Объект, который хочет получать KVO-нотификации должен:
+Чтобы реализовать получение нотификаций, необходимо:
 
-* Подписаться на нотификации, указав получателя, объект и KeyPath для отслеживания, контекст, дополнительные опции (например нотификация до или после изменения значения).
+* Подписаться на нотификации, указав получателя, объект и `KeyPath` для отслеживания, контекст, дополнительные опции (например нотификация до или после изменения значения).
 * Обрабатывать полученные нотификации, проверив что они действительно должны быть обработаны. (Родительский класс мог так же подписаться на нотификации и их нужно передать в `super`).
 * По необходимости или в конце жизненного цикла отписаться от всех ранее созданных подписок.
 
@@ -297,7 +297,7 @@ KVO — мощный механизм, который не терпит ошиб
 
 ## Key-Value Observing
 
-* Создаём контекст. Он поможет определить, принадлежат ли нам полученные нотификации.
+* Создаём контекст. Он поможет определить, принадлежат ли объекту полученные нотификации.
   ```ObjectiveC
   static void *const myContext = (void *)&myContext;
   ```
@@ -325,8 +325,9 @@ KVO — мощный механизм, который не терпит ошиб
     change:(NSDictionary *)change context:(void *)context
 {
 	if (context != myContext) {
-		return [super observeValueForKeyPath:keyPath ofObject:object
+		[super observeValueForKeyPath:keyPath ofObject:object
 			change:change context:context];
+		return;
 	}
 
 	Person *person = (Person *)object;
@@ -339,7 +340,7 @@ KVO — мощный механизм, который не терпит ошиб
 
 ## Key-Value Observing
 
-KVO поддерживает свойства, не имеющие под собой ivar, например для которых значение вычисляется в геттере.
+`KVO` поддерживает вычисляемые свойства (не имеющие под собой ivar, значение вычисляется в геттере).
 
 ```ObjectiveC
 @property (nonatomic, copy) NSString *firstName;
@@ -358,11 +359,16 @@ KVO поддерживает свойства, не имеющие под соб
 
 ## Key-Value Observing
 
-KVO поддерживает свойства, не имеющие под собой ivar, например для которых значение вычисляется в геттере.
+`KVO` поддерживает вычисляемые свойства.
 
+Выразить зависимости можно с помощью методов:
 ```ObjectiveC
 + (NSSet *)keyPathsForValuesAffectingValueForKey:(NSString *)key
-{
++ (NSSet *)keyPathsForValuesAffecting<Key>
+```
+
+```ObjectiveC
++ (NSSet *)keyPathsForValuesAffectingValueForKey:(NSString *)key {
 	NSSet *keyPaths = [super keyPathsForValuesAffectingValueForKey:key];
 	
 	if ([key isEqualToString:@"fullName"]) {
@@ -382,19 +388,18 @@ KVO поддерживает свойства, не имеющие под соб
 ```
 
 
-
 ----
 
 ## Key-Value Observing
 
-KVO поддерживает отслеживание изменений содержимого коллекций. Однако для обеспечения работоспособности этого механизма, изменения должны происходить не напрямую в коллекции, а через прокси-объект:
+`KVO` поддерживает отслеживание изменений содержимого коллекций. Однако для обеспечения работоспособности этого механизма, изменения должны происходить не напрямую в коллекции, а через прокси-объект:
 
 ```ObjectiveC
-@property (nonatomic) NSArray <Person *> *staff;
+@property (nonatomic) NSArray<Person *> *staff;
 ```
 
 ```ObjectiveC
-NSMutableArray <Person *> *mutableStaff = [self mutableArrayValueForKey:@"staff"];
+NSMutableArray<Person *> *mutableStaff = [self mutableArrayValueForKey:@"staff"];
 [mutableStaff addObject:newEmployee];
 ```
 
@@ -403,16 +408,18 @@ NSMutableArray <Person *> *mutableStaff = [self mutableArrayValueForKey:@"staff"
 
 ## Key-Value Observing
 
+Основыные правила:
 * Все нотификации приходят в один метод-обработчик.
-* При переименовании свойства мы ответственны за обновление всех KeyPath-строк.
+* При переименовании свойства мы ответственны за обновление всех `KeyPath`-строк.
 * Каждый объект должен обрабатывать только "свои" нотификации. Нельзя отдавать в `super` свою нотификацию, не стоит обрабатывать нотификации, предназначенные для `super`.
-* Если кто-то использует свойство для KVO, к нему нельзя обращаться через ivar, или нужно вручную нотифицировать об изменении значения (`willChangeValueForKey:` / `didChangeValueForKey:`).
+* Если кто-то использует свойство для `KVO`, к нему нельзя обращаться через `ivar`, или нужно вручную нотифицировать об изменении значения (`willChangeValueForKey:` / `didChangeValueForKey:`).
 
 
 ----
 
 ## Key-Value Observing
 
+Основыные правила:
 * Нельзя не отписываться от нотификаций.
 * Нельзя отписываться дважды от одной и той же нотификации.
 * Нельзя проверить, подписан ли объект на нотификацию.
@@ -424,22 +431,11 @@ NSMutableArray <Person *> *mutableStaff = [self mutableArrayValueForKey:@"staff"
 
 Для избавления от страданий создано много обёрток над API KVO.
 
-ReactiveCocoa
+* [KVOBlocks](https://github.com/sleroux/KVO-Blocks)
+* [KVOController](https://github.com/facebook/KVOController)
+* [ReactiveCocoa](https://github.com/ReactiveCocoa/ReactiveCocoa)
 
-```ObjectiveC
-[RACObserve(model, keyname) subscribeNext:^(NSString *newValue) {
-    	...
-}];
-```
 
-KVOBlocks
-
-```ObjectiveC
-[model addObserver:self forKeyPath:@"keyname" options:NSKeyValueObservingOptionNew
-	context:nil withBlock:^(NSDictionary *change, void *context) {
-		...
-}];
-```
 
 
 ----
