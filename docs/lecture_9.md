@@ -207,7 +207,7 @@ NSNumber *avgAge = [department valueForKeyPath:@"staff.@avg.age"];
 
 ```ObjectiveC
 NSPredicate *predicate = [NSPredicate predicateWithFormat:@"name CONTAINS 'Bob'"];
-NSArray <Person *> *bobs = [department.staff filteredArrayUsingPredicate:predicate];
+NSArray<Person *> *bobs = [department.staff filteredArrayUsingPredicate:predicate];
 
 predicate = [NSPredicate predicateWithFormat:@"age >= 19 AND age < 26"];
 NSArray<Person *> *somePersons = [department.staff filteredArrayUsingPredicate:predicate];
@@ -366,7 +366,7 @@ KVO — мощный механизм, который не терпит ошиб
 + (NSSet *)keyPathsForValuesAffectingValueForKey:(NSString *)key
 + (NSSet *)keyPathsForValuesAffecting<Key>
 ```
-
+Пример:
 ```ObjectiveC
 + (NSSet *)keyPathsForValuesAffectingValueForKey:(NSString *)key {
 	NSSet *keyPaths = [super keyPathsForValuesAffectingValueForKey:key];
