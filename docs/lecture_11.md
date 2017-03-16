@@ -160,6 +160,7 @@ CLLocationManager позволяет:
     self.locationManager = [[CLLocationManager alloc] init];
     self.locationManager.delegate = self;
     self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+    self.locationManager.distanceFilter = kCLDistanceFilterNone; //double
     [self.locationManager startUpdatingLocation];
     // or -(void)startMonitoringSignificantLocationChanges;
 //...
@@ -174,12 +175,13 @@ CLLocationManager позволяет:
 
 ----
 
-## GooleMaps vs MapKit
-* \+ для нашей деревни детализация гораздо лучше
-* \- хуже интеграция с CoreLocation и CoreAnimation. В гугл-картах пин - это картинка
+## GooleMaps vs MapKit vc MapBox
+* \+ в MapKit детализация хорошая только в Америке
+* \- в MapKit лучше интеграция с CoreLocation и CoreAnimation. В гугл-картах пин - это картинка
 
 ![](./lecture_11_img/map_example_mapkit.png)
 ![](./lecture_11_img/map_example_google.png)
+![](./lecture_11_img/map_example_osm.jpg)
 
 
 ----
@@ -347,7 +349,11 @@ self.avPlayerVC.view.frame = self.view.frame;
 
 ----
 
-## Экспорт картинок
+## Photos
+
+[Системный фреймворк](https://developer.apple.com/reference/photos/phphotolibrary?language=objc) для доступа к фотографиям пользователя (локальных и в iCloud).
+
+Например, экспорт картинок
 ```ObjectiveC
 @import Photos;
 //...
@@ -398,16 +404,17 @@ self.avPlayerVC.view.frame = self.view.frame;
 ## Email
 ```ObjectiveC
 @import MessageUI;
-///...
-self.mailComposer = [[MFMailComposeViewController alloc] init];
-self.mailComposer.mailComposeDelegate = self;
-[self.mailComposer setSubject:@"Some subject"];
-[self.mailComposer setMessageBody:@"Hello world." isHTML:NO];
-[self.mailComposer
+//...
+MFMailComposeViewController *mailComposer = [[MFMailComposeViewController alloc] init];
+mailComposer.mailComposeDelegate = self;
+[mailComposer setSubject:@"Some subject"];
+[mailComposer setMessageBody:@"Hello world." isHTML:NO];
+[mailComposer setToRecipients:@[@"a@b.c"]];
+[mailComposer
     addAttachmentData:UIImageJPEGRepresentation(self.imageView.image, 0.8)
     mimeType:@"image/jpeg"
     fileName:@"MyPhoto.jpg"];
-[self presentViewController:self.mailComposer animated:YES completion:nil];
+[self presentViewController:mailComposer animated:YES completion:nil];
 //...
 
 - (void)mailComposeController:(MFMailComposeViewController *)controller
@@ -425,7 +432,7 @@ self.mailComposer.mailComposeDelegate = self;
 ## Социализация
 Social framework предоставляет универсальный способ шаринга на разные социальные платформы.
 * Работает только при наличии соответствующего аккаунта в настройках устройства
-* Простое и удобное API (в сравнении с Facebook SDK и особенно Twitter API)
+* Простое и удобное API (в сравнении с Facebook SDK/Twitter API)
 * Удобно (без ввода пароля), привычно и безопасно для пользователя
 * Мало возможностей (нет хитрых поисковых запросов, токен напрямую не доступен, кастомизации интерфейса).
 * Абстрагирует от способов отправки: приложение проработает без исправлений дольше при изменении политик Facebook
@@ -437,6 +444,8 @@ Facebook, Twitter, LinkedIn, Sina/Tencent Weibo
 
 ## Social framework
 ```ObjectiveC
+@import Social;
+//...
 SLComposeViewController *slController = [SLComposeViewController
     composeViewControllerForServiceType:SLServiceTypeFacebook];
 [slController setInitialText:@"Awesome post..."];
