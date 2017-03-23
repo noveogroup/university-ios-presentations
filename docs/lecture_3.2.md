@@ -1,17 +1,15 @@
-# 3 Управление памятью
+# Управление памятью
 
 ### Noveo University — iOS
-
-#### Дмитрий Горев
 
 
 ----
 
 ## Сегодня
 
-* Основы управления памятью
+* Повторение
 * Manual Retain-Release
-* Automatic Reference Counting
+* Autorelease pools
 
 
 ----
@@ -21,36 +19,6 @@
 * __Статическая память__ содержит глобальные и статические скалярные переменные и ссылки на объекты
 * __Локальная (стековая) память__ выделяется при входе в подпрограмму (метод, функцию) и освобождается при выходе из нее
 * __Динамическая память__ выделяется в рантайме и управляется кодом
-
-
-----
-
-## Управление динамической памятью
-
-* Динамическое выделение памяти
-* Использование выделенной памяти
-* Высвобождение выделенной памяти
-
-
-----
-
-## Виды управления памятью
-
-* Ручное управление
-  * new, calloc, malloc, delete, free
-  * Smart pointers (Boost / STL)
-  * Manual Retain-Release (MRR)
-* Автоматическое управление
-  * Garbage collection (GC)
-  * Automatic Reference Counting (ARC)
-
-
-----
-
-## Проблемы ручного управления памятью
-
-* Освобождение (перезапись) данных, которые все еще используются
-* Исполнение программы без освобождения памяти, занятой более ненужными данными
 
 
 ----
@@ -89,70 +57,13 @@
 
 ## Основные положения
 
-* Вы владеете любым объектом, который создаете (методами `alloc`, `new`, `copy`, `mutableCopy`)
-* Вы можете стать владельцем объекта (сохранив его от преждевременного уничтожения), вызвав его метод `retain`
-* Когда объект вам больше не нужен, вы отпускаете его методом `release` или `autorelease`
-* Вы не должны отказываться от владения объектом если вы его не создавали
-* Вы не владеете объектами, возвращенными по ссылке
-
-
-----
-
-## Кто такие "вы"?
-
-* Подпрограмма
-  * Метод объекта
-  * Метод класса
-  * Функция
-* Объект
-  * ivar
-
-
-----
-
-## Пример
-
-```
-  Pupil *aPupil = [[Pupil alloc] init];
-  // ...
-  NSString *name = aPupil.name;
-  // ...
-  [aPupil release];
-  aPupil = nil;
-```
-
-```
-  - (NSString *)fullName
-  {
-    NSString *fullName = 
-      [[[NSString alloc] initWithFormat:@”%@ %@”,
-      self.surname, self.name] autorelease];
-
-    return fullName;
-  }
-```
-
-
-----
-
-## Под капотом
-
-* Выделение памяти под объект (и его переменные) происходит в методе класса `alloc`
-* Высвобождение памяти и ресурсов происходит в методе объекта `dealloc`
-* Каждый объект имеет свойство-счетчик ссылок (счетчик владельцев) `retainCount`
-* Объект умирает (вызывается метод `dealloc`) когда счетчик ссылок достигает нуля
-
-
-----
-
-## Управление счетчиком ссылок
-
-* Методы `alloc`, `new`, `copy`, `mutableCopy` возвращают объекты с счетчиком ссылок равным единице*
+* Методы `alloc`, `new`, `copy`, `mutableCopy` возвращают объекты с счетчиком ссылок равным единице
 * Метод `retain` увеличивает счетчик на единицу
 * Метод `release` уменьшает счетчик на единицу
 * Метод `autorelease` выполняет отложенное уменьшение счетчика на единицу
-
-\*На самом деле не всегда, но мы должны так считать
+* Объект умирает (вызывается метод `dealloc`) когда счетчик ссылок достигает нуля
+* Вы не должны отказываться от владения объектом если вы его не создавали
+* Вы не владеете объектами, возвращенными по ссылке
 
 
 ----
@@ -171,6 +82,20 @@ NSMutableArray *arrayCopy = [array mutableCopy]; //1
 [arrayCopy release]; //0
 [arrayCopy release]; //Exception - zombie
 ```
+
+
+----
+
+## Пример
+
+![](lecture_3.1_img/l3.1_apple_example.png)
+
+
+----
+
+## Пример
+
+![](lecture_3.1_img/Graph_2_2.png)
 
 
 ----
@@ -296,9 +221,7 @@ if (error) {
 ## То же самое
 
 ```ObjectiveC
-@interface Person : NSObject {
-    NSString *_lastName;
-}
+@interface Person : NSObject
 @property (retain) NSString *lastName;
 @end
 
@@ -367,7 +290,7 @@ if (error) {
 - (void)dealloc
 {
     [_age release];
-    _age = nil;
+    _age = nil; // зачем?
     [_birthDate release];
     _birthDate = nil;
     [super dealloc];
@@ -443,20 +366,6 @@ if (error) {
 
 ----
 
-## Пример
-
-![](lecture_3.2_img/Graph_3.png)
-
-
-----
-
-## Граф объектов приложения
-
-![](lecture_3.2_img/Graph_2_1.png)
-
-
-----
-
 # Autorelease Pools
 
 
@@ -505,106 +414,6 @@ if (error) {
 
 ----
 
-## Литература
-
-* [Memory Management Policy](https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/MemoryMgmt/Articles/mmRules.html#//apple_ref/doc/uid/20000994-BAJHFBGH)
-* [Practical Memory Management](https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/MemoryMgmt/Articles/mmPractical.html#//apple_ref/doc/uid/TP40004447-SW1)
-
-
-----
-
-# Automatic Reference Counting
-
-
-----
-
-## Переход на ARC
-
-* Концептуально ARC идентичен MRR
-* В отличии от MRR, подсчет ссылок осуществляется автоматически
-* Все необходимые для управления памятью вызовы расставляются за вас на этапе компиляции
-
-
-----
-
-## Преимущества ARC
-
-* Лишен недостатков, присущих ручным способам управления памятью
-* Уменьшает объем кода
-* Уменьшает время разработки
-* Нарушение установленных правил управления памятью приводит к ошибке компиляции
-
-
-----
-
-## Когда использовать ARC?
-
-“You are strongly encouraged to use ARC for new projects.”
-
-Copyright © 2012 Apple Inc. All Rights Reserved.
-
-
-----
-
-## Ограничения ARC
-
-Запрещено вызывать:
-* `retain`
-* `release` (`autorelease`)
-* `[super dealloc]`
-
-
-----
-
-## Классификаторы времени жизни
-
-* `strong` ( = `retain`, по умолчанию для объектов)
-* `weak`
-* `unsafe_unretained` ( = `assign`)
-
-
-----
-
-## Классификаторы времени жизни
-
-К переменным применимы следующие классификаторы:
-* __strong (по умолчанию для объектов)
-* __weak
-* __unsafe_unretained
-* __autoreleasing
-
-
-----
-
-## Классификаторы времени жизни
-
-Оформляйте классификаторы правильно!
-
-`ClassName *qualifier variable;`
-
-
-----
-
-## Пример
-
-```ObjectiveC
-MyClass *__weak weakReference = ...;
-
-MyClass *__unsafe_unretained unsafeReference = ...;
-```
-
-
-----
-
-## Включение/выключение ARC
-
-При помощи флагов компилятора
-* -fobjc-arc
-* -fno-objc-arc
-
-
-----
-
 # Autorelease Pool Blocks
 
 
@@ -633,28 +442,53 @@ MyClass *__unsafe_unretained unsafeReference = ...;
 
 ----
 
-## Диагностика управления памятью
+Autoreleasepool очищается на каждой итерации Run Loop-а
 
-* Clang Static Analyzer
-* Developer Tools - Instruments
-
-
-----
-
-## Темы для самостоятельного изучения
-
-[Особенности управления памятью в Core Foundation с использованием ARC](https://developer.apple.com/library/ios/releasenotes/ObjectiveC/RN-TransitioningToARC/Introduction/Introduction.html#//apple_ref/doc/uid/TP40011226-CH1-SW1)
+![](lecture_3.2_img/runloop.png)
 
 
 ----
 
-## Справочная литература
+## Пример
 
-[Advanced Memory Management Programming Guide](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/MemoryMgmt/Articles/MemoryMgmt.html#//apple_ref/doc/uid/10000011-SW1)
 
-[Transitioning to ARC Release Notes](https://developer.apple.com/library/ios/releasenotes/ObjectiveC/RN-TransitioningToARC/Introduction/Introduction.html#//apple_ref/doc/uid/TP40011226-CH1-SW11)
+```ObjectiveC
+typedef int(^Blocky)(void);
 
-[Toll-Free Bridged Types](https://developer.apple.com/library/ios/documentation/CoreFoundation/Conceptual/CFDesignConcepts/Articles/tollFreeBridgedTypes.html#//apple_ref/doc/uid/TP40010677)
+Blocky b[3];
+NSMutableArray<Blocky> *bb = @[].mutableCopy;
 
-[ARC Best Practices](http://amattn.com/p/arc_best_practices.html)
+for (int i=0; i<3; i++) {
+    b[i] = ^{ return i;};
+    bb[i] = ^{ return i;};
+}
+for (int i=0; i<3; i++) {
+    printf("b %d\n", b[i]());
+    NSLog(@"bb %d\n", bb[i]());
+}
+
+```
+
+
+----
+
+## Включение/выключение ARC
+
+При помощи флагов компилятора
+* -fobjc-arc
+* -fno-objc-arc
+
+
+----
+
+## Литература
+
+* [Memory Management Policy](https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/MemoryMgmt/Articles/mmRules.html#//apple_ref/doc/uid/20000994-BAJHFBGH)
+* [Practical Memory Management](https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/MemoryMgmt/Articles/mmPractical.html#//apple_ref/doc/uid/TP40004447-SW1)
+* [Run Loop](https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/RunLoopManagement.html)
+* [Block tricks 1](http://stackoverflow.com/questions/35834972/objc-how-to-explicitly-hand-off-ownership-to-a-block-that-will-be-performed-as)
+* [Block tricks 2](http://www.friday.com/bbum/2009/08/29/blocks-tips-tricks/)
+
+
+
 
