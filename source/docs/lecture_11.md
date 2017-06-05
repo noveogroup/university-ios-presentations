@@ -186,6 +186,13 @@ CLLocationManager позволяет:
 
 ----
 
+## GooleMaps vs MapKit
+
+![](./lecture_11_img/timeline_changes.gif)
+
+
+----
+
 # Мультимедиа
 
 * Проигрывание аудио/видео
