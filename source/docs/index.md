@@ -1,7 +1,6 @@
 ### Noveo University — iOS
 
-Онлайн-презентации
-
+* [New. Swift1](docs/lecture_swift_1.html)
 * [0. Intro](docs/lecture_0.html)
 * [1. Objective-C](docs/lecture_1.html)
 * [2. Основы управления памятью, блоки](docs/lecture_3.1.html)
@@ -16,3 +15,5 @@
 * [10. Обработка событий](docs/lecture_10.html)
 * [11. Навигация, мультимедиа, шаринг](docs/lecture_11.html)
 * [12. Управление памятью: детали, MRR](docs/lecture_3.2.html)
+
+
