@@ -1,4 +1,4 @@
-# 1. Введение в Swift
+# 1. Введение в Swift. Часть 1
 
 ### Noveo University — iOS
 
@@ -34,6 +34,8 @@ import Foundation
 			of the multiline string
 	"""
 ```
+
+<!-- Рассказать про строки, characters и кластеры. Почему string.count - это не то, что кажется -->
 
 <!-- Описание работы с функцией вывода в лог -->
 
@@ -124,7 +126,163 @@ import Foundation
 
 
 ----
+## Коллекции. Массив
+```swift
+	// Array<Element>
+	let array = ["cat", "dog"]
+	let emptyArray = Array<String>()
+	var emptyArray2: [String] = []
+	emptyArray2[0] = "some"
+	emptyArray2.removeFirst()
+	
+	var repeating = Array(repeating: 0, count: 10) //0000000000
+	repeating[3...8] = [1, 1] // 000110
+	// 3...8  CountableClosedRange<Int>
+	// 3..<9  CountableRange<Int>
+	
+	let sum = ["woman"] + ["man"] // ["woman", "man"]
+```
+* Определëн как обобщëнная коллекция (generic)
+* Является value-type
+* Объявляйте через `let` когда возможно (простота и оптимизация)
+
+
+----
+## Коллекции. Словарь
+<!-- Рассказать о хэш-таблице и о Hashable -->
+```swift
+	// Dictionary<Key, Value>; Key must be Hashable
+	let dictionary = ["key1": 7, "key2": 14, "key3": 21]
+	let emptyDictionary = Dictionary<String, Int>() 
+	var emptyDictionary2: [String: Int] = [:]
+	emptyDictionary2["key"] = 0
+	let old = emptyDictionary2.removeValue(forKey: "key")
+```
+* Определëн как обобщëнная коллекция (generic)
+* Является value-type
+* Элементы не упорядочены
+* Объявляйте через `let` когда возможно (простота и оптимизация)
+
+
+----
+## Коллекции. Множество
+```swift
+	// Set<Element>; Key must be Hashable
+	
+	let emptySetOfChar = Set<Character>()
+	
+	var setOfInt: Set<Int> = [0, 3, 2, 99]
+	setOfInt.insert(1)
+	let contains = setOfInt.contains(99)
+	let removed = setOfInt.remove(10)
+```
+* Определëн как обобщëнная коллекция (generic)
+* Является value-type
+* Элементы не упорядочены
+* Объявляйте через `let` когда возможно (простота и оптимизация)
+
+
+----
+## Коллекции. Операции над множествами
+Пересечения
+```swift
+	let odd: Set = [1, 3, 5, 7, 9]
+	let even: Set = [0, 2, 4, 6, 8]
+	let prime: Set = [2, 3, 5, 7]
+	
+	odd.union(even) // 0...9
+	odd.intersection(even) // empty
+	odd.subtracting(prime) // 1, 9
+	odd.symmetricDifference(prime) // 1, 2, 9
+```
+Принадлежность
+```swift
+	func isSubset(of:) // проверка является ли подмножеством
+	func isSuperset(of:) // проверка является ли надмножеством
+	func isStrictSubset(of:) // проверка является ли подмножеством и не равно
+	func isStrictSuperset(of:) // проверка является ли надмножеством и не равно
+	func isDisjoint(with:) // проверка на отсутствие общих элементов
+```
+
+
+----
 ## Перечисления
+```swift
+	enum Some {
+		case first, second 
+		case third
+	}
+	
+	let some = Some.second
+	switch some {
+		case .first: 
+			fallthrough
+		case .second: 
+			print("first or second")
+		default:
+			break
+	}
+	
+	enum Digit: Int {
+		case zero = 0, one, two, five = 5, six, seven
+	}
+	print(Digit.six.rawValue) // 6
+```
+* Является value-type
+* Поддерживает `Hashable` в указанном виде
+
+
+----
+## Перечисления. Ассоциированные значения
+```swift
+enum Barcode {
+	case upc(Int, Int, Int, Int)
+	case qr(String)
+}
+```
+```swift
+switch code {
+	case let .upc(system, manufacturer, product, check):
+		print(system, manufacturer, product, check)
+	case .qr(var productCode):
+		print(productCode)
+}
+if case let .qr(productCode) = code { /* ... */ } 
+
+let array: [Barcode] = // Some array of barcodes
+for case let .qr(productCode) in array {
+	print(productCode)
+}
+```
+<!-- показать возможные места для let\var -->
+* Не поддерживает `Hashable`
+
+
+----
+## Перечисления. Вложенность
+В случае если ваше перечисление содержит некоторые случаи, которые содержат в качестве ассоциированного значения объект того же перечисления, то необходимо использовать `indirect`
+
+```swift
+indirect enum ArithmeticExpression {
+	case number(Int)
+	case add(ArithmeticExpression, ArithmeticExpression)
+}
+
+func calculate(exp: ArithmeticExpression) -> Int {
+	switch exp {
+		case let .number(value):
+			return value
+		case let .add(first, second):
+			return calculate(exp: first) + calculate(exp: second)
+	}
+}
+```
+
+
+----
+## Перечисления. Ассоциированные значения
+Чтобы сделать работу с перечислениями ещë более новороченной в `Swift` реализован механизм Pattern Matching.
+
 
 
 ----
@@ -135,26 +293,6 @@ enum Optional<T> {
 	case none
 }
 ```
-
-
-----
-## Коллекции
-<!-- Слайд для напоминания синтаксиса --->
-
-Для создания массивов и словарей используются `[]`
-```swift
-	// Array<String>
-	let array = ["cat", "dog"]
-	let emptyArray = [String]()
-	let emptyArray2: [String] = []
-	
-	// Dictionary<String, Int>; Key must be Hashable
-	let dictionary = ["key1": 7, "key2": 14, "key3": 21]
-	let emptyDictionary = [String: Int]() 
-	let emptyDictionary2: [String: Int] = [:]
-```
-
-
 
 
 
