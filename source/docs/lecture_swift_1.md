@@ -249,8 +249,8 @@ switch code {
 }
 if case let .qr(productCode) = code { /* ... */ } 
 
-let array: [Barcode] = // Some array of barcodes
-for case let .qr(productCode) in array {
+let barcodes: [Barcode] = // Some array of barcodes
+for case let .qr(productCode) in barcodes {
 	print(productCode)
 }
 ```
@@ -282,18 +282,69 @@ func calculate(exp: ArithmeticExpression) -> Int {
 ----
 ## Перечисления. Ассоциированные значения
 Чтобы сделать работу с перечислениями ещë более новороченной в `Swift` реализован механизм Pattern Matching.
-
+```swift
+	enum NumberExpression {
+		case sum(Int, Int)
+		case subtract(Int, Int)
+	}
+	
+	func calculate(numberExpression: NumberExpression) -> Int {
+		switch numberExpression {
+			case let .sum(first, second) where first == second:
+				return 2 * first
+			case let .sum(first, second):
+				return first + second
+			case let .subtract(first, second):
+				return first - second
+		}
+	}
+```
+```swift
+	for case let .qr(productCode) in barcodes where productCode.contains("QWE") {
+		print(productCode)
+	}
+```
 
 
 ----
 ## Optional
+В `Swift` реализована обработка ситуацией отсутствия значения на уровне компиляции. Для этого определëн тип
 ```swift
-enum Optional<T> {
-	case some(T)
-	case none
-}
-```
+	enum Optional<Wrapped> {
+		case none
+		case some(Wrapped)
+	}
 
+	var integer: Int? // default value is none
+	var another: Optional<Int> = 5
+	
+	// Оператор ! разворачивает содержимое, но это небезопасно - runtime error
+	print(another!) 
+	
+	if let unwrapped = integer {
+		print(unwrapped) // unwrapped имеет тип Int
+	}
+	
+	integer?.hashValue // optional chaining
+	var someVariable: [Int!] //  compile error. Почему?
+```
+<!-- fatal error в случае nil!. Также обратить внимание, что нельзя с пробелом написать `another !`-->
+<!-- [Int!] //  compile error потому, что ! - это особенность декларации объекта и не является типом (тип - Optional). То есть это привязка к имени, а потому может быть написана только на верхнем уровне и никаких вложений -->
+
+
+----
+## Optional. nil
+В `Swift` для обозначения отсутствия значения у переменной используется ключевое слово `nil`. Работает это с помощью
+```swift
+	protocol ExpressibleByNilLiteral {
+	    /// Creates an instance initialized with `nil`.
+	    public init(nilLiteral: ())
+	}
+```
+Только тип `Optional` соответствует `ExpressibleByNilLiteral`. Соответствие `ExpressibleByNilLiteral` для типов, использующих `nil` для других целей, не рекомендуется.
+```swift
+	var variable: Int? = nil // .none
+```
 
 
 ----
@@ -301,16 +352,22 @@ enum Optional<T> {
 
 ```swift
 	if condition {
+		// condition is true
+	} else if condition2 {
+		// condition is not true, condition2 is true
+	} else {
+		// condition and condition2 are both false
 	}
 	
-	enum Some {
-		case one, two, three
+	guard condition3 else {
+		// condition3 is not true in else block
+		return // break | continue | throw
 	}
 	
-	switch someValue {
-	case .one:
+	switch someInteger {
+	case 0:
 		fallthrough
-	case .two:
+	case 1..<5:
 		break
 	default:
 		break
@@ -318,9 +375,255 @@ enum Optional<T> {
 ```
 
 
+----
+## Поток управления, циклы
+
+```swift
+	for i in 0...9 {
+	}
+	while condition {
+	}
+	
+	repeat {
+	} while condition
+```
+* Возможны ситуации, когда внутри цикла (или проверки) вы имеете вложенные циклы и/или проверки, которые должны влиять на работу внешнего блока. Для этого предусмотрена возможность выдачи имени
+
+```swift	
+	loopName: for (key, value) in dictionary.enumerated() {
+		switch value {
+			case .stop:
+				break loopName
+			case .continue:
+				continue loopName
+			default: 
+				break
+		}
+		// some logic
+	}	
+```
 
 
+----
+## Функции
+
+* Помогают структурировать код 
+* Облегчают понимание логики работы программы
+* Переиспользование 
+* Бывают глобальные, объектные и анонимные
+
+<!-- 
+Рассказать про по сути идентичность функций, методов и closure
+про то, что можно объявить в функции функцию и что это по сути является константным closure и имя функции является именем этой константы. Хранится на стеке
+-->
 
 
+----
+## Функции, синтаксис
 
+```swift
+	func f1(param1: Int, param2: Int) -> Int { return 0 }
+	let _ = f1(param1: 0, param2: 0)
+	
+	func f2(_ param1: Int, param2: Int = 12) -> (Int, Bool) { return (0, false) }
+	let _ = f2(0, param2: 0) // or
+	let _ = f2(0)
+	
+	func f3(external1 param1: Int, external2 param2: Int) {}
+	f3(external1: 0, external2: 0)
+	
+	// Можно передать >= 0 значений, в функции максимум 1 такой параметр 
+	func f4(numbers: Double...) {} 
+	f4(numbers: 1, 2, 3) // or
+	f4(numbers: 1, 2, 3, 4, 5.5, 6)
+	
+	func swap(_ a: inout Int, _ b: inout Int) {}
+	var var1 = 0; var2 = 1
+	swap(&var1, &var2)
+	
+```
+<!-- inout не может иметь дефолт значение, переменный по количеству значений параметр не может быть inout 
+
+inout работает по принципу скопировали сначала, поработали, скопировали обратно
+-->
+
+
+----
+## Функции, синтаксис
+<!-- можно объявлять вложенные функции -->
+```swift
+	func changeByOne(increase: Bool) -> (Int) -> Int {
+		func incrementFunc(value: Int) -> Int { return value + 1 }
+		func decrementFunc(value: Int) -> Int { return value - 1 }
+		
+		return increase ? incrementFunc : decrementFunc
+	}
+```
+<!-- Но проще использовать closure -->
+```swift
+	func f1(closure: @escaping () -> Void)  {
+		OperationQueue.main.addOperation(closure)
+	}
+	
+	func f2(closure: () -> Void)  {
+		closure()
+	}
+	
+	class Person {
+		var age = 20
+		
+		func life() {
+			f1(closure: {
+				self.age = 21
+			})
+
+			f2(closure: {
+				age = 21
+			})
+		}
+	}
+```
+
+
+----
+## Closures
+Замыкания могут захватывать и хранить ссылки на любые константы и переменные из контекста, в котором они определены. Функции, описанные перед этим, являются по сути специальными случаями замыканий.
+
+* Глобальная функция - замыкание, которое имеет имя и не захватывает значения
+* Вложенная функция - замыкание, которое имеет имя и может захватывать значения из содержащей еë функции
+* Closure - анонимное замыкание, которое может захватывать значения из окружения
+<!-- тут я написал по англ чтобы разнести смысл определений. Слева (closure) - конструкция языка, а справа еë определение -->
+
+
+----
+## Closures, синтаксис
+<!-- 
+```swift
+	{ (parameters) -> returnType in
+		statements
+	}
+```
+Параметры
+* могут быть inout
+* могут быть с переменные количеством значений, если указано имя
+* могут быть кортежами
+
+ключевое слово in означает конец декларации параметров и возвращаемого значения, и тем самым служит началом определения тела замыкания
+-->
+```swift
+	reversed = strings.sorted(by: { (s1: String, s2: String) -> Bool in
+		return s1 > s2
+	})
+	
+	reversed = strings.sorted(by: { (s1: String, s2: 
+			String) -> Bool in return s1 > s2 } ) // написано на одной строке
+	
+	reversed = strings.sorted(by: { s1, s2 in return s1 > s2 } ) // вывели типы
+	
+	reversed = strings.sorted(by: { s1, s2 in s1 > s2 } ) // отбросили return
+	
+	reversed = strings.sorted(by: { $0 > $1 } ) // алиас для аргументов
+	
+	reversed = strings.sorted() { $0 > $1 } // trailing closure
+	
+	reversed = strings.sorted { $0 > $1 } // пустые скобки можно убрать
+	
+	reversed = strings.sorted(by: >) // > - это оператор - функция
+	
+
+```
+
+
+----
+## Closures, захват значений
+* Вложенная функция - замыкание, которое имеет имя и может захватывать значения из содержащей еë функции
+```swift
+	func increment(amount: Int) -> () -> Int {
+		var total = 0
+		func incrementNestedFunc() -> Int {
+			total += amount
+			return total
+		}
+		return incrementNestedFunc
+	}
+	
+	let f = increment(amount: 10)
+	print(f()) // 10
+	print(f()) // 20
+	
+	let f2 = increment(amount: 10)
+	print(f2()) // 10
+	print(f()) // 30
+```
+
+
+----
+## Классы и структуры
+
+* Имеют свойства для хранения значений
+* Имеют методы для предоставления функциональности
+* Имеют конструкторы - возможность инициализации
+* Могут быть расширены по функциональности
+* Могут реализовывать протоколы (следовать контрактам)
+###Только классы:
+* Наследование
+* Преобразование типа в рантайме (type casting)
+* Деинициализация (можно освободить ресурсы доп.логикой)
+* Подсчëт ссылок - один и тот же объект доступен в нескольких местах
+
+<!-- 
+	Рассказать ref & value types 
+	Начать рассказ с того, что такое структура (Толя посоветовал вести речь на примере числа. Типа у тебя есть число, ты с ним работаешь и оно прямо у тебя рядом. Ты меняешь число и оно полностью меняется. Становится другим. А с классом немного по другому. Это та же структура, только лежит где-то там, в куче. И чтобы с ней работать тебе выдаëтся ссылка. Ссылка это как структура. Вот она у тебя есть и если ты еë поменяешь, то поменяется всë. Но объект по ссылке останется нетронутым. 
+	Размышления на тему когда что использовать. Как общую рекомендацию для структур можно привести
+	* объединение нескольких простых значений
+	* поля сущности в основном value-type (поскольку мы ожидаем, что будет копирование происходить. так пусть копируется)
+	* не нужно никакое наследование (свойств и поведения) от других типов
+	-->
+
+
+----
+## Классы и структуры, синтаксис
+
+```swift
+	struct HumanMeasure {
+    var weight: Float = 0
+    var height: Float = 0
+	}
+	/* HumanMeasure(), HumanMeasure(weight: 90, height: 190) */
+	
+	class Person {
+	    var measure = HumanMeasure()
+	}
+	
+	let man = Person()
+	var value = man.measure
+	value.weight = 90
+	print(man.measure.weight) // 0.0
+	
+	let manRef2 = man
+	manRef2.measure = HumanMeasure(weight: 90, height: 190)
+	print(man.measure.height) // 190.0
+```
+<!-- рассказать, что все поля должны иметь значение по умолчанию -->
+
+
+----
+## Классы и структуры, свойства
+
+```swift
+	class Person {
+		private var measure = HumanMeasure() // stored property
+		var weight: Float { // computed property
+			get {
+				return measure.weight
+			}
+			set {
+				measure.weight = weight
+			}
+		}
+		
+		lazy var child = Person()
+		static var personsNumber = 0
+	}	
+```
 
