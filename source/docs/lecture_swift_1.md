@@ -617,13 +617,25 @@ inout работает по принципу скопировали сначал
 			get {
 				return measure.weight
 			}
-			set {
-				measure.weight = weight
+			set { // or set(newWeight)
+				measure.weight = newValue
 			}
 		}
-		
+		var age = 0 {
+			willSet { // or willSet(newAge)
+				print(newValue)
+			}
+			didSet { // or didSet(oldAge)
+				print(oldValue)
+			}
+		}
 		lazy var child = Person()
 		static var personsNumber = 0
 	}	
 ```
+
+
+----
+## Классы и структуры, методы
+
 
