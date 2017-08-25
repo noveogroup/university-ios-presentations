@@ -638,4 +638,49 @@ inout работает по принципу скопировали сначал
 ----
 ## Классы и структуры, методы
 
+<!-- 
+		static - нельзя переопределить в наследниках классов
+class - можно 
+
+		Рассказать про self	- неявное свойство объекта, которое является точным эквивалентом объекта, обращения к нему
+-->
+		
+```swift
+	struct Counter {
+		private(set) var number = 0
+		
+		@discardableResult
+		mutating func increment(by number: Int) -> Int { 
+			self.number += number 
+			return self.number
+		}
+		
+		mutating func reset(to number: Int) {
+			self = Counter(number: number)
+		}
+		
+		static func print(counter: Counter) {
+			print("The number is ", counter.number)
+		}
+	}
+```
+
+
+----
+## Классы и структуры, subscript
+
+```swift
+	class Vector {
+		private var components = [Double]()
+
+		subscript(index: Int) -> Double {
+			get {
+				return components[index]
+			}
+			set {
+				components[index] = newValue
+			}
+		}
+	}
+```
 
