@@ -940,3 +940,236 @@ class - можно
 ```
 
 
+----
+## Протоколы
+* Наряду со структурами, перечислениями и классами в `Swift` существует тип данных `protocol`. 
+* С его помощью можно налагать контрактные обязательства.
+* Не может быть создан непосредственный экземпляр, однако можно работать с другими объектами под видом протокола (если их тип данных ему удовлетворяет).
+* Можно реализовывать сразу несколько протоколов
+
+```swift
+	protocol SomeProtocol {
+		var variable: Bool {get set}
+		func f()
+	}
+	
+	struct Example: SomeProtocol {
+		var variable = false
+		func f() {
+			// do nothing
+		}
+	}
+```
+
+<!--
+	Рассказать какие могут быть написаны требования в протоколах
+	* свойства гет сет; static\class, не static\class
+	* функции static\class, не static\class
+	* subscript-ы
+	* mutating для value type. Если реализует класс, то писать не надо
+	* инициализаторы - можно как DI можно как convenience. Но в любом случае реализацию надо будет пометить как required. С такой помощью данный инициализатор будет у всех потомков либо по наследованию либо по непосредственному переопределению, и таким образом протокол будет выполняться.
+	* Если класс final, то помечать инициализаторы из протокола как обязательные не надо. Всë равно наследоваться некому
+-->
+
+
+----
+## Расширения
+* Позволяет добавить новую, но не может перегрузить имеющуюся функциональность у любых уже существующих типов данных.
+<!--
+	* вычисляемые свойства
+	* классовые и объектные методы
+	* инициализаторы
+	* сабскрипты
+	* доопределить новые вложенные типы
+-->
+* Нельзя добавить хранимые свойства
+* Позволяет элегантно реализовать поддержку протокола.
+```swift
+	class A { var x = 0 }
+
+	protocol P {
+	    func calculate() -> Int
+	    func function()
+	}
+	
+	extension P {
+	    func function() {} // default implementation
+	}
+	
+	extension A: P {
+	    func calculate() -> Int { return x }
+	}
+```
+
+
+----
+## Обработка ошибок
+* В `Swift` ошибками могут быть любые типы, которые следуют пустому протоколу `Error`
+```swift
+	enum SomeError: Error {
+		case mistake(Int)
+		case incorrectFlow
+		case unknownError
+	}
+```
+* С помощью выбрасывания ошибки вы можете корректно обработать случаи неверного хода работы программы
+```swift
+	func generateOddNumber() throws -> Int {
+		let number = Int(arc4random())
+		if number % 2 == 0 {
+			throw SomeError.incorrectFlow
+		}
+		return number
+	}
+```
+* Не запускает раскрутку стека (поиск способного к обработке ситуации блока `catch`)
+
+
+----
+## Обработка ошибок
+```swift
+	do {
+		let n = try generateOddNumber()
+		print(n)
+	} catch SomeError.incorrectFlow {
+	    print("It's generated even number")
+	} catch let SomeError.mistake(mistakeNumber) where mistakeNumber % 5 != 0 {
+	    print("mistake", mistakeNumber)
+	} catch {
+	    print(error.localizedDescription) // error provided by Swift
+	}
+```
+Либо можно воспользоваться `Optional chaining`
+```swift
+	let n = try? generateOddNumber() // n has Optional<Int> type
+	let n2 = try! generateOddNumber() // n has Int type
+```
+
+
+----
+## Приведение типов
+* Данный механизм позволяет:
+	1. Проверить тип объекта
+	2. Начать работу с ним под видом какого-то другого типа его иерархии
+	3. Проверить следует ли тип данных указанному протоколу
+* Два оператора **`is`** и **`as`**
+	1. is - проверка для дочерних классов или протоколов
+	2. as? - безопасное преобразование к указанному типу данных
+	3. as! - небезопасное
+
+
+----
+## Приведение типов
+* В `Swift` определено два специальных типа данных для возможности работы с неспецифицированными типами:
+	1. **`Any`** может представлять объект любого типа (даже функции)
+	2. **`AnyObject`** может использоваться как тип конкретного объекта произвольного класса, классовый тип или как классовый протокол.
+
+```swift
+	// Swift lib:
+	@objc public protocol AnyObject {}
+	/********************************/
+	
+	protocol ExampleType: class { }
+	class Example: ExampleType { }
+	
+	let er = Example()
+	let ep: ExampleType = Example()
+	let a1: AnyObject = er
+	let a2: AnyObject = Example.self
+	let a3: AnyObject = ep
+```
+
+<!--
+Если протокол тут бы был без ограничения на класс
+protocol ExampleType { }
+то была бы ошибка 
+value of type 'ExampleType' does not conform to specified type 'AnyObject'
+
+Так же AnyObject может быть использован как конкретный тип для объектов сбриджованных от обж-си класса. Так как многие value-type из свифта бриджуются в классы обж-си. Например строка или целое число.
+
+Гибкость AnyObject схожа с использованием 'id' в обжси. Поэтому при взятые из обжси типы данных часто используют AnyObject, в который конвертится 'id' при импорте.
+-->
+
+* Используйте данные типы только когда действительно этого хотите, ведь вы лишаетесь интерфейса нужных типов и проверок компилятора.
+
+
+----
+## Шаблоны (Generics)
+
+* Шаблоны помогают написать гибкие, готовые к переиспользованию типы и функции.
+* В стандартной библиотеке Swift:
+	* `Array, Dictionary, Optional` – шаблонные типы
+	* `min, max, swap` – шаблонные функции
+
+* Пример:
+ ```swift
+ 	func swap<T>(_ a: inout T, _ b: inout T) {
+ 		let temp = a
+ 		a = b
+ 		b = temp
+ 	}
+ ```
+<!-- 
+	Всегда давайте upper camel case имена параметрам-типам, чтобы было понять, что это именно тип данных
+-->
+
+
+----
+## Шаблоны (Generics)
+
+```swift
+	struct Stack<Element> {
+	    private var items = [Element]()
+	    mutating func push(_ item: Element) {
+	        items.append(item)
+	    }
+	    
+	    mutating func pop() -> Element {
+	        return items.removeLast()
+	    }
+	}
+	
+	extension Stack {
+	    var topItem: Element? {
+	        return items.last
+	    }
+	}
+```
+
+
+----
+## Шаблоны (Generics). Ограничения.
+* При объявлении функции
+
+```swift
+	// func f<T: SomeClass, U: SomeProtocol>...
+	func intersecs<T: Equatable>(_ s1: Stack<T>, _ s2: Stack<T>) -> Bool {
+	    for item in s1.items {
+	        if s2.contains(item: item) {
+	            return true
+	        }
+	    }
+	    return false
+	}
+```
+
+* Расширение существующих типов
+
+```swift
+	extension Stack where Element: Equatable {
+	    func contains(item: Element) -> Bool {
+	        for i in items {
+	            if item == i {
+	                return true
+	            }
+	        }
+	        return false
+	    }
+	}
+```
+
+<!-- 
+Материал про ассоциативные протоколы думаю для школьников не нужен. Так же не стал углубляться какие можно писать ограничения в where. То есть нужно сделать замечание, что необходимо самостоятельно изучить какие ещë средства свифт предоставляет для написания ограничений в дженериках.
+-->
+
+
