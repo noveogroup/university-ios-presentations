@@ -27,15 +27,27 @@ import Foundation
 	let s = "example" // String
 	var result = "example" + String(x) // example 1
 	result = "\(s) \(x * 2)" // example 2
+	let enclosedEAcute: Character = "\u{E9}\u{20DD}" // é⃝
 	
 	/* multiline example */
 	let multiline = """
 		This is a test example
 			of the multiline string
-	"""
+		"""
 ```
 
-<!-- Рассказать про строки, characters и кластеры. Почему string.count - это не то, что кажется -->
+<!-- 
+Swift String использует встроенные юникод-скаляры, которые являются 21-битными числами. Например, U+0061 - маленькая латинская a.
+юникодные скаляры в интервалах U+0000 - U+D7FF и U+E000 - U+10FFFF
+суррогатные пары в интервале U+D800 - U+DFFF
+остальные зарезервированы на будущее
+
+Каждому Character сопоставлен единственный расширенный графемный кластер, который по сути является одним или несколькими юникодными скалярами (скомбинированными)
+
+Рассказать про строки, characters и кластеры. Почему string.count - это не то, что кажется. Кластеры могут складываться
+var cafe = "cafe" // cafe.count = 4
+cafe += "\u{301}" // café => cafe.count = 4
+-->
 
 <!-- Описание работы с функцией вывода в лог -->
 
@@ -122,7 +134,7 @@ import Foundation
 	typealias HttpResponseStatus = (statusCode: UInt16, description: String)
 ```
 Если ваша структура данных будет использоваться за пределами какой-то малой области логики, то используйте полноценные структуры и классы вместо кортежей.
-<!-- является value-type -->
+<!-- является value-type. Нельзя создать из одного элемента. -->
 
 
 ----
