@@ -39,58 +39,73 @@
 
 ## UIView : UIResponder
 
-```ObjectiveC
-- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event;
-// Игнорирует все subview, которые 
-// 									* скрыты;
-// 									* userInteractionEnabled = NO;
-// 									* alpha < 0.01.
+```swift
+func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView?
+// Функция `hitTest` игнорирует все subview, которые скрыты;
+// `userInteractionEnabled = false` или `alpha < 0.01`
 
-- (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event;
+func point(inside: CGPoint, with: UIEvent?) -> Bool
 // Вызывается перед проверкой hittest для конкретного subview
 ``` 
 
 ![](./lecture_10_img/hittest.png)
 
+Note: 
+This method traverses the view hierarchy by calling the point(inside:with:) method of each subview to determine which subview should receive a touch event. If point(inside:with:) returns true, then the subview’s hierarchy is similarly traversed until the frontmost view containing the specified point is found. If a view does not contain the point, its branch of the view hierarchy is ignored. You rarely need to call this method yourself, but you might override it to hide touch events from subviews.
+
+This method ignores view objects that are hidden, that have disabled user interactions, or have an alpha level less than 0.01. This method does not take the view’s content into account when determining a hit. Thus, a view can still be returned even if the specified point is in a transparent portion of that view’s content.
+
+Points that lie outside the receiver’s bounds are never reported as hits, even if they actually lie within one of the receiver’s subviews. This can occur if the current view’s clipsToBounds property is set to false and the affected subview extends beyond the view’s bounds.
+
 
 ----
 
 ## UIResponder
 
-```ObjectiveC
-- (UIResponder *)nextResponder; // default: nil
+```swift
+var next: UIResponder? { get } // default: nil
 ```
 ![](./lecture_10_img/nextResponder.png)
 
-
-----
-
-## UIResponder
-
-```ObjectiveC
-- (BOOL)canBecomeFirstResponder; // default: NO
-- (BOOL)becomeFirstResponder;
-- (BOOL)canResignFirstResponder; // default: YES
-- (BOOL)resignFirstResponder;
-- (BOOL)isFirstResponder;
-```
-
-<!-- Рассказать о...
+Note:
 UIViewController.view.nextResponder ~> UIViewController
 UIViewController.nextResponder ~> UIViewController.view.superview
 UIView.nextResponder ~> UIView.superview
 UIWindow.nextResponder ~> UIApplication
 UIApplication.nextResponder ~> nil
--->
 
-```ObjectiveC
-@interface UIResponder (UIResponderInputViewAdditions)
-// Called and presented when object becomes first responder.  
-// Goes up the responder chain.
-@property (nonatomic, readonly, strong) UIView *inputView; // default: nil
-@property (nonatomic, readonly, strong) UIView *inputAccessoryView; // default: nil
-@end
+
+Return Value
+The next object in the responder chain or nil if this is the last object in the chain.  
+Discussion
+The UIResponder class does not store or set the next responder automatically, so this method returns nil by default. Subclasses must override this method and return an appropriate next responder. For example, UIView implements this method and returns the UIViewController object that manages it (if it has one) or its superview (if it doesn’t). UIViewController similarly implements the method and returns its view’s superview. UIWindow returns the application object. The shared UIApplication object normally returns nil, but it returns its app delegate if that object is a subclass of UIResponder and has not already been called to handle the event.
+
+
+----
+
+## UIResponder
+
+```swift
+var canBecomeFirstResponder: Bool { get } // default is false
+func becomeFirstResponder() -> Bool
+var canResignFirstResponder: Bool { get } // default is true
+func resignFirstResponder() -> Bool
+
+var isFirstResponder: Bool { get }
 ```
+
+```swift
+// UIResponderInputViewAdditions
+
+extension UIResponder { 
+	// Called and presented when object becomes first responder.  
+	// Goes up the responder chain.
+    open var inputView: UIView? { get } // default is nil
+    open var inputAccessoryView: UIView? { get } // default is nil
+}
+```
+Note:
+becomeFirstResponder - попросить текущий объект попытаться стать первым респондером. UIKit спросит текущего первого респондера освободиться от своих полномочий `canResignFirstResponder` + `resignFirstResponder` (который может отказаться от этого). Если получится, то UIKit спросит текущий объект `canBecomeFirstResponder` (который по умолчанию false). Если ответит положительно, то последующий события для первого респондера будут доставляться текущему объекту, а также UIKit попытается отобразить inputView.
 
 
 ----
